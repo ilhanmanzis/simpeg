@@ -52,8 +52,9 @@
 
 
                                 <div class=" w-64 aspect-[3/4] overflow-hidden ">
-                                    <img src="{{ asset('storage/register/' . $pengajuan->foto) }}" alt=""
+                                    <img src="{{ route('file.foto', $pengajuan->foto) }}" alt=""
                                         class="w-full h-full object-cover">
+
 
                                 </div>
                             </div>
@@ -251,7 +252,7 @@
                                                     <div class="w-4">:</div>
                                                     <div class="flex-1">
                                                         @if ($pendidikan->ijazah)
-                                                            <a href="{{ asset('storage/pendidikan/ijazah/' . $pendidikan->ijazah) }}"
+                                                            <a href="{{ route('file.ijazah', $pendidikan->ijazah) }}"
                                                                 target="_blank" class="text-blue-600 hover:underline">
                                                                 {{ $pendidikan->ijazah }}
                                                             </a>
@@ -265,7 +266,7 @@
                                                     <div class="w-4">:</div>
                                                     <div class="flex-1">
                                                         @if ($pendidikan->transkip_nilai)
-                                                            <a href="{{ asset('storage/pendidikan/transkipNilai/' . $pendidikan->transkip_nilai) }}"
+                                                            <a href="{{ route('file.transkip', $pendidikan->transkip_nilai) }}"
                                                                 target="_blank" class="text-blue-600 hover:underline">
                                                                 {{ $pendidikan->transkip_nilai }}
                                                             </a>
@@ -288,16 +289,22 @@
                         </div>
 
                         <div class="flex justify-between w-full">
-                            <form action="" method="get" class="w-1/4 ml-5">
+                            <form
+                                action="{{ route('admin.pengajuan.akun.tolak', ['id' => $pengajuan['id_register']]) }}"
+                                method="post" class="w-1/4 ml-5">
                                 @csrf
+                                @method('PUT')
 
                                 <button type="submit"
                                     class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-error-500 shadow-theme-xs hover:bg-error-600 mt-5 ">
                                     Tolak
                                 </button>
                             </form>
-                            <form action="" method="get" class="w-1/4">
+                            <form
+                                action="{{ route('admin.pengajuan.akun.setuju', ['id' => $pengajuan['id_register']]) }}"
+                                method="post" class="w-1/4">
                                 @csrf
+                                @method('PUT')
                                 <button type="submit"
                                     class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 mt-5">
                                     Setuju

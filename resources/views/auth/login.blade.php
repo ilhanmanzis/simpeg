@@ -40,6 +40,24 @@
             </div>
             <!-- Form -->
             <div class="flex flex-col flex-1 w-full lg:w-1/2">
+                @if (session('success'))
+                    <div class="max-w-md mx-auto mt-10">
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8
+                          3.582-8 8 3.582 8 8 8z">
+                                    </path>
+                                </svg>
+                                <p class="text-sm font-medium">
+                                    {{ session('success') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
 
                 <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
                     <div>

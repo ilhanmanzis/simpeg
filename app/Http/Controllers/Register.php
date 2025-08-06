@@ -100,8 +100,8 @@ class Register extends Controller
         // ===== Simpan foto profil =====
         $originalName = $request->file('foto')->getClientOriginalName();
         $timestampedName = time() . '_' . $originalName;
-        $request->file('foto')->storeAs('register', $timestampedName, 'public');
-        $foto = $timestampedName;
+        // Simpan ke storage/app/register
+        $request->file('foto')->storeAs('register', $timestampedName);
 
         // ===== Simpan data utama =====
         $register = Registers::create([
@@ -129,20 +129,22 @@ class Register extends Controller
             'role' => 'dosen',
             'status' => 'pending',
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'foto' => $foto
+            'foto' => $timestampedName
         ]);
 
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====
         foreach ($request->pendidikan as $index => $pendidikan) {
             $ijazahFile = $request->file("pendidikan.$index.ijazah");
             $ijazahName = time() . '_' . $ijazahFile->getClientOriginalName();
-            $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName, 'public');
+            // Simpan ke storage/app/pendidikan/ijazah
+            $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName);
 
             $transkipNilaiName = null;
             if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
                 $transkipFile = $request->file("pendidikan.$index.transkip_nilai");
                 $transkipNilaiName = time() . '_' . $transkipFile->getClientOriginalName();
-                $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName, 'public');
+                // Simpan ke storage/app/pendidikan/ijazah
+                $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
             }
 
             RegisterPendidikans::create([
@@ -157,7 +159,7 @@ class Register extends Controller
             ]);
         }
 
-        return redirect()->route('login')->with('message', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
+        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
     }
     public function storeKaryawan(Request $request)
     {
@@ -199,8 +201,10 @@ class Register extends Controller
         // ===== Simpan foto profil =====
         $originalName = $request->file('foto')->getClientOriginalName();
         $timestampedName = time() . '_' . $originalName;
-        $request->file('foto')->storeAs('register', $timestampedName, 'public');
-        $foto = $timestampedName;
+        // Simpan ke storage/app/register
+        $request->file('foto')->storeAs('register', $timestampedName);
+
+
 
         // ===== Simpan data utama =====
         $register = Registers::create([
@@ -224,20 +228,22 @@ class Register extends Controller
             'role' => 'karyawan',
             'status' => 'pending',
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'foto' => $foto
+            'foto' => $timestampedName
         ]);
 
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====
         foreach ($request->pendidikan as $index => $pendidikan) {
             $ijazahFile = $request->file("pendidikan.$index.ijazah");
             $ijazahName = time() . '_' . $ijazahFile->getClientOriginalName();
-            $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName, 'public');
+            // Simpan ke storage/app/pendidikan/ijazah
+            $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName);
 
             $transkipNilaiName = null;
             if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
                 $transkipFile = $request->file("pendidikan.$index.transkip_nilai");
                 $transkipNilaiName = time() . '_' . $transkipFile->getClientOriginalName();
-                $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName, 'public');
+                // Simpan ke storage/app/pendidikan/ijazah
+                $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
             }
 
             RegisterPendidikans::create([
@@ -252,7 +258,7 @@ class Register extends Controller
             ]);
         }
 
-        return redirect()->route('login')->with('message', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
+        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
     }
 
 

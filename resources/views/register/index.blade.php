@@ -7,11 +7,11 @@
     <div class="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
         <div class="flex flex-col justify-center w-full h-screen dark:bg-gray-900 sm:p-0 lg:flex-row">
             <!-- Form -->
-            <div class="flex flex-col flex-1 w-full lg:w-1/2">
+            <div class="flex flex-col flex-1 w-full lg:w-2/3 px-0 lg:px-20">
                 <div class="w-full max-w-md pt-5 mx-auto sm:py-10">
 
                 </div>
-                <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+                <div class="flex flex-col justify-center flex-1 w-full  mx-auto">
                     <div class="mb-5 sm:mb-8">
                         <h1 class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
                             Selamat datang di Simpeg El-Rahma
@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </div>
-            <div class="relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2">
+            <div class="relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/3">
                 <div class="flex items-center justify-center z-1">
                     <!-- ===== Common Grid Shape Start ===== -->
                     @include('partials.common-grid-shape')
