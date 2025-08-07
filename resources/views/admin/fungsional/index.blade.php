@@ -8,7 +8,7 @@
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
                 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
+
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">
@@ -40,9 +40,11 @@
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="px-5 py-4 sm:px-6 sm:py-5">
                         <div class="flex items-center justify-between gap-5">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ $title }}</h2>
                             <a href="{{ route('admin.fungsional.create') }}"
                                 class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mb-5">
                                 Tambah Jabatan Fungsional
+
                             </a>
 
 
