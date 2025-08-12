@@ -20,4 +20,9 @@ class Jenjangs extends Model
     {
         return $this->hasMany(Pendidikans::class, 'id_jenjang', 'id_jenjang');
     }
+
+    public function pengajuanPerubahanPendidikan()
+    {
+        return $this->hasMany(PengajuanPerubahanPendidikans::class, 'id_jenjang', 'id_jenjang');
+    }
 }

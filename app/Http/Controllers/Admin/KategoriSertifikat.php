@@ -21,7 +21,7 @@ class KategoriSertifikat extends Controller
             'sertifikats' => KategoriSertifikats::orderBy('id_kategori_sertifikat', 'desc')->paginate(10)->withQueryString()
 
         ];
-        return view('admin.kategorisertifikat.index', $data);
+        return view('admin.master.kategorisertifikat.index', $data);
     }
 
     /**
@@ -35,7 +35,7 @@ class KategoriSertifikat extends Controller
             'title' => 'Tambah Kategori Sertifikat',
         ];
 
-        return view('admin.kategorisertifikat.create', $data);
+        return view('admin.master.kategorisertifikat.create', $data);
     }
 
     /**
@@ -78,7 +78,7 @@ class KategoriSertifikat extends Controller
 
         // dd($data);
 
-        return view('admin.kategorisertifikat.edit', $data);
+        return view('admin.master.kategorisertifikat.edit', $data);
     }
 
     /**

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokumens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
+use Yaza\LaravelGoogleDriveStorage\Gdrive;
+
 
 class FileController extends Controller
 {
@@ -43,5 +46,29 @@ class FileController extends Controller
         $content = Storage::get($path);
 
         return response($content, 200)->header('Content-Type', $mime);
+    }
+    public function showFotoPerubahan($filename)
+    {
+        $path = "perubahanProfile/{$filename}";
+
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+
+        $mime = Storage::mimeType($path);
+        $content = Storage::get($path);
+
+        return response($content, 200)->header('Content-Type', $mime);
+    }
+
+    public function showFotoDrive(string $id)
+    {
+        $dokumen = Dokumens::where('nomor_dokumen', $id)->first();
+        $path = $dokumen->path_file;
+
+        $data = Gdrive::get($path);
+
+        return response($data->file, 200)
+            ->header('Content-Type', $data->ext);
     }
 }

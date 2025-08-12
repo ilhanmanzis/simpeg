@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('id_jenjang');
             $table->string('institusi');
             $table->string('gelar')->nullable();
-            $table->string('program_studi');
+            $table->string('program_studi')->nullable();
             $table->string('tahun_lulus');
             $table->string('ijazah');
             $table->string('transkip_nilai')->nullable();

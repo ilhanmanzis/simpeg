@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('provinsi')->nullable();
             $table->string('foto')->nullable();
             $table->enum('role', ['dosen', 'karyawan'])->default('dosen');
-            $table->enum('status', ['disetjui', 'pending', 'ditolak'])->default('pending');
+            $table->enum('status', ['disetujui', 'pending', 'ditolak'])->default('pending');
 
 
             $table->timestamps();

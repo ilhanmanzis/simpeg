@@ -5,10 +5,16 @@ use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
 use App\Http\Controllers\Admin\KategoriSertifikat;
+use App\Http\Controllers\Admin\PegawaiDosen;
+use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\PengajuanAkun;
+use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Dosen\PengajuanPendikan;
+use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
+use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\FileController;
 
 use App\Http\Controllers\Register;
@@ -89,18 +95,80 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/semester/{id}', [Semester::class, 'edit'])->name('semester.edit');
     Route::put('/semester/{id}', [Semester::class, 'update'])->name('semester.update');
     Route::delete('/semester/{id}', [Semester::class, 'destroy'])->name('semester.delete');
+
+    // dosen
+    Route::get('/dosen', [PegawaiDosen::class, 'index'])->name('dosen');
+    Route::get('/dosen/{id}', [PegawaiDosen::class, 'show'])->name('dosen.show');
+    Route::get('/dosen/create', [PegawaiDosen::class, 'create'])->name('dosen.create');
+    Route::get('/dosen/{id}/datadiri', [PegawaiDosen::class, 'dataDiri'])->name('dosen.datadiri');
+    Route::put('/dosen/{id}/datadiri', [PegawaiDosen::class, 'dataDiriUpdate'])->name('dosen.datadiri.update');
+    Route::get('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'pendidikan'])->name('dosen.pendidikan');
+    Route::put('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'pendidikanUpdate'])->name('dosen.pendidikan.update');
+    Route::get('/dosen/{id}/creatependidikan', [PegawaiDosen::class, 'createPendidikan'])->name('dosen.pendidikan.create');
+    Route::post('/dosen/{id}/creatependidikan', [PegawaiDosen::class, 'storePendidikan'])->name('dosen.pendidikan.store');
+    Route::delete('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'deletePendidikan'])->name('dosen.pendidikan.delete');
+
+    // karyawan
+    Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
+    Route::get('/karyawan/{id}', [PegawaiKaryawan::class, 'show'])->name('karyawan.show');
+    Route::get('/karyawan/create', [PegawaiKaryawan::class, 'create'])->name('karyawan.create');
+    Route::get('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiri'])->name('karyawan.datadiri');
+    Route::put('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiriUpdate'])->name('karyawan.datadiri.update');
+    Route::get('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikan'])->name('karyawan.pendidikan');
+    Route::put('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikanUpdate'])->name('karyawan.pendidikan.update');
+    Route::get('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'createPendidikan'])->name('karyawan.pendidikan.create');
+    Route::post('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'storePendidikan'])->name('karyawan.pendidikan.store');
+    Route::delete('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'deletePendidikan'])->name('karyawan.pendidikan.delete');
+
+
+    // pengajuan perubahan profile pribadi
+    Route::get('/perubahan-profile', [AdminPengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
+    Route::get('/perubahan-profile/{id}', [AdminPengajuanProfilePribadi::class, 'show'])->name('pengajuan.profile.show');
+    Route::put('/perubahan-profile/setuju/{id}', [AdminPengajuanProfilePribadi::class, 'setuju'])->name('pengajuan.profile.setuju');
+    Route::put('/perubahan-profile/tolak/{id}', [AdminPengajuanProfilePribadi::class, 'tolak'])->name('pengajuan.profile.tolak');
 });
+
+
+
+// dosen
 Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(function () {
     Route::get('/', [Dashboard::class, 'dosen'])->name('dashboard');
+
+    // profile pribadi
+    Route::get('/profile', [ProfilePribadi::class, 'index'])->name('profilepribadi');
+
+    // pengajuan perubahan profile pribadi
+    Route::get('/perubahan-profile', [PengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
+    Route::get('/perubahan-profile/create', [PengajuanProfilePribadi::class, 'create'])->name('pengajuan.profile.create');
+    Route::post('/perubahan-profile/store', [PengajuanProfilePribadi::class, 'store'])->name('pengajuan.profile.store');
+    Route::get('/perubahan-profile/{id}', [PengajuanProfilePribadi::class, 'show'])->name('pengajuan.profile.show');
+
+    // pengajuan perubahan Pendidikan
+    Route::get('/perubahan-pendidikan', [PengajuanPendikan::class, 'index'])->name('pengajuan.pendidikan');
+    Route::get('/perubahan-pendidikan/create', [PengajuanPendikan::class, 'create'])->name('pengajuan.pendidikan.create');
+    Route::post('/perubahan-pendidikan/store', [PengajuanPendikan::class, 'store'])->name('pengajuan.pendidikan.store');
+    Route::get('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendikan::class, 'edit'])->name('pengajuan.pendidikan.edit');
+    Route::put('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendikan::class, 'update'])->name('pengajuan.pendidikan.update');
+    Route::delete('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendikan::class, 'destroy'])->name('pengajuan.pendidikan.delete');
+    Route::get('/perubahan-pendidikan/{id}', [PengajuanPendikan::class, 'show'])->name('pengajuan.pendidikan.show');
 });
+
+
+// karyawan
 Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.')->group(function () {
     Route::get('/', [Dashboard::class, 'karyawan'])->name('dashboard');
 });
 
+
+
+
+// get file
 Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');
     Route::get('/file/foto/{filename}', [FileController::class, 'showFoto'])->name('file.foto');
+    Route::get('/file/fotodrive/{id}', [FileController::class, 'showFotoDrive'])->name('file.foto.drive');
+    Route::get('/file/fotoperubahan/{id}', [FileController::class, 'showFotoPerubahan'])->name('file.foto.perubahan');
 });
 
 

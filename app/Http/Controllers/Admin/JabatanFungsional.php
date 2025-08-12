@@ -22,7 +22,7 @@ class JabatanFungsional extends Controller
             'fungsionals' => JabatanFungsionals::with(['golongan'])->orderBy('id_fungsional', 'desc')->paginate(10)->withQueryString()
 
         ];
-        return view('admin.fungsional.index', $data);
+        return view('admin.master.fungsional.index', $data);
     }
 
     /**
@@ -37,7 +37,7 @@ class JabatanFungsional extends Controller
             'golongans' => Golongans::all()
         ];
 
-        return view('admin.fungsional.create', $data);
+        return view('admin.master.fungsional.create', $data);
     }
 
     /**
@@ -84,7 +84,7 @@ class JabatanFungsional extends Controller
 
         // dd($data);
 
-        return view('admin.fungsional.edit', $data);
+        return view('admin.master.fungsional.edit', $data);
     }
 
     /**

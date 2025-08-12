@@ -28,6 +28,7 @@
                     <x-side-link href="{{ route('admin.dashboard') }}" label="Dashboard" selected={{ $selected }}
                         icon='<path fill-rule="evenodd" clip-rule="evenodd" d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z" fill="" />'>
                     </x-side-link>
+                    {{-- master data --}}
                     <li>
                         <a href="#" @click.prevent="selected = (selected === 'Master Data' ? '':'Master Data')"
                             class="menu-item group"
@@ -97,6 +98,55 @@
                         <!-- Dropdown Menu End -->
                     </li>
 
+                    {{-- data pegawai --}}
+                    <li>
+                        <a href="#" @click.prevent="selected = (selected === 'Data Pegawai' ? '':'Data Pegawai')"
+                            class="menu-item group"
+                            :class="(selected === 'Data Pegawai') || (page === 'device' || page === 'formLayout') ?
+                            'menu-item-active' :
+                            'menu-item-inactive'">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                            </svg>
+
+
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Data Pegawai
+                            </span>
+
+                            <svg class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
+                                :class="[(selected === 'Data Pegawai') ? 'menu-item-arrow-active' :
+                                    'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : ''
+                                ]"
+                                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke=""
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu Start -->
+                        <div class="overflow-hidden transform translate"
+                            :class="(selected === 'Data Pegawai') ? 'block' : 'hidden'">
+                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'"
+                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                                <x-drop-side-link href="{{ route('admin.dosen') }}" page="Dosen">
+                                    Dosen
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.karyawan') }}" page="Karyawan">
+                                    Karyawan
+                                </x-drop-side-link>
+
+                            </ul>
+                        </div>
+                        <!-- Dropdown Menu End -->
+                    </li>
+
+                    {{-- pengajuan --}}
                     <li>
                         <a href="#" @click.prevent="selected = (selected === 'Pengajuan' ? '':'Pengajuan')"
                             class="menu-item group"
@@ -133,6 +183,10 @@
                                 class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                                 <x-drop-side-link href="{{ route('admin.pengajuan.akun') }}" page="Pengajuan Akun">
                                     Akun
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.profile') }}"
+                                    page="Pengajuan Profile Pribadi">
+                                    Perubahan Profile Pribadi
                                 </x-drop-side-link>
 
                             </ul>

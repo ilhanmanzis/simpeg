@@ -53,4 +53,19 @@ class User extends Authenticatable
     {
         return $this->hasOne(DataDiri::class, 'id_user');
     }
+
+    public function pendidikan()
+    {
+        return $this->hasMany(Pendidikans::class, 'id_user', 'id_user');
+    }
+
+    public function pengajuanPerubahanData()
+    {
+        return $this->hasMany(PengajuanPerubahanDatas::class, 'id_user', 'id_user');
+    }
+
+    public function pengajuanPerubahanPendidikan()
+    {
+        return $this->hasMany(PengajuanPerubahanPendidikans::class, 'id_user', 'id_user');
+    }
 }

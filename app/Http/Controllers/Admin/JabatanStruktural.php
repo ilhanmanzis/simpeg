@@ -22,7 +22,7 @@ class JabatanStruktural extends Controller
             'strukturals' => JabatanStrukturals::orderBy('id_struktural', 'desc')->paginate(10)->withQueryString()
 
         ];
-        return view('admin.struktural.index', $data);
+        return view('admin.master.struktural.index', $data);
     }
 
     /**
@@ -36,7 +36,7 @@ class JabatanStruktural extends Controller
             'title' => 'Tambah Jabatan Struktural',
         ];
 
-        return view('admin.struktural.create', $data);
+        return view('admin.master.struktural.create', $data);
     }
 
     /**
@@ -79,7 +79,7 @@ class JabatanStruktural extends Controller
 
         // dd($data);
 
-        return view('admin.struktural.edit', $data);
+        return view('admin.master.struktural.edit', $data);
     }
 
     /**

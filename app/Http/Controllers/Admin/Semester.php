@@ -21,7 +21,7 @@ class Semester extends Controller
             'semesters' => Semesters::orderBy('id_semester', 'desc')->paginate(10)->withQueryString()
 
         ];
-        return view('admin.semester.index', $data);
+        return view('admin.master.semester.index', $data);
     }
 
     /**
@@ -35,7 +35,7 @@ class Semester extends Controller
             'title' => 'Tambah Semester',
         ];
 
-        return view('admin.semester.create', $data);
+        return view('admin.master.semester.create', $data);
     }
 
     /**
@@ -78,7 +78,7 @@ class Semester extends Controller
 
         // dd($data);
 
-        return view('admin.semester.edit', $data);
+        return view('admin.master.semester.edit', $data);
     }
 
     /**

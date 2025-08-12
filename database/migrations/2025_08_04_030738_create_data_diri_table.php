@@ -37,6 +37,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+            $table->foreign('foto')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
         });
     }
 

@@ -24,7 +24,7 @@ class Jenjang extends Controller
         // dd($data);
 
 
-        return view('admin.jenjang.index', $data);
+        return view('admin.master.jenjang.index', $data);
     }
 
     /**
@@ -38,7 +38,7 @@ class Jenjang extends Controller
             'title' => 'Tambah Jenjang',
         ];
 
-        return view('admin.jenjang.create', $data);
+        return view('admin.master.jenjang.create', $data);
     }
 
     /**
@@ -81,7 +81,7 @@ class Jenjang extends Controller
 
         // dd($data);
 
-        return view('admin.jenjang.edit', $data);
+        return view('admin.master.jenjang.edit', $data);
     }
 
     /**

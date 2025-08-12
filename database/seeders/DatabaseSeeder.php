@@ -106,26 +106,17 @@ class DatabaseSeeder extends Seeder
                 'nama_jabatan' => 'Lektor',
                 'id_golongan' => 11 // III/c
             ],
-            [
-                'nama_jabatan' => 'Lektor',
-                'id_golongan' => 12 // III/d
-            ],
+
             [
                 'nama_jabatan' => 'Lektor Kepala',
                 'id_golongan' => 13 // IV/a
             ],
-            [
-                'nama_jabatan' => 'Lektor Kepala',
-                'id_golongan' => 14 // IV/b
-            ],
+
             [
                 'nama_jabatan' => 'Guru Besar',
                 'id_golongan' => 15 // IV/c
             ],
-            [
-                'nama_jabatan' => 'Guru Besar',
-                'id_golongan' => 16 // IV/d
-            ],
+
         ];
 
         foreach ($fungsionals as $fungsional) {

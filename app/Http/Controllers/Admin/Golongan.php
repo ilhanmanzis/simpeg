@@ -20,7 +20,7 @@ class Golongan extends Controller
             'golongans' => Golongans::orderBy('id_golongan', 'desc')->paginate(10)->withQueryString()
 
         ];
-        return view('admin.golongan.index', $data);
+        return view('admin.master.golongan.index', $data);
     }
 
     /**
@@ -34,7 +34,7 @@ class Golongan extends Controller
             'title' => 'Tambah Golongan',
         ];
 
-        return view('admin.golongan.create', $data);
+        return view('admin.master.golongan.create', $data);
     }
 
     /**
@@ -77,7 +77,7 @@ class Golongan extends Controller
 
         // dd($data);
 
-        return view('admin.golongan.edit', $data);
+        return view('admin.master.golongan.edit', $data);
     }
 
     /**

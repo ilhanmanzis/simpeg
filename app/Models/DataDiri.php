@@ -16,4 +16,10 @@ class DataDiri extends Model
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+
+
+    public function dokumen()
+    {
+        return $this->belongsTo(Dokumens::class, 'foto', 'nomor_dokumen');
+    }
 }
