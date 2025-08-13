@@ -188,6 +188,10 @@
                                     page="Pengajuan Profile Pribadi">
                                     Perubahan Profile Pribadi
                                 </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.pendidikan') }}"
+                                    page="Pengajuan Pendidikan">
+                                    Perubahan Pendidikan
+                                </x-drop-side-link>
 
                             </ul>
                         </div>

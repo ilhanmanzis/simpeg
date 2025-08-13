@@ -40,200 +40,21 @@
             <div class="space-y-5 sm:space-y-6">
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="px-5 py-4 sm:px-6 sm:py-5">
-
-
-                        {{-- profile pribadi --}}
-                        <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6">
-                            <div
-                                class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
-
-                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
-                                    Profile Pribadi</h2>
-
-                                <div x-data="{ openDropDown: false }" class="-mt-5 relative h-fit ">
-                                    <button @click="openDropDown = !openDropDown"
-                                        :class="openDropDown ? 'text-gray-700 dark:text-white' :
-                                            'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                                        <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                                                fill="" />
-                                        </svg>
-                                    </button>
-                                    <div x-show="openDropDown" @click.outside="openDropDown = false"
-                                        class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
-
-                                        <a href="{{ route('admin.karyawan.datadiri', ['id' => $karyawan->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Edit Profile Pribadi
-                                        </a>
-                                        <a href="{{ route('admin.karyawan.password', ['id' => $karyawan->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Ubah Password
-                                        </a>
-                                        {{-- <form method="POST"
-                                            action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
-                                                Delete
-                                            </button>
-                                        </form> --}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-center mt-10 mb-5">
-
-
-                                <div class=" w-64 aspect-[3/4] overflow-hidden ">
-                                    <img src="{{ route('file.foto.drive', $karyawan->dataDiri->foto) }}" alt=""
-                                        class="w-full h-full object-cover">
-
-
-
-                                </div>
-
-                            </div>
-                            <div class="flex justify-center mb-5">
-                                <button onclick="copyUrl('{{ $karyawan->dataDiri->dokumen->view_url }}', this)"
-                                    class="text-blue-600 hover:underline">
-                                    Salin URL
-                                </button>
-                            </div>
-                            <div
-                                class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
-
-
-
-                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-
-                                    <div class="w-full ">
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Nama</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->name }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->no_ktp }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NPP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->npp }}</div>
-                                        </div>
-
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Email</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->email }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Nomor HP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->no_hp }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Jenis Kelamin</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->jenis_kelamin }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Agama</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->agama }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tempat Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->tempat_lahir }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_lahir }}</div>
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-                                    <div class="w-full ">
-
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Alamat</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->alamat }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">RT</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->rt }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">RW</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->rw }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Desa/Kelurahan</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->desa }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Kecamatan</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->kecamatan }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Kabupaten/Kota</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->kabupaten }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Provinsi</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->provinsi }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Bergabung</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_bergabung }}</div>
-                                        </div>
-
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Status</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->status_keaktifan }}</div>
-                                        </div>
-
-                                    </div>
-
-
-                                </div>
-
-
-                            </div>
-
-                        </div>
                         {{-- informasi pendidikan --}}
-                        <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 mt-10">
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 mt-2">
                             <div
                                 class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Informasi Pendidikan</h2>
 
-                                <a href="{{ route('admin.karyawan.pendidikan.create', ['id' => $karyawan->id_user]) }}"
+                                <a href="{{ route('karyawan.pengajuan.pendidikan.create') }}"
                                     class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 -mt-5">
                                     Tambah Pendidikan
                                 </a>
                             </div>
 
-                            @foreach ($karyawan->pendidikan as $i => $pendidikan)
+
+                            @foreach ($pendidikans as $i => $pendidikan)
                                 <div class="mt-5 border border-gray-100 dark:border-gray-800 ">
                                     <div
                                         class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 px-5">
@@ -241,10 +62,9 @@
                                         <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  ">
                                             Pendidikan {{ $i + 1 }}</h2>
 
-
                                         <div class="flex justify-start">
 
-                                            <a href="{{ route('admin.karyawan.pendidikan', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
+                                            <a href="{{ route('karyawan.pengajuan.pendidikan.edit', ['id' => $pendidikan->id_pendidikan]) }}"
                                                 class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 ">
                                                 Edit Pendidikan
                                             </a>
@@ -264,8 +84,8 @@
                                                     class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
 
                                                     <form method="POST"
-                                                        action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
+                                                        action="{{ route('karyawan.pengajuan.pendidikan.delete', ['id' => $pendidikan->id_pendidikan]) }}"
+                                                        onsubmit="return confirm('Apakah Anda yakin ingin mengajukan penghapusan data pendidikan ini?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -277,6 +97,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div
                                         class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row  p-4">
                                         <div class="w-full">
@@ -362,6 +183,168 @@
                     </div>
 
 
+                </div>
+            </div>
+
+            <div class="space-y-5 sm:space-y-6 mt-5">
+                <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="px-5 py-4 sm:px-6 sm:py-5">
+                        <div class="flex items-center justify-center gap-5">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Riwayat Pengajuan
+                            </h2>
+                        </div>
+
+                        <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+                            <!-- ====== Table Six Start -->
+                            <div
+                                class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                                <div class="max-w-full overflow-x-auto">
+                                    <table class="min-w-full">
+                                        <!-- table header start -->
+                                        <thead>
+                                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                                <th class="px-5 py-3 sm:px-6">
+                                                    <div class="flex items-center">
+                                                        <p
+                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            No
+                                                        </p>
+                                                    </div>
+                                                </th>
+                                                <th class="px-5 py-3 sm:px-6">
+                                                    <div class="flex items-center">
+                                                        <p
+                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            Tanggal
+                                                        </p>
+                                                    </div>
+                                                </th>
+
+                                                <th class="px-5 py-3 sm:px-6">
+                                                    <div class="flex items-center">
+                                                        <p
+                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            Jenis
+                                                        </p>
+                                                    </div>
+                                                </th>
+
+                                                <th class="px-5 py-3 sm:px-6">
+                                                    <div class="flex items-center">
+                                                        <p
+                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            Status
+                                                        </p>
+                                                    </div>
+                                                </th>
+
+                                                <th class="px-5 py-3 sm:px-6">
+                                                    <div class="flex items-center">
+                                                        <p
+                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            Aksi
+                                                        </p>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- table header end -->
+
+                                        @php
+                                            $i = 1;
+                                        @endphp
+                                        <!-- table body start -->
+                                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                            @foreach ($pengajuans as $pengajuan)
+                                                <tr>
+                                                    <td class="px-5 py-4 sm:px-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex items-center gap-3">
+                                                                <span
+                                                                    class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                                    {{ $i++ }}
+                                                                </span>
+
+
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-5 py-4 sm:px-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex -space-x-2">
+                                                                <p
+                                                                    class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                                                    {{ $pengajuan->created_at->format('Y-m-d') }}
+
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-5 py-4 sm:px-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex -space-x-2">
+                                                                <p
+                                                                    class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                                                    {{ $pengajuan['jenis'] }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-5 py-4 sm:px-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex -space-x-2">
+                                                                @if ($pengajuan['status'] == 'ditolak')
+                                                                    <span
+                                                                        class="inline-flex items-center justify-center gap-1 rounded-full bg-error-50 px-2.5 py-0.5 text-sm font-medium text-error-600 dark:bg-error-500/15 dark:text-error-400">
+                                                                        {{ $pengajuan['status'] }}
+                                                                    </span>
+                                                                @elseif ($pengajuan['status'] == 'disetujui')
+                                                                    <span
+                                                                        class="inline-flex items-center justify-center gap-1 rounded-full bg-success-50 px-2.5 py-0.5 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-400">
+                                                                        {{ $pengajuan['status'] }}
+                                                                    </span>
+                                                                @else
+                                                                    <span
+                                                                        class="inline-flex items-center justify-center gap-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-sm font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+                                                                        {{ $pengajuan['status'] }}
+                                                                    </span>
+                                                                @endif
+
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-5 py-4 sm:px-6">
+                                                        {{-- aksi --}}
+                                                        <div class="flex items-center">
+
+
+                                                            <a href="{{ route('karyawan.pengajuan.pendidikan.show', ['id' => $pengajuan['id_perubahan']]) }}"
+                                                                class="inline-flex items-center gap-2 rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
+                                                                Lihat
+
+                                                            </a>
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            @endforeach
+                                            <!-- table body end -->
+
+                                        </tbody>
+                                    </table>
+                                    <!-- Pagination links -->
+                                    <div class="border-t border-gray-100 dark:border-gray-800 p-4">
+                                        {{ $pengajuans->links() }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ====== Table Six End -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

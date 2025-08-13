@@ -69,7 +69,7 @@
                             <h1 class="mb-2 font-bold text-gray-800 text-xl dark:text-white/90 ">
                                 STMIK El-Rahma Yogyakarta
                             </h1>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <p class="text-sm text-error-500 dark:text-error-400">
                                 {{ session('message') }}
                             </p>
                         </div>

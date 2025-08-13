@@ -21,7 +21,7 @@
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
-                <form action="{{ route('dosen.pengajuan.pendidikan.store') }}" method="post"
+                <form action="{{ route('karyawan.pengajuan.pendidikan.store') }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     <!-- Elements -->

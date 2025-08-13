@@ -12,6 +12,7 @@ use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Yaza\LaravelGoogleDriveStorage\Gdrive;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class PegawaiKaryawan extends Controller
@@ -646,5 +647,37 @@ class PegawaiKaryawan extends Controller
             return redirect()->route('admin.karyawan.show', $id)->with('success', 'Data pendidikan berhasil dihapus.');
         }
         return redirect()->route('admin.karyawan.show', $id)->with('error', 'Data pendidikan tidak ditemukan.');
+    }
+
+    public function password(string $id)
+    {
+        $data = [
+            'page' => 'Karyawan',
+            'selected' => 'Karyawan',
+            'title' => 'Ubah Password Karyawan',
+            'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
+
+        ];
+        return view('admin.pegawai.karyawan.password', $data);
+    }
+    public function passwordUpdate(Request $request, string $id)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'same:password',
+        ], [
+            'password.required' => 'Password harus di isi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password_confirmation.same' => 'Konfirmasi Password tidak sama',
+        ]);
+
+
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('admin.karyawan.show', $id)->with('success', 'Password berhasil diperbarui');
     }
 }

@@ -30,10 +30,13 @@ class PengajuanAkun extends Controller
 
     public function index()
     {
-        $pengajuans = Registers::where('status', 'pending')->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $pengajuans = Registers::where('status', 'pending')->orderBy('created_at', 'desc')->paginate(10)->appends(request()->except('page', 'riwayat_page'));
         $riwayats = Registers::where('status', '!=', 'pending')->orderBy('updated_at', 'desc')
             ->paginate(10, ['*'], 'riwayat_page')
-            ->withQueryString();
+            // jangan bawa-bawa page default saat pindah halaman riwayat
+            ->appends(request()->except('page'))
+            // opsional: auto-scroll ke section riwayat
+            ->fragment('riwayat');
         $data = [
             'selected' => 'Pengajuan',
             'page' => 'Pengajuan Akun',

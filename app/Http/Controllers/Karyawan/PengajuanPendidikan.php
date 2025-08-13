@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dosen;
+namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jenjangs;
@@ -9,7 +9,7 @@ use App\Models\PengajuanPerubahanPendidikans;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class PengajuanPendikan extends Controller
+class PengajuanPendidikan extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +26,7 @@ class PengajuanPendikan extends Controller
             'pendidikans' => Pendidikans::where('id_user', $id)->with(['jenjang', 'dokumenIjazah', 'dokumenTranskipNilai'])->orderBy('id_jenjang', 'asc')->get()
         ];
 
-        return view('dosen.pengajuan.pendidikan.index', $data);
+        return view('karyawan.pengajuan.pendidikan.index', $data);
     }
 
     /**
@@ -37,11 +37,11 @@ class PengajuanPendikan extends Controller
         $data = [
             'page' => 'Pengajuan Pendidikan',
             'selected' => 'Pengajuan Pendidikan',
-            'title' => 'Tambah Pendidikan Dosen',
+            'title' => 'Tambah Pendidikan karyawan',
             'jenjangs' => Jenjangs::all()
 
         ];
-        return view('dosen.pengajuan.pendidikan.create', $data);
+        return view('karyawan.pengajuan.pendidikan.create', $data);
     }
 
     /**
@@ -89,7 +89,7 @@ class PengajuanPendikan extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Tambah pendidikan berhasil diajukan.');
+        return redirect()->route('karyawan.pengajuan.pendidikan')->with('success', 'Tambah pendidikan berhasil diajukan.');
     }
 
     /**
@@ -108,9 +108,9 @@ class PengajuanPendikan extends Controller
         ];
 
         if ($pengajuan->status === 'pending') {
-            return view('dosen.pengajuan.pendidikan.show', $data);
+            return view('karyawan.pengajuan.pendidikan.show', $data);
         } else {
-            return view('dosen.pengajuan.pendidikan.riwayat', $data);
+            return view('karyawan.pengajuan.pendidikan.riwayat', $data);
         }
     }
 
@@ -124,18 +124,18 @@ class PengajuanPendikan extends Controller
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['dokumenIjazah', 'dokumenTranskipNilai', 'user'])->first();
 
         if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan');
+            return redirect()->route('karyawan.pengajuan.pendidikan');
         }
 
         $data = [
             'page' => 'Pengajuan Pendidikan',
             'selected' => 'Pengajuan Pendidikan',
-            'title' => 'Edit Pendidikan Dosen',
+            'title' => 'Edit Pendidikan karyawan',
             'pendidikan' => $pendidikan,
             'jenjangs' => Jenjangs::all()
 
         ];
-        return view('dosen.pengajuan.pendidikan.edit', $data);
+        return view('karyawan.pengajuan.pendidikan.edit', $data);
     }
 
     /**
@@ -157,7 +157,7 @@ class PengajuanPendikan extends Controller
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['user'])->first();
 
         if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
+            return redirect()->route('karyawan.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
         }
 
         $ijazahName = null;
@@ -190,7 +190,7 @@ class PengajuanPendikan extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Edit pendidikan berhasil diajukan.');
+        return redirect()->route('karyawan.pengajuan.pendidikan')->with('success', 'Edit pendidikan berhasil diajukan.');
     }
 
     /**
@@ -202,7 +202,7 @@ class PengajuanPendikan extends Controller
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['user'])->first();
 
         if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
+            return redirect()->route('karyawan.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
         }
 
         PengajuanPerubahanPendidikans::create([
@@ -218,6 +218,6 @@ class PengajuanPendikan extends Controller
             'jenis' => 'delete',
             'status' => 'pending',
         ]);
-        return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Hapus pendidikan berhasil diajukan.');
+        return redirect()->route('karyawan.pengajuan.pendidikan')->with('success', 'Hapus pendidikan berhasil diajukan.');
     }
 }

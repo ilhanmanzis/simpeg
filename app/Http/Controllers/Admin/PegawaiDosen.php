@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class PegawaiDosen extends Controller
@@ -170,6 +171,17 @@ class PegawaiDosen extends Controller
         ];
         return view('admin.pegawai.dosen.show', $data);
     }
+    public function password(string $id)
+    {
+        $data = [
+            'page' => 'Dosen',
+            'selected' => 'Dosen',
+            'title' => 'Ubah Password Dosen',
+            'dosen' => User::where('id_user', $id)->with(['dataDiri'])->first()
+
+        ];
+        return view('admin.pegawai.dosen.password', $data);
+    }
 
 
     public function dataDiri(string $id)
@@ -195,6 +207,27 @@ class PegawaiDosen extends Controller
 
         ];
         return view('admin.pegawai.dosen.pendidikan', $data);
+    }
+
+    public function passwordUpdate(Request $request, string $id)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'same:password',
+        ], [
+            'password.required' => 'Password harus di isi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password_confirmation.same' => 'Konfirmasi Password tidak sama',
+        ]);
+
+
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('admin.dosen.show', $id)->with('success', 'Password berhasil diperbarui');
     }
 
     /**

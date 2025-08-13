@@ -28,12 +28,15 @@ class PengajuanProfilePribadi extends Controller
             'page' => 'Pengajuan Profile Pribadi',
             'selected' => 'Pengajuan Profile Pribadi',
             'title' => 'Pengajuan Perubahan Profile Pribadi',
-            'pengajuans' => PengajuanPerubahanDatas::with(['user.dataDiri'])->where('status', 'pending')->orderBy('updated_at', 'desc')->paginate(10)->withQueryString(),
+            'pengajuans' => PengajuanPerubahanDatas::with(['user.dataDiri'])->where('status', 'pending')->orderBy('updated_at', 'desc')->paginate(10)->appends(request()->except('page', 'riwayat_page')),
             'riwayats' => PengajuanPerubahanDatas::with(['user.dataDiri'])
                 ->where('status', '!=', 'pending')
                 ->orderBy('updated_at', 'desc')
-                ->paginate(10)
-                ->withQueryString()
+                ->paginate(10, ['*'], 'riwayat_page')
+                // jangan bawa-bawa page default saat pindah halaman riwayat
+                ->appends(request()->except('page'))
+                // opsional: auto-scroll ke section riwayat
+                ->fragment('riwayat')
         ];
 
         return view('admin.pengajuan.profile.index', $data);

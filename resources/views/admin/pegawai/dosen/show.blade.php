@@ -50,10 +50,41 @@
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Profile Pribadi</h2>
 
-                                <a href="{{ route('admin.dosen.datadiri', ['id' => $dosen->id_user]) }}"
-                                    class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 -mt-5">
-                                    Edit Profile Pribadi
-                                </a>
+                                <div x-data="{ openDropDown: false }" class="-mt-5 relative h-fit ">
+                                    <button @click="openDropDown = !openDropDown"
+                                        :class="openDropDown ? 'text-gray-700 dark:text-white' :
+                                            'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
+                                        <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
+                                                fill="" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="openDropDown" @click.outside="openDropDown = false"
+                                        class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
+
+                                        <a href="{{ route('admin.dosen.datadiri', ['id' => $dosen->id_user]) }}"
+                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                            Edit Profile Pribadi
+                                        </a>
+                                        <a href="{{ route('admin.dosen.password', ['id' => $dosen->id_user]) }}"
+                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                            Ubah Password
+                                        </a>
+                                        {{-- <form method="POST"
+                                            action="{{ route('admin.dosen.pendidikan.delete', ['id' => $dosen->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
+                                                Delete
+                                            </button>
+                                        </form> --}}
+                                    </div>
+                                </div>
+
                             </div>
 
 

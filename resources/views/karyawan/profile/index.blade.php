@@ -48,36 +48,33 @@
                                 class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
 
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
-                                    Pengajuan Perubahan Profile Pribadi {{ $pengajuan->user->dataDiri->name }}</h2>
+                                    Profile Pribadi</h2>
 
-
+                                <a href="{{ route('karyawan.pengajuan.profile.create') }}"
+                                    class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 -mt-5">
+                                    Ajukan Perubahan Data
+                                </a>
                             </div>
 
 
                             <div class="flex justify-center mt-10 mb-5">
 
 
-                                <div
-                                    class="{{ $pengajuan->status === 'ditolak' ? '' : 'w-64 aspect-[3/4] overflow-hidden' }}">
+                                <div class=" w-64 aspect-[3/4] overflow-hidden ">
+                                    <img src="{{ route('file.foto.drive', $karyawan->dataDiri->foto) }}" alt=""
+                                        class="w-full h-full object-cover">
 
-
-                                    @if ($pengajuan->status == 'disetujui')
-                                        <img src="{{ route('file.foto.drive', $pengajuan->user->dataDiri->foto) }}"
-                                            alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
-                                    @elseif ($pengajuan->status == 'ditolak')
-                                        <p class="text-error-500 border-b border-error-500">
-                                            Foto telah dihapus dari sistem
-                                        </p>
-                                    @else
-                                        <img src="{{ route('file.foto.perubahan', $pengajuan->foto) }}"
-                                            alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
-                                    @endif
 
 
                                 </div>
 
                             </div>
-
+                            <div class="flex justify-center mb-5">
+                                <button onclick="copyUrl('{{ $karyawan->dataDiri->dokumen->view_url }}', this)"
+                                    class="text-blue-600 hover:underline">
+                                    Salin URL
+                                </button>
+                            </div>
                             <div
                                 class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
 
@@ -89,111 +86,102 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nama</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->name }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->name }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->no_ktp }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->no_ktp }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NPP</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->npp }}</div>
                                         </div>
 
                                         <div class="flex">
-                                            <div class="w-32 font-semibold">NUPTK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nuptk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nip }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDN</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidn }}</div>
-                                        </div>
-                                        <div class="flex">
                                             <div class="w-32 font-semibold">Email</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->email }}</div>
+                                            <div class="flex-1">{{ $karyawan->email }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nomor HP</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->no_hp }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->no_hp }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Jenis Kelamin</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->jenis_kelamin }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->jenis_kelamin }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Agama</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->agama }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->agama }}</div>
                                         </div>
 
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tempat Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tempat_lahir }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_lahir }}</div>
+                                        </div>
 
                                     </div>
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tempat Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->tempat_lahir }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->tanggal_lahir }}</div>
-                                        </div>
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Alamat</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->alamat }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->alamat }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">RT</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->rt }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->rt }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">RW</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->rw }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->rw }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Desa/Kelurahan</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->desa }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->desa }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Kecamatan</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->kecamatan }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->kecamatan }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Kabupaten/Kota</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->kabupaten }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->kabupaten }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Provinsi</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->provinsi }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->provinsi }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Bergabung</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->tanggal_bergabung }}</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_bergabung }}</div>
                                         </div>
 
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Status</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->status_keaktifan }}</div>
+                                        </div>
 
                                     </div>
 

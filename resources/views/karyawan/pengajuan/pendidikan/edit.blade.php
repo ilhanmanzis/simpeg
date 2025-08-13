@@ -17,12 +17,13 @@
 
             <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
                 <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                    Tambah Pendidikan
+                    Edit Pendidikan
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
-                <form action="{{ route('dosen.pengajuan.pendidikan.store') }}" method="post"
-                    enctype="multipart/form-data">
+                <form action="{{ route('karyawan.pengajuan.pendidikan.update', ['id' => $pendidikan->id_pendidikan]) }}"
+                    method="post" enctype="multipart/form-data">
+                    @method('put')
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
@@ -39,13 +40,9 @@
                                         class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10  h-11 w-full appearance-none rounded-lg border bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('jenjang') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
                                         :class="isOptionSelected && 'text-gray-800 dark:text-white/90'"
                                         @change="isOptionSelected = true">
-                                        <option value=""
-                                            class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
-                                            Pilih Jenjang
-                                        </option>
                                         @foreach ($jenjangs as $jenjang)
                                             <option value="{{ $jenjang['id_jenjang'] }}"
-                                                {{ old('jenjang') == $jenjang['id_jenjang'] ? 'selected' : '' }}
+                                                {{ $pendidikan->id_jenjang == $jenjang['id_jenjang'] ? 'selected' : '' }}
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                                                 {{ $jenjang['nama_jenjang'] }}
                                             </option>
@@ -74,7 +71,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Tahun Lulus<span class="text-error-500">*</span>
                                 </label>
-                                <input name="tahun_lulus" value="{{ old('tahun_lulus') }}"
+                                <input name="tahun_lulus" value="{{ $pendidikan->tahun_lulus }}"
                                     class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('tahun_lulus') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
                                     required />
                                 @error('tahun_lulus')
@@ -88,7 +85,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Program Studi/Jurusan
                                 </label>
-                                <input name="program_studi" value="{{ old('program_studi') }}"
+                                <input name="program_studi" value="{{ $pendidikan->program_studi }}"
                                     class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('program_studi') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
                                 @error('program_studi')
                                     <p class="text-theme-xs text-error-500 my-1.5">
@@ -103,7 +100,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Gelar
                                 </label>
-                                <input name="gelar" value="{{ old('gelar') }}"
+                                <input name="gelar" value="{{ $pendidikan->gelar }}"
                                     class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('gelar') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
                                 @error('gelar')
                                     <p class="text-theme-xs text-error-500 my-1.5">
@@ -115,7 +112,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Institusi<span class="text-error-500">*</span>
                                 </label>
-                                <input name="institusi" value="{{ old('institusi') }}"
+                                <input name="institusi" value="{{ $pendidikan->institusi }}"
                                     class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('institusi') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
                                     required />
                                 @error('institusi')
@@ -129,10 +126,15 @@
 
                         <div class="w-full mb-2">
                             <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ijazah<span class="text-error-500">*</span>
-
+                                Ijazah<span class="text-error-500">*</span> (kosongkan jika tidak diubah)
+                                @if ($pendidikan->ijazah)
+                                    <a href="{{ $pendidikan->dokumenIjazah->preview_url }}" target="_blank"
+                                        class="text-blue-600 hover:underline">
+                                        Lihat
+                                    </a>
+                                @endif
                             </label>
-                            <input name="ijazah" type="file" accept="application/pdf" required
+                            <input name="ijazah" type="file" accept="application/pdf"
                                 class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border  {{ $errors->has('ijazah') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}   bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900  dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400" />
                             @error('ijazah')
                                 <p class="text-theme-xs text-error-500 my-1.5">
@@ -143,7 +145,13 @@
 
                         <div class="w-full mb-4">
                             <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Transkip Nilai
+                                Transkip Nilai (kosongkan jika tidak diubah)
+                                @if ($pendidikan->transkip_nilai)
+                                    <a href="{{ $pendidikan->dokumenTranskipNilai->preview_url }}" target="_blank"
+                                        class="text-blue-600 hover:underline">
+                                        Lihat
+                                    </a>
+                                @endif
                             </label>
                             <input name="transkip_nilai" type="file" accept="application/pdf"
                                 class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border  {{ $errors->has('transkip_nilai') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}   bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900  dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400" />

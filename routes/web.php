@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\PengajuanAkun;
+use App\Http\Controllers\Admin\PengajuanPendikan as AdminPengajuanPendikan;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Auth;
@@ -16,7 +17,9 @@ use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\FileController;
-
+use App\Http\Controllers\Karyawan\PengajuanPendidikan;
+use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanProfilePribadi;
+use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
 use App\Http\Controllers\Register;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -107,6 +110,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/dosen/{id}/creatependidikan', [PegawaiDosen::class, 'createPendidikan'])->name('dosen.pendidikan.create');
     Route::post('/dosen/{id}/creatependidikan', [PegawaiDosen::class, 'storePendidikan'])->name('dosen.pendidikan.store');
     Route::delete('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'deletePendidikan'])->name('dosen.pendidikan.delete');
+    Route::get('/dosen/{id}/password', [PegawaiDosen::class, 'password'])->name('dosen.password');
+    Route::put('/dosen/{id}/password', [PegawaiDosen::class, 'passwordUpdate'])->name('dosen.password.update');
 
     // karyawan
     Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
@@ -119,6 +124,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'createPendidikan'])->name('karyawan.pendidikan.create');
     Route::post('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'storePendidikan'])->name('karyawan.pendidikan.store');
     Route::delete('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'deletePendidikan'])->name('karyawan.pendidikan.delete');
+    Route::get('/karyawan/{id}/password', [PegawaiKaryawan::class, 'password'])->name('karyawan.password');
+    Route::put('/karyawan/{id}/password', [PegawaiKaryawan::class, 'passwordUpdate'])->name('karyawan.password.update');
 
 
     // pengajuan perubahan profile pribadi
@@ -126,6 +133,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/perubahan-profile/{id}', [AdminPengajuanProfilePribadi::class, 'show'])->name('pengajuan.profile.show');
     Route::put('/perubahan-profile/setuju/{id}', [AdminPengajuanProfilePribadi::class, 'setuju'])->name('pengajuan.profile.setuju');
     Route::put('/perubahan-profile/tolak/{id}', [AdminPengajuanProfilePribadi::class, 'tolak'])->name('pengajuan.profile.tolak');
+
+    // pengajuan perubahan pendidikan
+    Route::get('/perubahan-pendidikan', [AdminPengajuanPendikan::class, 'index'])->name('pengajuan.pendidikan');
+    Route::get('/perubahan-pendidikan/{id}', [AdminPengajuanPendikan::class, 'show'])->name('pengajuan.pendidikan.show');
+    Route::get('/perubahan-pendidikan/{id}/riwayat', [AdminPengajuanPendikan::class, 'riwayat'])->name('pengajuan.pendidikan.riwayat');
+    Route::put('/perubahan-pendidikan/setuju/{id}', [AdminPengajuanPendikan::class, 'setuju'])->name('pengajuan.pendidikan.setuju');
+    Route::put('/perubahan-pendidikan/tolak/{id}', [AdminPengajuanPendikan::class, 'tolak'])->name('pengajuan.pendidikan.tolak');
 });
 
 
@@ -157,6 +171,25 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
 // karyawan
 Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.')->group(function () {
     Route::get('/', [Dashboard::class, 'karyawan'])->name('dashboard');
+
+    // profile pribadi
+    Route::get('/profile', [KaryawanProfilePribadi
+    ::class, 'index'])->name('profilepribadi');
+
+    // pengajuan perubahan profile pribadi
+    Route::get('/perubahan-profile', [KaryawanPengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
+    Route::get('/perubahan-profile/create', [KaryawanPengajuanProfilePribadi::class, 'create'])->name('pengajuan.profile.create');
+    Route::post('/perubahan-profile/store', [KaryawanPengajuanProfilePribadi::class, 'store'])->name('pengajuan.profile.store');
+    Route::get('/perubahan-profile/{id}', [KaryawanPengajuanProfilePribadi::class, 'show'])->name('pengajuan.profile.show');
+
+    // pengajuan perubahan Pendidikan
+    Route::get('/perubahan-pendidikan', [PengajuanPendidikan::class, 'index'])->name('pengajuan.pendidikan');
+    Route::get('/perubahan-pendidikan/create', [PengajuanPendidikan::class, 'create'])->name('pengajuan.pendidikan.create');
+    Route::post('/perubahan-pendidikan/store', [PengajuanPendidikan::class, 'store'])->name('pengajuan.pendidikan.store');
+    Route::get('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendidikan::class, 'edit'])->name('pengajuan.pendidikan.edit');
+    Route::put('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendidikan::class, 'update'])->name('pengajuan.pendidikan.update');
+    Route::delete('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendidikan::class, 'destroy'])->name('pengajuan.pendidikan.delete');
+    Route::get('/perubahan-pendidikan/{id}', [PengajuanPendidikan::class, 'show'])->name('pengajuan.pendidikan.show');
 });
 
 

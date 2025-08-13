@@ -97,26 +97,7 @@
                                             <div class="flex-1">{{ $pengajuan->no_ktp }}</div>
                                         </div>
 
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NUPTK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nuptk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nip }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDN</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidn }}</div>
-                                        </div>
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Email</div>
                                             <div class="w-4">:</div>
@@ -137,12 +118,6 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->agama }}</div>
                                         </div>
-
-
-                                    </div>
-                                </div>
-                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-                                    <div class="w-full ">
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Tempat Lahir</div>
                                             <div class="w-4">:</div>
@@ -153,6 +128,23 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->tanggal_lahir }}</div>
                                         </div>
+                                        @if ($pengajuan->status === 'ditolak')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Keterangan</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">
+                                                    <span
+                                                        class="text-error-500">{{ $pengajuan->keterangan ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        @endif
+
+
+                                    </div>
+                                </div>
+                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+                                    <div class="w-full ">
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Alamat</div>
                                             <div class="w-4">:</div>
