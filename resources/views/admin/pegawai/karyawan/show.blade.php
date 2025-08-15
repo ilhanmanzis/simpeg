@@ -68,10 +68,25 @@
                                             class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                             Edit Profile Pribadi
                                         </a>
+
+                                        <a href="{{ route('admin.karyawan.npp', ['id' => $karyawan->id_user]) }}"
+                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                            Edit NPP
+                                        </a>
                                         <a href="{{ route('admin.karyawan.password', ['id' => $karyawan->id_user]) }}"
                                             class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                             Ubah Password
                                         </a>
+                                        <form method="POST"
+                                            action="{{ route('admin.karyawan.status', ['id' => $karyawan->id_user]) }}"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin mengubah status karyawan ini menjadi {{ $karyawan->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                Ubah Status
+                                            </button>
+                                        </form>
                                         {{-- <form method="POST"
                                             action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">

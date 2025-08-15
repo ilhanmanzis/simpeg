@@ -7,7 +7,6 @@
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
             </div>
 
         </div>
@@ -17,7 +16,7 @@
 
             <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
                 <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                    Profile {{ $karyawan->dataDiri->name }}
+                    Edit Profile Pribadi {{ $karyawan->dataDiri->name }}
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">

@@ -111,7 +111,7 @@ class PengajuanProfilePribadi extends Controller
         }
 
         // update email
-        $perubahan->user->update(['email' => $perubahan->email]);
+        // $perubahan->user->update(['email' => $perubahan->email]);
 
         // Data diri
         $perubahan->user->dataDiri->update([

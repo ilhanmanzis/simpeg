@@ -30,7 +30,7 @@
 
 
 
-                        <div class="w-full flex">
+                        <div class="w-1/2 flex">
                             <div class="mb-2 w-1/2 mr-5">
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Nama Lengkap<span class="text-error-500">*</span>
@@ -44,8 +44,49 @@
                                     </p>
                                 @enderror
                             </div>
+                            <div class="w-full">
+                                <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Pilih Foto Profil (kosongkan jika tidak ingin diubah)
+                                </label>
+                                <input type="file" id="fotoInput" name="foto" accept="image/*" id="fotoInput"
+                                    @change="handleFileUpload($event, 'foto')"
+                                    class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border  {{ $errors->has('foto') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}   bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900  dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400" />
+                                @error('foto')
+                                    <p class="text-theme-xs text-error-500 my-1.5">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                                <div id="previewFoto" class="mt-4">
+                                    @if (!empty($dosen->dataDiri->foto))
+                                        <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}"
+                                            alt="{{ $dosen->dataDiri->foto }}"
+                                            class="max-w-[200px] mt-2 rounded shadow">
+                                    @endif
+                                </div>
 
-                            <div class="mb-2 w-1/2">
+                                {{-- Tempat preview foto --}}
+                                <script>
+                                    document.getElementById('fotoInput').addEventListener('change', function(e) {
+                                        const file = e.target.files[0];
+                                        const previewDiv = document.getElementById('previewFoto');
+                                        previewDiv.innerHTML = ''; // Clear preview sebelumnya
+
+                                        if (file && file.type.startsWith('image/')) {
+                                            const reader = new FileReader();
+                                            reader.onload = function(event) {
+                                                const img = document.createElement('img');
+                                                img.src = event.target.result;
+                                                img.alt = 'Preview Foto';
+                                                img.classList = 'max-w-[200px] mt-2 rounded shadow';
+                                                previewDiv.appendChild(img);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    });
+                                </script>
+                            </div>
+
+                            {{-- <div class="mb-2 w-1/2">
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Email Aktif<span class="text-error-500">*</span>
                                 </label>
@@ -57,10 +98,10 @@
                                         {{ $message }}
                                     </p>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                         </div>
-                        <div class="w-full">
+                        {{-- <div class="w-full">
                             <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 Pilih Foto Profil (kosongkan jika tidak ingin diubah)
                             </label>
@@ -79,7 +120,7 @@
                                 @endif
                             </div>
 
-                            {{-- Tempat preview foto --}}
+                            Tempat preview foto
                             <script>
                                 document.getElementById('fotoInput').addEventListener('change', function(e) {
                                     const file = e.target.files[0];
@@ -99,7 +140,7 @@
                                     }
                                 });
                             </script>
-                        </div>
+                        </div> --}}
                         <div class="w-full">
                             <div class="lg:flex md:flex sm:block justify-between mb-2">
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full lg:mr-3 md:mr-3 sm:mr-0">

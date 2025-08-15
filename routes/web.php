@@ -13,13 +13,16 @@ use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfileP
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Dosen\Pendidikan;
 use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanProfilePribadi;
 use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
+use App\Http\Controllers\ManajemenUser;
 use App\Http\Controllers\Register;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -101,8 +104,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
 
     // dosen
     Route::get('/dosen', [PegawaiDosen::class, 'index'])->name('dosen');
-    Route::get('/dosen/{id}', [PegawaiDosen::class, 'show'])->name('dosen.show');
+    Route::get('/dosen/{id}/show', [PegawaiDosen::class, 'show'])->name('dosen.show');
     Route::get('/dosen/create', [PegawaiDosen::class, 'create'])->name('dosen.create');
+    Route::post('/dosen/store', [PegawaiDosen::class, 'store'])->name('dosen.store');
     Route::get('/dosen/{id}/datadiri', [PegawaiDosen::class, 'dataDiri'])->name('dosen.datadiri');
     Route::put('/dosen/{id}/datadiri', [PegawaiDosen::class, 'dataDiriUpdate'])->name('dosen.datadiri.update');
     Route::get('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'pendidikan'])->name('dosen.pendidikan');
@@ -112,11 +116,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::delete('/dosen/{id}/pendidikan/{idPendidikan}', [PegawaiDosen::class, 'deletePendidikan'])->name('dosen.pendidikan.delete');
     Route::get('/dosen/{id}/password', [PegawaiDosen::class, 'password'])->name('dosen.password');
     Route::put('/dosen/{id}/password', [PegawaiDosen::class, 'passwordUpdate'])->name('dosen.password.update');
+    Route::get('/dosen/{id}/npp', [PegawaiDosen::class, 'npp'])->name('dosen.npp');
+    Route::put('/dosen/{id}/npp', [PegawaiDosen::class, 'nppUpdate'])->name('dosen.npp.update');
+    Route::put('/dosen/{id}/status', [PegawaiDosen::class, 'status'])->name('dosen.status');
 
     // karyawan
     Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
-    Route::get('/karyawan/{id}', [PegawaiKaryawan::class, 'show'])->name('karyawan.show');
+    Route::get('/karyawan/{id}/show', [PegawaiKaryawan::class, 'show'])->name('karyawan.show');
     Route::get('/karyawan/create', [PegawaiKaryawan::class, 'create'])->name('karyawan.create');
+    Route::post('/karyawan/store', [PegawaiKaryawan::class, 'store'])->name('karyawan.store');
     Route::get('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiri'])->name('karyawan.datadiri');
     Route::put('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiriUpdate'])->name('karyawan.datadiri.update');
     Route::get('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikan'])->name('karyawan.pendidikan');
@@ -126,6 +134,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::delete('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'deletePendidikan'])->name('karyawan.pendidikan.delete');
     Route::get('/karyawan/{id}/password', [PegawaiKaryawan::class, 'password'])->name('karyawan.password');
     Route::put('/karyawan/{id}/password', [PegawaiKaryawan::class, 'passwordUpdate'])->name('karyawan.password.update');
+    Route::get('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'npp'])->name('karyawan.npp');
+    Route::put('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'nppUpdate'])->name('karyawan.npp.update');
+    Route::put('/karyawan/{id}/status', [PegawaiKaryawan::class, 'status'])->name('karyawan.status');
 
 
     // pengajuan perubahan profile pribadi
@@ -165,6 +176,8 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     Route::put('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendikan::class, 'update'])->name('pengajuan.pendidikan.update');
     Route::delete('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendikan::class, 'destroy'])->name('pengajuan.pendidikan.delete');
     Route::get('/perubahan-pendidikan/{id}', [PengajuanPendikan::class, 'show'])->name('pengajuan.pendidikan.show');
+
+    Route::get('/pendidikan', [Pendidikan::class, 'index'])->name('pendidikan');
 });
 
 
@@ -190,6 +203,8 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.'
     Route::put('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendidikan::class, 'update'])->name('pengajuan.pendidikan.update');
     Route::delete('/perubahan-pendidikan/pendidikan/{id}', [PengajuanPendidikan::class, 'destroy'])->name('pengajuan.pendidikan.delete');
     Route::get('/perubahan-pendidikan/{id}', [PengajuanPendidikan::class, 'show'])->name('pengajuan.pendidikan.show');
+
+    Route::get('/pendidikan', [KaryawanPendidikan::class, 'index'])->name('pendidikan');
 });
 
 
@@ -197,6 +212,11 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.'
 
 // get file
 Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
+
+    // edit profile
+    Route::get('/users/edit', [ManajemenUser::class, 'index'])->name('users.index');
+    Route::put('/users/edit', [ManajemenUser::class, 'update'])->name('users.update');
+
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');
     Route::get('/file/foto/{filename}', [FileController::class, 'showFoto'])->name('file.foto');

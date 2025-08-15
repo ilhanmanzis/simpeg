@@ -68,4 +68,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(PengajuanPerubahanPendidikans::class, 'id_user', 'id_user');
     }
+
+    // app/Models/User.php
+    public function scopeSearchDosen($query, $keyword)
+    {
+        return $query->where('role', 'dosen') // filter role = dosen
+            ->where(function ($q) use ($keyword) {
+                $q->where('npp', 'like', "%{$keyword}%")
+                    ->orWhereHas('dataDiri', function ($q2) use ($keyword) {
+                        $q2->where('name', 'like', "%{$keyword}%");
+                    });
+            });
+    }
+    public function scopeSearchKaryawan($query, $keyword)
+    {
+        return $query->where('role', 'karyawan') // filter role = karyawan
+            ->where(function ($q) use ($keyword) {
+                $q->where('npp', 'like', "%{$keyword}%")
+                    ->orWhereHas('dataDiri', function ($q2) use ($keyword) {
+                        $q2->where('name', 'like', "%{$keyword}%");
+                    });
+            });
+    }
 }

@@ -98,11 +98,11 @@
                                         </div>
 
 
-                                        <div class="flex">
+                                        {{-- <div class="flex">
                                             <div class="w-32 font-semibold">Email</div>
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->email }}</div>
-                                        </div>
+                                        </div> --}}
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nomor HP</div>
                                             <div class="w-4">:</div>

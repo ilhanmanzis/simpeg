@@ -28,13 +28,16 @@ class PegawaiKaryawan extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $keyword = $request->get('karyawan');
         $data = [
             'page' => 'Karyawan',
             'selected' => 'Karyawan',
             'title' => 'Data Karyawan',
-            'karyawans' => User::where('role', 'karyawan')->with(['dataDiri'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
+            'karyawans' => User::where('role', 'karyawan')->with(['dataDiri'])->when($keyword, function ($query) use ($keyword) {
+                $query->searchKaryawan($keyword);
+            })->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
 
         ];
         return view('admin.pegawai.karyawan.index', $data);
@@ -143,7 +146,14 @@ class PegawaiKaryawan extends Controller
      */
     public function create()
     {
-        //
+        $data = [
+            'page' => 'Karyawan',
+            'selected' => 'Karyawan',
+            'title' => 'Tambah Data Karyawan',
+            'jenjangs' => Jenjangs::all(),
+        ];
+
+        return view('admin.pegawai.karyawan.create', $data);
     }
 
     /**
@@ -151,7 +161,190 @@ class PegawaiKaryawan extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'same:password',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'nik' => 'required|max:20',
+            'no_hp' => 'required|max:20|unique:data_diri,no_ktp',
+            'tanggal_lahir' => 'required|date',
+            'tempat_lahir' => 'required|string|max:255',
+            'agama' => 'required|string|max:50',
+            'desa' => 'required|string|max:255',
+            'rt' => 'required|max:3',
+            'rw' => 'required|max:3',
+            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
+            'kecamatan' => 'required|string|max:255',
+            'kabupaten' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'npp' => 'required|max:30|unique:users,npp',
+            'tanggal_bergabung' => 'required|date',
+
+
+            // Pendidikan (array)
+            'pendidikan' => 'required|array|min:1',
+            'pendidikan.*.jenjang' => 'required|integer|max:255',
+            'pendidikan.*.tahun_lulus' => 'required|max:5',
+            'pendidikan.*.program_studi' => 'required|string|max:255',
+            'pendidikan.*.gelar' => 'nullable|string|max:255',
+            'pendidikan.*.institusi' => 'nullable|string|max:255',
+            'pendidikan.*.ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pendidikan.*.transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+
+            // Foto
+            'foto' => 'required|image|max:2048',
+        ], [
+            'password.required' => 'Password harus di isi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password_confirmation.same' => 'Konfirmasi Password tidak sama',
+        ]);
+
+
+
+
+
+        // Ambil nomor dokumen terakhir
+        $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
+        $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+
+        // Dokumen foto utama
+        $lastNumber++;
+        $newId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+        $originalName = $request->file('foto')->getClientOriginalName();
+        $timestampedName = time() . '_' . $originalName;
+        $destinationPath = "{$request->npp}/datadiri/{$timestampedName}";
+
+        // Upload ke Google Drive
+        $result = $this->googleDriveService->uploadFileAndGetUrl($request->file('foto')->getPathname(), $destinationPath);
+
+        // tambah user
+        $user  = User::create([
+            'email' => $request->email,
+            'npp' => $request->npp,
+            'password' => Hash::make($request->password),
+            'status_keaktifan' => 'aktif',
+            'role' => 'karyawan'
+        ]);
+
+        $dokumenFoto = Dokumens::create([
+            'nomor_dokumen' => $newId,
+            'path_file' => $destinationPath,
+            'file_id' => $result['file_id'],
+            'view_url' => $result['view_url'],
+            'download_url' => $result['download_url'],
+            'preview_url' => $result['preview_url'],
+            'id_user' => $user->id_user,
+            'tanggal_upload' => now()
+        ]);
+
+        DataDiri::create([
+            'id_user' => $user->id_user,
+            'name' => $request->name,
+            'no_ktp' => $request->nik,
+            'no_hp' => $request->no_hp,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'tempat_lahir' => $request->tempat_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'agama' => $request->agama,
+            'tanggal_bergabung' => $request->tanggal_bergabung,
+            'alamat' => $request->alamat,
+            'rt' => $request->rt,
+            'rw' => $request->rw,
+            'desa' => $request->desa,
+            'kecamatan' => $request->kecamatan,
+            'kabupaten' => $request->kabupaten,
+            'provinsi' => $request->provinsi,
+            'foto' => $newId,
+        ]);
+
+
+        $newIdIjazah = null;
+        $newIdT = null;
+        // Dokumen pendidikan
+        foreach ($request->pendidikan as $index => $pendidikanData) {
+
+            // Ambil data jenjang dari DB
+            $jenjang = Jenjangs::find($pendidikanData['jenjang']);
+            if (!$jenjang) {
+                continue; // skip kalau jenjang tidak ditemukan
+            }
+
+            $namaJenjang = $jenjang->nama_jenjang;
+
+            $newIdIjazah = null;
+            $newIdT = null;
+
+            // ==== Upload Ijazah ====
+            if ($request->hasFile("pendidikan.$index.ijazah")) {
+                $lastNumber++;
+                $newIdIjazah = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+                $originalName = $request->file("pendidikan.$index.ijazah")->getClientOriginalName();
+                $timestampedName = time() . '_' . $originalName;
+
+                $ijazahPath = "{$user->npp}/pendidikan/{$namaJenjang}/{$timestampedName}";
+
+                $ijazahResult = $this->googleDriveService->uploadFileAndGetUrl(
+                    $request->file("pendidikan.$index.ijazah")->getPathname(),
+                    $ijazahPath
+                );
+
+                Dokumens::create([
+                    'nomor_dokumen' => $newIdIjazah,
+                    'path_file' => $ijazahPath,
+                    'file_id' => $ijazahResult['file_id'],
+                    'view_url' => $ijazahResult['view_url'],
+                    'download_url' => $ijazahResult['download_url'],
+                    'preview_url' => $ijazahResult['preview_url'],
+                    'id_user' => $user->id_user,
+                    'tanggal_upload' => now()
+                ]);
+            }
+
+            // ==== Upload Transkrip Nilai (jika ada) ====
+            if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
+                $lastNumber++;
+                $newIdT = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+                $originalNameT = $request->file("pendidikan.$index.transkip_nilai")->getClientOriginalName();
+                $timestampedNameT = time() . '_' . $originalNameT;
+
+                $transkipPath = "{$user->npp}/pendidikan/{$namaJenjang}/{$timestampedNameT}";
+
+                $transkipResult = $this->googleDriveService->uploadFileAndGetUrl(
+                    $request->file("pendidikan.$index.transkip_nilai")->getPathname(),
+                    $transkipPath
+                );
+
+                Dokumens::create([
+                    'nomor_dokumen' => $newIdT,
+                    'path_file' => $transkipPath,
+                    'file_id' => $transkipResult['file_id'],
+                    'view_url' => $transkipResult['view_url'],
+                    'download_url' => $transkipResult['download_url'],
+                    'preview_url' => $transkipResult['preview_url'],
+                    'id_user' => $user->id_user,
+                    'tanggal_upload' => now()
+                ]);
+            }
+
+            // Simpan data pendidikan
+            Pendidikans::create([
+                'id_user' => $user->id_user,
+                'id_jenjang' => $jenjang->id_jenjang,
+                'institusi' => $pendidikanData['institusi'] ?? null,
+                'tahun_lulus' => $pendidikanData['tahun_lulus'],
+                'ijazah' => $newIdIjazah ?? null,
+                'transkip_nilai' => $newIdT ?? null,
+                'gelar' => $pendidikanData['gelar'] ?? null,
+                'program_studi' => $pendidikanData['program_studi'],
+            ]);
+        }
+
+        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil ditambahkan');
     }
 
     /**
@@ -679,5 +872,64 @@ class PegawaiKaryawan extends Controller
         ]);
 
         return redirect()->route('admin.karyawan.show', $id)->with('success', 'Password berhasil diperbarui');
+    }
+
+
+    public function npp(string $id)
+    {
+        $data = [
+            'page' => 'Karyawan',
+            'selected' => 'Karyawan',
+            'title' => 'Ubah NPP Karyawan',
+            'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
+
+        ];
+        return view('admin.pegawai.karyawan.npp', $data);
+    }
+
+
+    public function nppUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'npp' => 'required|string|max:30|unique:users,npp,' . $id . ',id_user',
+        ]);
+
+        // Ambil user dan NPP lama
+        $user = User::findOrFail($id);
+        $oldNpp = $user->npp;
+        $newNpp = $request->npp;
+
+        // Update NPP user
+        $user->npp = $newNpp;
+        $user->save();
+
+        Gdrive::renameDir($oldNpp, $newNpp);
+        // Update semua dokumen yang path_file diawali dengan NPP lama
+        Dokumens::where('id_user', $id)
+            ->where('path_file', 'like', $oldNpp . '/%')
+            ->chunkById(50, function ($dokumens) use ($oldNpp, $newNpp) {
+                foreach ($dokumens as $dokumen) {
+                    $dokumen->path_file = preg_replace(
+                        '#^' . preg_quote($oldNpp, '#') . '/#',
+                        $newNpp . '/',
+                        $dokumen->path_file
+                    );
+                    $dokumen->save();
+                }
+            });
+
+        return redirect()->route('admin.karyawan.show', $id)->with('success', 'NPP dan path file dokumen berhasil diperbarui.');
+    }
+
+    public function status(string $id)
+    {
+        $user = User::findOrFail($id);
+
+        $status = $user->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif';
+        $user->update([
+            'status_keaktifan' => $status
+        ]);
+
+        return redirect()->route('admin.dosen.show', $id)->with('success', 'Status berhasil diperbarui');
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pengajuan_perubahan_data', function (Blueprint $table) {
             $table->increments('id_perubahan');
             $table->unsignedInteger('id_user');
-            $table->string('email');
+            // $table->string('email');
             $table->string('nuptk')->nullable();
             $table->string('nip')->nullable();
             $table->string('nidk')->nullable();

@@ -50,7 +50,7 @@ class PengajuanProfilePribadi extends Controller
         $id = Auth::user()->id_user;
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $id . ',id_user',
+            // 'email' => 'required|email|max:255|unique:users,email,' . $id . ',id_user',
             'nik' => 'required|max:20',
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
@@ -85,7 +85,7 @@ class PengajuanProfilePribadi extends Controller
         PengajuanPerubahanDatas::create([
             'id_user' => $id,
             'name' => $request->input('name'),
-            'email' => $request->input('email'),
+            // 'email' => $request->input('email'),
             'no_ktp' => $request->input('nik'),
             'no_hp' => $request->input('no_hp'),
             'tanggal_lahir' => $request->input('tanggal_lahir'),

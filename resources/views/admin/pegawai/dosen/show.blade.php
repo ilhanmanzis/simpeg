@@ -68,10 +68,24 @@
                                             class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                             Edit Profile Pribadi
                                         </a>
+                                        <a href="{{ route('admin.dosen.npp', ['id' => $dosen->id_user]) }}"
+                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                            Edit NPP
+                                        </a>
                                         <a href="{{ route('admin.dosen.password', ['id' => $dosen->id_user]) }}"
                                             class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                             Ubah Password
                                         </a>
+                                        <form method="POST"
+                                            action="{{ route('admin.dosen.status', ['id' => $dosen->id_user]) }}"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin mengubah status dosen ini menjadi {{ $dosen->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                Ubah Status
+                                            </button>
+                                        </form>
                                         {{-- <form method="POST"
                                             action="{{ route('admin.dosen.pendidikan.delete', ['id' => $dosen->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
