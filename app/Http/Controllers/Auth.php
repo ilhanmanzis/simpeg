@@ -61,11 +61,11 @@ class Auth extends Controller
             FacadesAuth::login($user);
             $request->session()->regenerate();
 
-            // Tambahkan data jabatan dan name ke session
 
-
-
-
+            if ($user->status_keaktifan === 'nonaktif') {
+                FacadesAuth::logout();
+                return redirect()->route('login')->with('message', 'Akun anda telah di nonaktifkan, silahkan hubungi Admin untuk mengaktifkan akun anda.');
+            }
             // Redirect sesuai dengan role user
             switch ($user->role) {
                 case 'admin':

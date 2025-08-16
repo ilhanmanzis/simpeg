@@ -821,7 +821,24 @@ class PegawaiKaryawan extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
+        $user = User::findOrFail($id);
+
+        // Jangan izinkan menghapus user admin lain
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Tidak dapat menghapus admin.');
+        }
+
+        if ($user->role === 'dosen') {
+            return back()->with('error', 'Tidak dapat menghapus dosen.');
+        }
+
+        // hapus folder user
+        Gdrive::deleteDir($user->npp);
+
+        $user->delete();
+
+        return redirect()->route('admin.karyawan')->with('success', 'Data berhasil dihapus');
     }
 
     public function deletePendidikan(Request $request, string $id, string $idPendidikan)
@@ -930,6 +947,6 @@ class PegawaiKaryawan extends Controller
             'status_keaktifan' => $status
         ]);
 
-        return redirect()->route('admin.dosen.show', $id)->with('success', 'Status berhasil diperbarui');
+        return redirect()->route('admin.karyawan.show', $id)->with('success', 'Status berhasil diperbarui');
     }
 }

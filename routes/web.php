@@ -119,6 +119,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/dosen/{id}/npp', [PegawaiDosen::class, 'npp'])->name('dosen.npp');
     Route::put('/dosen/{id}/npp', [PegawaiDosen::class, 'nppUpdate'])->name('dosen.npp.update');
     Route::put('/dosen/{id}/status', [PegawaiDosen::class, 'status'])->name('dosen.status');
+    Route::delete('/dosen/{id}', [PegawaiDosen::class, 'destroy'])->name('dosen.destroy');
 
     // karyawan
     Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
@@ -137,6 +138,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'npp'])->name('karyawan.npp');
     Route::put('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'nppUpdate'])->name('karyawan.npp.update');
     Route::put('/karyawan/{id}/status', [PegawaiKaryawan::class, 'status'])->name('karyawan.status');
+    Route::delete('/karyawan/{id}', [PegawaiKaryawan::class, 'destroy'])->name('karyawan.destroy');
 
 
     // pengajuan perubahan profile pribadi

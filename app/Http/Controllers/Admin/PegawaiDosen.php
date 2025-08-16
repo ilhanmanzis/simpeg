@@ -10,6 +10,7 @@ use App\Models\Pendidikans;
 use App\Models\User;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 use Illuminate\Support\Facades\DB;
@@ -907,14 +908,7 @@ class PegawaiDosen extends Controller
     //     return redirect()->route('admin.dosen.show', $id)->with('success', 'Pendidikan Dosen berhasil diperbarui.');
     // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        // Hapus foto jika ada
 
-    }
 
     public function deletePendidikan(Request $request, string $id, string $idPendidikan)
     {
@@ -944,5 +938,32 @@ class PegawaiDosen extends Controller
         ]);
 
         return redirect()->route('admin.dosen.show', $id)->with('success', 'Status berhasil diperbarui');
+    }
+
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+
+        $user = User::findOrFail($id);
+
+        // Jangan izinkan menghapus user admin lain
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Tidak dapat menghapus admin.');
+        }
+
+        if ($user->role === 'karyawan') {
+            return back()->with('error', 'Tidak dapat menghapus karyawan.');
+        }
+
+        // hapus folder user
+        Gdrive::deleteDir($user->npp);
+
+        $user->delete();
+
+        return redirect()->route('admin.dosen')->with('success', 'Data berhasil dihapus');
     }
 }

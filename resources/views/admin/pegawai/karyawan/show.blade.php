@@ -87,16 +87,16 @@
                                                 Ubah Status
                                             </button>
                                         </form>
-                                        {{-- <form method="POST"
-                                            action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
+                                        <form method="POST"
+                                            action="{{ route('admin.karyawan.destroy', ['id' => $karyawan->id_user]) }}"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data karyawan ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
                                                 class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
                                                 Delete
                                             </button>
-                                        </form> --}}
+                                        </form>
                                     </div>
                                 </div>
                             </div>
