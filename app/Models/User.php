@@ -90,4 +90,19 @@ class User extends Authenticatable
                     });
             });
     }
+
+
+
+    public function golongan()
+    {
+        return $this->hasMany(GolonganUsers::class, 'id_user', 'id_user');
+    }
+    public function fungsional()
+    {
+        return $this->hasMany(FungsionalUsers::class, 'id_user', 'id_user');
+    }
+    public function struktural()
+    {
+        return $this->hasMany(StrukturalUsers::class, 'id_user', 'id_user');
+    }
 }

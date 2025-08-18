@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\FungsionalUser;
 use App\Http\Controllers\Admin\Golongan;
+use App\Http\Controllers\Admin\GolonganUser;
 use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
@@ -11,6 +13,7 @@ use App\Http\Controllers\Admin\PengajuanAkun;
 use App\Http\Controllers\Admin\PengajuanPendikan as AdminPengajuanPendikan;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
 use App\Http\Controllers\Admin\Semester;
+use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Dosen\Pendidikan;
@@ -24,6 +27,7 @@ use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanPr
 use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
 use App\Http\Controllers\ManajemenUser;
 use App\Http\Controllers\Register;
+use App\Models\StrukturalUsers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
@@ -153,6 +157,28 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/perubahan-pendidikan/{id}/riwayat', [AdminPengajuanPendikan::class, 'riwayat'])->name('pengajuan.pendidikan.riwayat');
     Route::put('/perubahan-pendidikan/setuju/{id}', [AdminPengajuanPendikan::class, 'setuju'])->name('pengajuan.pendidikan.setuju');
     Route::put('/perubahan-pendidikan/tolak/{id}', [AdminPengajuanPendikan::class, 'tolak'])->name('pengajuan.pendidikan.tolak');
+
+
+    // golongan
+    Route::get('/jabatan/golongan', [GolonganUser::class, 'index'])->name('jabatan.golongan');
+    Route::get('/jabatan/golongan/{id}', [GolonganUser::class, 'show'])->name('jabatan.golongan.show');
+    Route::get('/jabatan/golongan/{id}/mutasi', [GolonganUser::class, 'mutasi'])->name('jabatan.golongan.mutasi');
+    Route::post('/jabatan/golongan/{id}/mutasi', [GolonganUser::class, 'mutasiStore'])->name('jabatan.golongan.mutasi.store');
+    Route::delete('/jabatan/golongan/{id}', [GolonganUser::class, 'destroy'])->name('jabatan.golongan.mutasi.delete');
+
+    // jabatan fungsional
+    Route::get('/jabatan/fungsional', [FungsionalUser::class, 'index'])->name('jabatan.fungsional');
+    Route::get('/jabatan/fungsional/{id}', [FungsionalUser::class, 'show'])->name('jabatan.fungsional.show');
+    Route::get('/jabatan/fungsional/{id}/mutasi', [FungsionalUser::class, 'mutasi'])->name('jabatan.fungsional.mutasi');
+    Route::post('/jabatan/fungsional/{id}/mutasi', [FungsionalUser::class, 'mutasiStore'])->name('jabatan.fungsional.mutasi.store');
+    Route::delete('/jabatan/fungsional/{id}', [FungsionalUser::class, 'destroy'])->name('jabatan.fungsional.mutasi.delete');
+
+    // jabatan struktural
+    Route::get('/jabatan/struktural', [StrukturalUser::class, 'index'])->name('jabatan.struktural');
+    Route::get('/jabatan/struktural/{id}', [StrukturalUser::class, 'show'])->name('jabatan.struktural.show');
+    Route::get('/jabatan/struktural/{id}/mutasi', [StrukturalUser::class, 'mutasi'])->name('jabatan.struktural.mutasi');
+    Route::post('/jabatan/struktural/{id}/mutasi', [StrukturalUser::class, 'mutasiStore'])->name('jabatan.struktural.mutasi.store');
+    Route::delete('/jabatan/struktural/{id}', [StrukturalUser::class, 'destroy'])->name('jabatan.struktural.mutasi.delete');
 });
 
 

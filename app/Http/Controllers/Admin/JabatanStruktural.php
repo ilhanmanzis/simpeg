@@ -16,8 +16,8 @@ class JabatanStruktural extends Controller
     {
 
         $data = [
-            'page' => 'Jabatan Struktural',
-            'selected' => 'Jabatan Struktural',
+            'page' => 'Struktural',
+            'selected' => 'Struktural',
             'title' => 'Data Jabatan Struktural',
             'strukturals' => JabatanStrukturals::orderBy('id_struktural', 'desc')->paginate(10)->withQueryString()
 
@@ -31,8 +31,8 @@ class JabatanStruktural extends Controller
     public function create()
     {
         $data = [
-            'page' => 'Jabatan Struktural',
-            'selected' => 'Jabatan Struktural',
+            'page' => 'Struktural',
+            'selected' => 'Struktural',
             'title' => 'Tambah Jabatan Struktural',
         ];
 
@@ -71,8 +71,8 @@ class JabatanStruktural extends Controller
     public function edit(string $id)
     {
         $data = [
-            'page' => 'Jabatan Struktural',
-            'selected' => 'Jabatan Struktural',
+            'page' => 'Struktural',
+            'selected' => 'Struktural',
             'title' => 'Edit Jabatan Struktural',
             'struktural' => JabatanStrukturals::where('id_struktural', $id)->first()
         ];

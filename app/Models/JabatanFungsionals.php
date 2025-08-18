@@ -16,4 +16,9 @@ class JabatanFungsionals extends Model
     {
         return $this->belongsTo(Golongans::class, 'id_golongan', 'id_golongan');
     }
+
+    public function fungsionalUser()
+    {
+        return $this->hasMany(FungsionalUsers::class, 'id_fungsional', 'id_fungsional');
+    }
 }

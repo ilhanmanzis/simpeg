@@ -16,4 +16,9 @@ class Golongans extends Model
     {
         return $this->hasMany(JabatanFungsionals::class, 'id_golongan', 'id_golongan');
     }
+
+    public function golonganUser()
+    {
+        return $this->hasMany(Golongans::class, 'id_golongan', 'id_golongan');
+    }
 }

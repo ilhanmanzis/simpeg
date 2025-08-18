@@ -16,8 +16,8 @@ class JabatanFungsional extends Controller
     {
 
         $data = [
-            'page' => 'Jabatan Fungsional',
-            'selected' => 'Jabatan Fungsional',
+            'page' => 'Fungsional',
+            'selected' => 'Fungsional',
             'title' => 'Data Jabatan Fungsional',
             'fungsionals' => JabatanFungsionals::with(['golongan'])->orderBy('id_fungsional', 'desc')->paginate(10)->withQueryString()
 
@@ -31,8 +31,8 @@ class JabatanFungsional extends Controller
     public function create()
     {
         $data = [
-            'page' => 'Jabatan Fungsional',
-            'selected' => 'Jabatan Fungsional',
+            'page' => 'Fungsional',
+            'selected' => 'Fungsional',
             'title' => 'Tambah Jabatan Fungsional',
             'golongans' => Golongans::all()
         ];
@@ -75,8 +75,8 @@ class JabatanFungsional extends Controller
     public function edit(string $id)
     {
         $data = [
-            'page' => 'Jabatan Fungsional',
-            'selected' => 'Jabatan Fungsional',
+            'page' => 'Fungsional',
+            'selected' => 'Fungsional',
             'title' => 'Edit Jabatan Fungsional',
             'golongans' => Golongans::all(),
             'fungsional' => JabatanFungsionals::where('id_fungsional', $id)->first()

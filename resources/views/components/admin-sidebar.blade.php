@@ -80,10 +80,10 @@
                                     Golongan
                                 </x-drop-side-link>
 
-                                <x-drop-side-link href="{{ route('admin.fungsional') }}" page="Jabatan Fungsional">
+                                <x-drop-side-link href="{{ route('admin.fungsional') }}" page="Fungsional">
                                     Jabatan Fungsional
                                 </x-drop-side-link>
-                                <x-drop-side-link href="{{ route('admin.struktural') }}" page="Jabatan Struktural">
+                                <x-drop-side-link href="{{ route('admin.struktural') }}" page="Struktural">
                                     Jabatan Struktural
                                 </x-drop-side-link>
                                 <x-drop-side-link href="{{ route('admin.kategorisertifikat') }}"
@@ -146,6 +146,60 @@
                         <!-- Dropdown Menu End -->
                     </li>
 
+                    {{-- golongan dan jabatan --}}
+                    <li>
+                        <a href="#" @click.prevent="selected = (selected === 'Jabatan' ? '':'Jabatan')"
+                            class="menu-item group"
+                            :class="(selected === 'Jabatan') || (page === 'device' || page === 'formLayout') ?
+                            'menu-item-active' :
+                            'menu-item-inactive'">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+
+                            </svg>
+
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                Golongan Dan Jabatan
+                            </span>
+
+                            <svg class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
+                                :class="[(selected === 'Jabatan') ? 'menu-item-arrow-active' :
+                                    'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : ''
+                                ]"
+                                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke=""
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu Start -->
+                        <div class="overflow-hidden transform translate"
+                            :class="(selected === 'Jabatan') ? 'block' : 'hidden'">
+                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'"
+                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                                <x-drop-side-link href="{{ route('admin.jabatan.golongan') }}"
+                                    page="Jabatan Golongan">
+                                    Golongan
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.jabatan.fungsional') }}"
+                                    page="Jabatan Fungsional">
+                                    Jabatan Fungsional
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.jabatan.struktural') }}"
+                                    page="Jabatan Struktural">
+                                    Jabatan Struktural
+                                </x-drop-side-link>
+
+                            </ul>
+                        </div>
+                        <!-- Dropdown Menu End -->
+                    </li>
+
                     {{-- pengajuan --}}
                     <li>
                         <a href="#" @click.prevent="selected = (selected === 'Pengajuan' ? '':'Pengajuan')"
@@ -197,6 +251,8 @@
                         </div>
                         <!-- Dropdown Menu End -->
                     </li>
+
+
 
 
                 </ul>

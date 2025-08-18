@@ -34,4 +34,17 @@ class Dokumens extends Model
     {
         return $this->belongsTo(Pendidikans::class, 'transkip_nilai', 'nomor_dokumen');
     }
+
+    public function golongan()
+    {
+        return $this->belongsTo(GolonganUsers::class, 'sk', 'nomor_dokumen');
+    }
+    public function struktural()
+    {
+        return $this->belongsTo(StrukturalUsers::class, 'sk', 'nomor_dokumen');
+    }
+    public function fungsional()
+    {
+        return $this->belongsTo(FungsionalUsers::class, 'sk', 'nomor_dokumen');
+    }
 }
