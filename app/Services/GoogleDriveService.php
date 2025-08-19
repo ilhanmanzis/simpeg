@@ -125,7 +125,10 @@ class GoogleDriveService
             $filename = array_pop($pathParts);
 
             // Mulai dari root folder (simpeg)
-            $parentId = $this->getFolderId('simpeg');
+            // $parentId = $this->getFolderId('simpeg');
+            // Ambil nama root folder dari env
+            $rootFolderName = config('filesystems.disks.google.folder');
+            $parentId = $rootFolderName ? $this->getFolderId($rootFolderName) : null;
 
             // Navigasi ke folder yang tepat
             foreach ($pathParts as $folderName) {

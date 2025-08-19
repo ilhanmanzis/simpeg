@@ -231,6 +231,7 @@ class PengajuanAkun extends Controller
                     'ijazah' => $newIdIjazah,
                     'transkip_nilai' =>  $newIdT,
                     'gelar' => $pendidikan->gelar,
+                    'id_user' => $user->id_user,
                     'program_studi' => $pendidikan->program_studi,
 
                 ]);
@@ -238,6 +239,7 @@ class PengajuanAkun extends Controller
 
             Pendidikans::create([
                 'id_jenjang' => $pendidikan->id_jenjang,
+                'id_user' => $user->id_user,
                 'institusi' => $pendidikan->institusi,
                 'tahun_lulus' => $pendidikan->tahun_lulus,
                 'ijazah' => $newIdIjazah,
