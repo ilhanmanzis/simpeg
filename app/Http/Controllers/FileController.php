@@ -22,6 +22,16 @@ class FileController extends Controller
         // return Storage::download($path); // atau response()->file(...) untuk inline
         return Storage::response($path);
     }
+    public function showSk($filename)
+    {
+        $path = "sk/{$filename}";
+
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+
+        return Storage::response($path);
+    }
     public function showTranskip($filename)
     {
         $path = "pendidikan/transkipNilai/{$filename}";

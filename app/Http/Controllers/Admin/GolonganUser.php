@@ -119,7 +119,10 @@ class GolonganUser extends Controller
 
         $originalName = $request->file('sk')->getClientOriginalName();
         $timestampedName = time() . '_' . $originalName;
-        $destinationPath = "{$user->npp}/golongan/{$golongan->nama_golongan}/{$timestampedName}";
+        $namaGolongan = str_replace('/', '-', $golongan->nama_golongan);
+
+        $destinationPath = "{$user->npp}/golongan/{$namaGolongan}/{$timestampedName}";
+
 
         // Upload ke Google Drive
         $result = $this->googleDriveService->uploadFileAndGetUrl($request->file('sk')->getPathname(), $destinationPath);

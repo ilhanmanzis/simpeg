@@ -246,6 +246,14 @@
                                     page="Pengajuan Pendidikan">
                                     Perubahan Pendidikan
                                 </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.golongan') }}"
+                                    page="Pengajuan Golongan">
+                                    Kenaikan Golongan
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.fungsional') }}"
+                                    page="Pengajuan Fungsional">
+                                    Kenaikan Jabatan Fungsional
+                                </x-drop-side-link>
 
                             </ul>
                         </div>

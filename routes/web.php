@@ -10,16 +10,23 @@ use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\PengajuanAkun;
+use App\Http\Controllers\Admin\PengajuanFungsional as AdminPengajuanFungsional;
+use App\Http\Controllers\Admin\PengajuanGolongan as AdminPengajuanGolongan;
 use App\Http\Controllers\Admin\PengajuanPendikan as AdminPengajuanPendikan;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Dosen\Fungsional;
+use App\Http\Controllers\Dosen\Golongan as DosenGolongan;
 use App\Http\Controllers\Dosen\Pendidikan;
+use App\Http\Controllers\Dosen\PengajuanFungsional;
+use App\Http\Controllers\Dosen\PengajuanGolongan;
 use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
 use App\Http\Controllers\Dosen\ProfilePribadi;
+use App\Http\Controllers\Dosen\Struktural;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanPendidikan;
@@ -179,6 +186,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/jabatan/struktural/{id}/mutasi', [StrukturalUser::class, 'mutasi'])->name('jabatan.struktural.mutasi');
     Route::post('/jabatan/struktural/{id}/mutasi', [StrukturalUser::class, 'mutasiStore'])->name('jabatan.struktural.mutasi.store');
     Route::delete('/jabatan/struktural/{id}', [StrukturalUser::class, 'destroy'])->name('jabatan.struktural.mutasi.delete');
+
+
+    // pengajuan kenaikan golongan
+    Route::get('/kenaikan-golongan', [AdminPengajuanGolongan::class, 'index'])->name('pengajuan.golongan');
+    Route::get('/kenaikan-golongan/{id}', [AdminPengajuanGolongan::class, 'show'])->name('pengajuan.golongan.show');
+    Route::get('/kenaikan-golongan/{id}/riwayat', [AdminPengajuanGolongan::class, 'riwayat'])->name('pengajuan.golongan.riwayat');
+    Route::put('/kenaikan-golongan/setuju/{id}', [AdminPengajuanGolongan::class, 'setuju'])->name('pengajuan.golongan.setuju');
+    Route::put('/kenaikan-golongan/tolak/{id}', [AdminPengajuanGolongan::class, 'tolak'])->name('pengajuan.golongan.tolak');
+
+    // pengajuan kenaikan fungsional
+    Route::get('/kenaikan-fungsional', [AdminPengajuanFungsional::class, 'index'])->name('pengajuan.fungsional');
+    Route::get('/kenaikan-fungsional/{id}', [AdminPengajuanFungsional::class, 'show'])->name('pengajuan.fungsional.show');
+    Route::get('/kenaikan-fungsional/{id}/riwayat', [AdminPengajuanFungsional::class, 'riwayat'])->name('pengajuan.fungsional.riwayat');
+    Route::put('/kenaikan-fungsional/setuju/{id}', [AdminPengajuanFungsional::class, 'setuju'])->name('pengajuan.fungsional.setuju');
+    Route::put('/kenaikan-fungsional/tolak/{id}', [AdminPengajuanFungsional::class, 'tolak'])->name('pengajuan.fungsional.tolak');
 });
 
 
@@ -206,6 +228,25 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     Route::get('/perubahan-pendidikan/{id}', [PengajuanPendikan::class, 'show'])->name('pengajuan.pendidikan.show');
 
     Route::get('/pendidikan', [Pendidikan::class, 'index'])->name('pendidikan');
+
+    // golongan
+    Route::get('/jabatan/golongan', [DosenGolongan::class, 'index'])->name('jabatan.golongan');
+    // jabatan fungsioal
+    Route::get('/jabatan/fungsional', [Fungsional::class, 'index'])->name('jabatan.fungsional');
+    // jabatan struktural
+    Route::get('/jabatan/struktural', [Struktural::class, 'index'])->name('jabatan.struktural');
+
+    // kenaikan golongan
+    Route::get('/kenaikan-golongan', [PengajuanGolongan::class, 'index'])->name('pengajuan.golongan');
+    Route::get('/kenaikan-golongan/create', [PengajuanGolongan::class, 'create'])->name('pengajuan.golongan.create');
+    Route::post('/kenaikan-golongan/store', [PengajuanGolongan::class, 'store'])->name('pengajuan.golongan.store');
+    Route::get('/kenaikan-golongan/{id}', [PengajuanGolongan::class, 'show'])->name('pengajuan.golongan.show');
+
+    // kenaikan fungsional
+    Route::get('/kenaikan-fungsional', [PengajuanFungsional::class, 'index'])->name('pengajuan.fungsional');
+    Route::get('/kenaikan-fungsional/create', [PengajuanFungsional::class, 'create'])->name('pengajuan.fungsional.create');
+    Route::post('/kenaikan-fungsional/store', [PengajuanFungsional::class, 'store'])->name('pengajuan.fungsional.store');
+    Route::get('/kenaikan-fungsional/{id}', [PengajuanFungsional::class, 'show'])->name('pengajuan.fungsional.show');
 });
 
 
@@ -246,6 +287,7 @@ Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
     Route::put('/users/edit', [ManajemenUser::class, 'update'])->name('users.update');
 
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
+    Route::get('/file/sk/{filename}', [FileController::class, 'showSk'])->name('file.sk');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');
     Route::get('/file/foto/{filename}', [FileController::class, 'showFoto'])->name('file.foto');
     Route::get('/file/fotodrive/{id}', [FileController::class, 'showFotoDrive'])->name('file.foto.drive');

@@ -105,4 +105,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(StrukturalUsers::class, 'id_user', 'id_user');
     }
+
+    public function pengajuanGolongan()
+    {
+        return $this->hasMany(PengajuanGolongans::class, 'id_user', 'id_user');
+    }
+
+    public function pengajuanFungsional()
+    {
+        return $this->hasMany(PengajuanFungsionals::class, 'id_user', 'id_user');
+    }
 }

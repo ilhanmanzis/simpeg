@@ -21,4 +21,9 @@ class Golongans extends Model
     {
         return $this->hasMany(Golongans::class, 'id_golongan', 'id_golongan');
     }
+
+    public function pengajuanGolongan()
+    {
+        return $this->hasMany(PengajuanGolongans::class, 'id_golongan', 'id_golongan');
+    }
 }
