@@ -83,7 +83,11 @@
                 <a class="flex items-center text-gray-700 dark:text-gray-400" href="#"
                     @click.prevent="dropdownOpen = ! dropdownOpen">
                     <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-                        <img src="{{ asset('images/user/owner.jpg') }}" alt="User" />
+                        @if ($user && $user->dataDiri && $user->dataDiri->foto)
+                            <img src="{{ route('file.foto.drive', $user->dataDiri->foto) }}" alt="User" />
+                        @else
+                            <img src="{{ asset('storage/user/default.jpg') }}" alt="User" />
+                        @endif
                     </span>
 
                     <span class="text-theme-sm mr-1 block font-medium"> {{ auth()->user()->dataDiri->name ?? 'Admin' }}

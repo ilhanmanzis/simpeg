@@ -2,8 +2,10 @@
 
 namespace App\View\Components;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 
 class Header extends Component
@@ -14,6 +16,7 @@ class Header extends Component
     public function __construct()
     {
         //
+
     }
 
     /**
@@ -21,6 +24,9 @@ class Header extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.header');
+        $data = [
+            'user' => User::where('id_user', Auth::user()->id_user)->first()
+        ];
+        return view('components.header', $data);
     }
 }
