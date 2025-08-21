@@ -27,8 +27,6 @@ jobs:
 
             cd /var/www/simpeg
 
-            # Maintenance mode agar aman saat update (tidak wajib, tapi bagus)
-            # php artisan down || true
 
             # Pastikan git sinkron dengan branch main remote
             git pull origin main
