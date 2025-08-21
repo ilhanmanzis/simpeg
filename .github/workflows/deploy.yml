@@ -31,14 +31,8 @@ jobs:
             # php artisan down || true
 
             # Pastikan git sinkron dengan branch main remote
-            sudo git fetch --all --prune
-            sudo git reset --hard origin/main || git pull origin main
-
-            # Pastikan permission storage & cache aman (sesuaikan user web Anda)
-            sudo chown -R www-data:www-data storage bootstrap/cache || true
-            sudo find storage -type d -exec chmod 775 {} \; || true
-            sudo find storage -type f -exec chmod 664 {} \; || true
-            sudo chmod -R 775 bootstrap/cache || true
+            git fetch --all --prune
+            git reset --hard origin/main || git pull origin main
 
             # Composer (tanpa dev, optimize autoloader)
             composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
