@@ -17,7 +17,7 @@
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Jabatan Fungsional Saat Ini</h2>
 
-                                <a href="#"
+                                <a href="{{ route('dosen.pengajuan.fungsional') }}"
                                     class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 -mt-5">
                                     Ajukan Kenaikan
                                 </a>
