@@ -9,54 +9,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout (context only)
+      - name: Checkout (just to have repo context if needed)
         uses: actions/checkout@v4
+
+      # Opsional: kirim notifikasi / set env, dll.
 
       - name: SSH to GCE and deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.SSH_HOST }} # contoh: 34.101.xx.xx
+          username: ${{ secrets.SSH_USER }} # contoh: deploy atau www-data (disarankan user deploy)
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # private key yang cocok dengan authorized_keys di VM
+          port: ${{ secrets.SSH_PORT }} # default 22; atau set 22 jika tidak pakai secret ini
           script_stop: true
           script: |
             set -e
+
             cd /var/www/simpeg
 
-            # 0) Pastikan repo bisa ditulis oleh user SSH (hindari permission denied .git/*)
-            sudo chown -R $USER:$USER /var/www/simpeg || true
+            # Maintenance mode agar aman saat update (tidak wajib, tapi bagus)
+            # php artisan down || true
 
-            # 1) Sinkron kode: hard reset (hindari "local changes would be overwritten")
-            git fetch --all --prune
-            git reset --hard origin/main
-            git clean -fd
+            # Pastikan git sinkron dengan branch main remote
+            git pull origin main
 
-            # 2) Siapkan permission sementara agar composer/artisan bisa menulis log/cache
-            mkdir -p storage/logs bootstrap/cache
-            sudo chown -R $USER:$USER storage bootstrap/cache
-            chmod -R 775 storage bootstrap/cache
+            # Composer (tanpa dev, optimize autoloader)
+            composer install 
 
-            # 3) Dependencies & optimize (tanpa dev)
-            composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
-
-            # 4) Cache optimizations
+            # Optimisasi Laravel
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
 
-            # 5) Frontend build (Node harus tersedia di VM)
+            # Build front-end (pastikan Node sudah terpasang di server)
             npm install
             npm run build
 
-            # 6) Migrasi (non-interactive)
-            php artisan migrate --force
-
-            # 7) Kembalikan permission runtime untuk web server
-            sudo chown -R www-data:www-data storage bootstrap/cache
-            sudo find storage -type d -exec chmod 775 {} \; || true
-            sudo find storage -type f -exec chmod 664 {} \; || true
-            sudo chmod -R 775 bootstrap/cache || true
-
-            # 8) Restart FrankenPHP
-            sudo systemctl restart frankenphp
+            # Migrasi DB (pakai --force untuk non-interactive)
+            php artisan migrate
