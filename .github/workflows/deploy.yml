@@ -31,8 +31,7 @@ jobs:
             # php artisan down || true
 
             # Pastikan git sinkron dengan branch main remote
-            git fetch --all --prune
-            git reset --hard origin/main || git pull origin main
+            git pull origin main
 
             # Composer (tanpa dev, optimize autoloader)
             composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
