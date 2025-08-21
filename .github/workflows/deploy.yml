@@ -31,8 +31,8 @@ jobs:
             # php artisan down || true
 
             # Pastikan git sinkron dengan branch main remote
-            git fetch --all --prune
-            git reset --hard origin/main || git pull origin main
+            sudo git fetch --all --prune
+            sudo git reset --hard origin/main || git pull origin main
 
             # Pastikan permission storage & cache aman (sesuaikan user web Anda)
             sudo chown -R www-data:www-data storage bootstrap/cache || true
