@@ -32,7 +32,7 @@ jobs:
             git pull origin main
 
             # Composer (tanpa dev, optimize autoloader)
-            composer install 
+            # composer install 
 
             # Optimisasi Laravel
             php artisan config:cache
@@ -40,8 +40,8 @@ jobs:
             php artisan view:cache
 
             # Build front-end (pastikan Node sudah terpasang di server)
-            npm install
-            npm run build
+            # npm install
+            # npm run build
 
             # Migrasi DB (pakai --force untuk non-interactive)
             php artisan migrate
