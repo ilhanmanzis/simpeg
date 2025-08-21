@@ -30,18 +30,3 @@ jobs:
 
             # Pastikan git sinkron dengan branch main remote
             git pull origin main
-
-            # Composer (tanpa dev, optimize autoloader)
-            # composer install 
-
-            # Optimisasi Laravel
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-
-            # Build front-end (pastikan Node sudah terpasang di server)
-            # npm install
-            # npm run build
-
-            # Migrasi DB (pakai --force untuk non-interactive)
-            php artisan migrate
