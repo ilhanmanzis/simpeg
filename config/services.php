@@ -34,5 +34,14 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'google_drive' => [
+        'client_id'     => env('GOOGLE_DRIVE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
+        // pakai route() agar fleksibel, fallback ke env jika diperlukan
+        'redirect' => env('GOOGLE_DRIVE_REDIRECT_URI', 'http://localhost:8000/oauth/google/callback'),
+        'refresh_token' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
+        'root_folder'   => env('GOOGLE_DRIVE_FOLDER_ID'),
+        'scopes'        => ['https://www.googleapis.com/auth/drive'],
+    ],
 
 ];

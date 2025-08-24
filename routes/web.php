@@ -28,6 +28,7 @@ use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\Dosen\Struktural;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\GoogleOauthController;
 use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanProfilePribadi;
@@ -301,7 +302,7 @@ Route::get('/login', [Auth::class, 'index'])->middleware('guest')->name('login')
 Route::post('/login', [Auth::class, 'store'])->name('auth.login');
 
 // logout
-Route::get('/logout', [Auth::class, 'destroy'])->name('auth.logout');
+Route::post('/logout', [Auth::class, 'destroy'])->name('auth.logout');
 
 // register
 Route::get('/register', [Register::class, 'index'])->middleware('guest')->name('register');
@@ -316,3 +317,8 @@ Route::get('/check-email', function (Illuminate\Http\Request $request) {
 
     return response()->json(['unique' => !$exists]);
 });
+
+
+// OAuth flow
+Route::get('/oauth/google/redirect', [GoogleOauthController::class, 'redirect'])->name('google.oauth.redirect');
+Route::get('/oauth/google/callback', [GoogleOauthController::class, 'callback'])->name('google.oauth.callback');

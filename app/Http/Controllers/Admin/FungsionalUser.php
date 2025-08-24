@@ -10,7 +10,6 @@ use App\Models\JabatanFungsionals;
 use App\Models\User;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
-use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 class FungsionalUser extends Controller
 {
@@ -20,6 +19,7 @@ class FungsionalUser extends Controller
     {
         $this->googleDriveService = $googleDriveService;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -79,6 +79,7 @@ class FungsionalUser extends Controller
 
         return view('admin.jabatan.fungsional.show', $data);
     }
+
     public function mutasi(string $id)
     {
         $data = [
@@ -89,12 +90,10 @@ class FungsionalUser extends Controller
             'dosen' => FungsionalUsers::where('id_user', $id)->where('status', 'aktif')->with(['fungsional'])->orderBy('id_fungsional_user', 'desc')->first(),
             'golongan' => GolonganUsers::where('id_user', $id)->where('status', 'aktif')->with(['golongan'])->orderBy('id_golongan_user', 'desc')->first(),
             'fungsionals' => JabatanFungsionals::with('golongan')->get()
-
         ];
 
         return view('admin.jabatan.fungsional.mutasi', $data);
     }
-
 
     public function mutasiStore(Request $request, string $id)
     {
@@ -111,7 +110,6 @@ class FungsionalUser extends Controller
 
         $fungsionalSebelumnya = FungsionalUsers::where('id_user', $id)->where('status', 'aktif')->with(['fungsional'])->orderBy('id_fungsional_user', 'desc')->first();
 
-
         // Ambil nomor dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
         $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
@@ -124,7 +122,7 @@ class FungsionalUser extends Controller
         $timestampedName = time() . '_' . $originalName;
         $destinationPath = "{$user->npp}/fungsional/{$fungsional->nama_jabatan}/{$timestampedName}";
 
-        // Upload ke Google Drive
+        // Upload ke Google Drive (tetap pakai method yang sama sesuai logika kamu)
         $result = $this->googleDriveService->uploadFileAndGetUrl($request->file('sk')->getPathname(), $destinationPath);
 
         $dokumen = Dokumens::create([
@@ -147,8 +145,6 @@ class FungsionalUser extends Controller
             'angka_kredit' => $request->angka_kredit ?? null,
             'sk' => $newId
         ]);
-
-
 
         if ($fungsionalSebelumnya) {
             $fungsionalSebelumnya->update([
@@ -184,8 +180,18 @@ class FungsionalUser extends Controller
         $fungsional = FungsionalUsers::where('id_fungsional_user', $id)->with(['dokumen', 'user'])->first();
 
         $user = $fungsional->user->id_user;
-        Gdrive::delete($fungsional->dokumen->path_file);
 
+        // Hapus file di Google Drive berdasarkan file_id yang kamu simpan.
+        // (Jika data lama belum punya file_id, bagian ini akan dilewati—logika tetap sama: fokus ke penghapusan data fungsional.)
+        if ($fungsional->dokumen?->file_id) {
+            try {
+                $this->googleDriveService->deleteById($fungsional->dokumen->file_id);
+            } catch (\Throwable $e) {
+                // biarkan silent agar perilaku tetap sesuai alur kamu
+            }
+        }
+
+        // Hapus record fungsional (tetap sesuai logika kamu)
         $fungsional->delete();
 
         return redirect()->route('admin.jabatan.fungsional.show', $user)->with('success', 'Data berhasil dihapus');

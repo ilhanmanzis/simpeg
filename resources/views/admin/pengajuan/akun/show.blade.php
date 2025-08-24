@@ -254,7 +254,7 @@
                                                         @if ($pendidikan->ijazah)
                                                             <a href="{{ route('file.ijazah', $pendidikan->ijazah) }}"
                                                                 target="_blank" class="text-blue-600 hover:underline">
-                                                                {{ $pendidikan->ijazah }}
+                                                                Lihat
                                                             </a>
                                                         @else
                                                             <span class="text-gray-500 italic">-</span>
@@ -268,7 +268,7 @@
                                                         @if ($pendidikan->transkip_nilai)
                                                             <a href="{{ route('file.transkip', $pendidikan->transkip_nilai) }}"
                                                                 target="_blank" class="text-blue-600 hover:underline">
-                                                                {{ $pendidikan->transkip_nilai }}
+                                                                Lihat
                                                             </a>
                                                         @else
                                                             <span class="text-gray-500 italic">-</span>

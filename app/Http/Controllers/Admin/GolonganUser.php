@@ -9,7 +9,6 @@ use App\Models\GolonganUsers;
 use App\Models\User;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
-use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 class GolonganUser extends Controller
 {
@@ -19,6 +18,7 @@ class GolonganUser extends Controller
     {
         $this->googleDriveService = $googleDriveService;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -72,12 +72,12 @@ class GolonganUser extends Controller
             'title' => 'Data Golongan Dosen',
             'user' => User::where('id_user', $id)->with('dataDiri')->first(),
             'dosen' => GolonganUsers::where('id_user', $id)->where('status', 'aktif')->with(['user.dataDiri', 'golongan', 'dokumen'])->orderBy('id_golongan_user', 'desc')->first(),
-
             'riwayats' => GolonganUsers::where('id_user', $id)->where('status', 'nonaktif')->with(['user', 'golongan', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
         ];
 
         return view('admin.jabatan.golongan.show', $data);
     }
+
     public function mutasi(string $id)
     {
         $data = [
@@ -87,71 +87,72 @@ class GolonganUser extends Controller
             'user' => User::where('id_user', $id)->with('dataDiri')->first(),
             'dosen' => GolonganUsers::where('id_user', $id)->where('status', 'aktif')->with(['golongan'])->orderBy('id_golongan_user', 'desc')->first(),
             'golongans' => Golongans::all()
-
         ];
 
         return view('admin.jabatan.golongan.mutasi', $data);
     }
 
-
     public function mutasiStore(Request $request, string $id)
     {
         $request->validate([
-            'golongan' => 'required',
-            'tanggal_mulai' => 'required|date',
+            'golongan'        => 'required',
+            'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'nullable|date',
-            'sk' => 'required|file|mimes:pdf|max:2048'
+            'sk'              => 'required|file|mimes:pdf|max:2048'
         ]);
 
-        $user = User::findOrFail($id);
+        $user     = User::findOrFail($id);
         $golongan = Golongans::findOrFail($request->golongan);
 
-        $golonganSebelumnya = GolonganUsers::where('id_user', $id)->where('status', 'aktif')->with(['golongan'])->orderBy('id_golongan_user', 'desc')->first();
-
+        $golonganSebelumnya = GolonganUsers::where('id_user', $id)
+            ->where('status', 'aktif')
+            ->with(['golongan'])
+            ->orderBy('id_golongan_user', 'desc')
+            ->first();
 
         // Ambil nomor dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
-        $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+        $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
 
         // Dokumen foto utama
         $lastNumber++;
         $newId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
 
-        $originalName = $request->file('sk')->getClientOriginalName();
+        $originalName    = $request->file('sk')->getClientOriginalName();
         $timestampedName = time() . '_' . $originalName;
-        $namaGolongan = str_replace('/', '-', $golongan->nama_golongan);
+        $namaGolongan    = str_replace('/', '-', $golongan->nama_golongan);
 
         $destinationPath = "{$user->npp}/golongan/{$namaGolongan}/{$timestampedName}";
 
-
-        // Upload ke Google Drive
-        $result = $this->googleDriveService->uploadFileAndGetUrl($request->file('sk')->getPathname(), $destinationPath);
+        // Upload ke Google Drive (tetap sesuai logika kamu)
+        $result = $this->googleDriveService->uploadFileAndGetUrl(
+            $request->file('sk')->getPathname(),
+            $destinationPath
+        );
 
         $dokumen = Dokumens::create([
-            'nomor_dokumen' => $newId,
-            'path_file' => $destinationPath,
-            'file_id' => $result['file_id'],
-            'view_url' => $result['view_url'],
-            'download_url' => $result['download_url'],
-            'preview_url' => $result['preview_url'],
-            'id_user' => $user->id_user,
+            'nomor_dokumen'  => $newId,
+            'path_file'      => $destinationPath,
+            'file_id'        => $result['file_id'],
+            'view_url'       => $result['view_url'],
+            'download_url'   => $result['download_url'],
+            'preview_url'    => $result['preview_url'],
+            'id_user'        => $user->id_user,
             'tanggal_upload' => now()
         ]);
 
         GolonganUsers::create([
-            'id_user' => $user->id_user,
-            'id_golongan' => $request->golongan,
-            'tanggal_mulai' => $request->tanggal_mulai,
+            'id_user'         => $user->id_user,
+            'id_golongan'     => $request->golongan,
+            'tanggal_mulai'   => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai ?? null,
-            'status' => 'aktif',
-            'sk' => $newId
+            'status'          => 'aktif',
+            'sk'              => $newId
         ]);
-
-
 
         if ($golonganSebelumnya) {
             $golonganSebelumnya->update([
-                'status' => 'nonaktif',
+                'status'          => 'nonaktif',
                 'tanggal_selesai' => $golonganSebelumnya->tanggal_selesai ?? now()
             ]);
         }
@@ -180,10 +181,21 @@ class GolonganUser extends Controller
      */
     public function destroy(string $id)
     {
-        $golongan = GolonganUsers::where('id_golongan_user', $id)->with(['dokumen', 'user'])->first();
+        $golongan = GolonganUsers::where('id_golongan_user', $id)
+            ->with(['dokumen', 'user'])
+            ->first();
 
         $user = $golongan->user->id_user;
-        Gdrive::delete($golongan->dokumen->path_file);
+
+        // Hapus file di Google Drive berdasarkan file_id (jika tersedia)
+        if ($golongan->dokumen?->file_id) {
+            try {
+                $this->googleDriveService->deleteById($golongan->dokumen->file_id);
+            } catch (\Throwable $e) {
+                // sengaja diabaikan agar alur tetap sama (hapus data di DB tetap jalan)
+            }
+        }
+        // (Jika data lama belum punya file_id, kita tidak memanggil penghapusan by path)
 
         $golongan->delete();
 

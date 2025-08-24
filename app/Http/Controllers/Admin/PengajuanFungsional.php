@@ -18,130 +18,148 @@ class PengajuanFungsional extends Controller
     {
         $this->googleDriveService = $googleDriveService;
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $data = [
-            'page' => 'Pengajuan Fungsional',
+            'page'     => 'Pengajuan Fungsional',
             'selected' => 'Pengajuan Fungsional',
-            'title' => 'Pengajuan Kenaikan Jabatan Fungsional',
-            'pengajuans' => PengajuanFungsionals::where('status', 'pending')->with(['user.dataDiri'])->orderBy('updated_at', 'desc')->paginate(10)->appends(request()->except('page', 'riwayat_page')),
+            'title'    => 'Pengajuan Kenaikan Jabatan Fungsional',
+            'pengajuans' => PengajuanFungsionals::where('status', 'pending')
+                ->with(['user.dataDiri'])
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10)
+                ->appends(request()->except('page', 'riwayat_page')),
             'riwayats' => PengajuanFungsionals::with(['user.dataDiri'])
                 ->where('status', '!=', 'pending')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')
-                // jangan bawa-bawa page default saat pindah halaman riwayat
                 ->appends(request()->except('page'))
-                // opsional: auto-scroll ke section riwayat
                 ->fragment('riwayat'),
         ];
 
         return view('admin.pengajuan.fungsional.index', $data);
     }
 
-
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $pengajuan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)->with(['user.dataDiri'])->first();
+        $pengajuan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)
+            ->with(['user.dataDiri'])
+            ->firstOrFail();
+
         $data = [
-            'page' => 'Pengajuan Fungsional',
+            'page'     => 'Pengajuan Fungsional',
             'selected' => 'Pengajuan Fungsional',
-            'title' => 'Pengajuan Kenaikan Jabatan Fungsional',
+            'title'    => 'Pengajuan Kenaikan Jabatan Fungsional',
             'pengajuan' => $pengajuan
         ];
 
         if ($pengajuan->status === 'pending') {
             return view('admin.pengajuan.fungsional.show', $data);
-        } else {
-            return view('admin.pengajuan.fungsional.riwayat', $data);
         }
+        return view('admin.pengajuan.fungsional.riwayat', $data);
     }
-
-
 
     public function tolak(Request $request, string $id)
     {
-        // Ambil data user
         $perubahan = PengajuanFungsionals::findOrFail($id);
 
-        if ($perubahan->sk && Storage::exists('sk/' . $perubahan->sk)) {
-            // Hapus file sk jika ada
-            Storage::delete('sk/' . $perubahan->sk);
+        // hapus file SK di storage lokal (pakai lokasi yang konsisten dengan proses upload)
+        $localPath = storage_path("app/private/sk/{$perubahan->sk}");
+        if ($perubahan->sk && is_file($localPath)) {
+            @unlink($localPath);
         }
 
-        // Update status menjadi 'ditolak'
-        $perubahan->status = 'ditolak';
+        $perubahan->status     = 'ditolak';
         $perubahan->keterangan = $request->input('keterangan');
         $perubahan->save();
 
-        return redirect()->route('admin.pengajuan.fungsional')->with('success', 'Pengajuan kenaikan jabatan fungsional ditolak.');
+        return redirect()->route('admin.pengajuan.fungsional')
+            ->with('success', 'Pengajuan kenaikan jabatan fungsional ditolak.');
     }
 
     public function setuju(string $id)
     {
-        $perubahan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)->with(['fungsional', 'user.dataDiri'])->first();
+        $perubahan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)
+            ->with(['fungsional', 'user.dataDiri'])
+            ->firstOrFail();
 
-        $fungsionalSebelumnya = FungsionalUsers::where('id_user', $id)->where('status', 'aktif')->with(['fungsional'])->orderBy('id_fungsional_user', 'desc')->first();
+        // histori fungsional aktif sebelumnya (pakai id_user dari pengajuan)
+        $fungsionalSebelumnya = FungsionalUsers::where('id_user', $perubahan->user->id_user)
+            ->where('status', 'aktif')
+            ->with(['fungsional'])
+            ->orderBy('id_fungsional_user', 'desc')
+            ->first();
 
-
-        // Ambil nomor dokumen terakhir
+        // generator nomor_dokumen baru
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
-        $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+        $lastNumber  = $lastDokumen ? (int)$lastDokumen->nomor_dokumen : 0;
 
-        // Dokumen sk utama
         $lastNumber++;
         $newId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
 
-        $timestampedName = $perubahan->sk;
-
+        // path tujuan di Google Drive
+        $timestampedName = $perubahan->sk; // mengikuti logika kamu
         $destinationPath = "{$perubahan->user->npp}/fungsional/{$perubahan->fungsional->nama_jabatan}/{$timestampedName}";
 
-
+        // path lokal file SK
         $localPath = storage_path("app/private/sk/{$perubahan->sk}");
-        // Upload ke Google Drive
-        $result = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destinationPath);
+        if (!is_file($localPath)) {
+            return back()->with('error', 'File SK tidak ditemukan di penyimpanan lokal.');
+        }
 
-        $dokumen = Dokumens::create([
-            'nomor_dokumen' => $newId,
-            'path_file' => $destinationPath,
-            'file_id' => $result['file_id'],
-            'view_url' => $result['view_url'],
-            'download_url' => $result['download_url'],
-            'preview_url' => $result['preview_url'],
-            'id_user' => $perubahan->user->id_user,
+        // upload ke Google Drive
+        $result = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destinationPath);
+        if (!$result || empty($result['file_id'])) {
+            return back()->with('error', 'Gagal mengunggah SK ke Google Drive.');
+        }
+
+        // simpan dokumen SK
+        Dokumens::create([
+            'nomor_dokumen'  => $newId,
+            'path_file'      => $destinationPath,
+            'file_id'        => $result['file_id'],
+            'view_url'       => $result['view_url'],
+            'download_url'   => $result['download_url'],
+            'preview_url'    => $result['preview_url'],
+            'id_user'        => $perubahan->user->id_user,
             'tanggal_upload' => now()
         ]);
 
-        fungsionalUsers::create([
-            'id_user' => $perubahan->user->id_user,
-            'id_fungsional' => $perubahan->id_fungsional,
-            'tanggal_mulai' => $perubahan->tanggal_mulai,
+        // buat record fungsional aktif baru
+        FungsionalUsers::create([
+            'id_user'        => $perubahan->user->id_user,
+            'id_fungsional'  => $perubahan->id_fungsional,
+            'tanggal_mulai'  => $perubahan->tanggal_mulai,
             'tanggal_selesai' => $perubahan->tanggal_selesai ?? null,
-            'angka_kredit' => $perubahan->angka_kredit,
-            'status' => 'aktif',
-            'sk' => $newId
+            'angka_kredit'   => $perubahan->angka_kredit,
+            'status'         => 'aktif',
+            'sk'             => $newId
         ]);
 
-
-
+        // nonaktifkan histori sebelumnya (jika ada)
         if ($fungsionalSebelumnya) {
             $fungsionalSebelumnya->update([
-                'status' => 'nonaktif',
+                'status'          => 'nonaktif',
                 'tanggal_selesai' => $fungsionalSebelumnya->tanggal_selesai ?? now()
             ]);
         }
 
-        $perubahan->update([
-            'status' => 'disetujui'
-        ]);
+        // update status pengajuan
+        $perubahan->update(['status' => 'disetujui']);
 
-        Storage::delete('sk/' . $perubahan->sk);
+        // hapus file SK lokal setelah sukses upload
+        if (is_file($localPath)) {
+            @unlink($localPath);
+        }
 
-        return redirect()->route('admin.pengajuan.fungsional', $id)->with('success', 'Pengajuan kenaikan jabatan fungsional berhasil disetujui');
+        return redirect()->route('admin.pengajuan.fungsional')
+            ->with('success', 'Pengajuan kenaikan jabatan fungsional berhasil disetujui');
     }
 }

@@ -10,14 +10,11 @@ use App\Models\Pendidikans;
 use App\Models\User;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
-use Yaza\LaravelGoogleDriveStorage\Gdrive;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class PegawaiKaryawan extends Controller
 {
-
     protected $googleDriveService;
 
     public function __construct(GoogleDriveService $googleDriveService)
@@ -32,13 +29,16 @@ class PegawaiKaryawan extends Controller
     {
         $keyword = $request->get('karyawan');
         $data = [
-            'page' => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title' => 'Data Karyawan',
-            'karyawans' => User::where('role', 'karyawan')->with(['dataDiri'])->when($keyword, function ($query) use ($keyword) {
-                $query->searchKaryawan($keyword);
-            })->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
-
+            'page'      => 'Karyawan',
+            'selected'  => 'Karyawan',
+            'title'     => 'Data Karyawan',
+            'karyawans' => User::where('role', 'karyawan')->with(['dataDiri'])
+                ->when($keyword, function ($query) use ($keyword) {
+                    $query->searchKaryawan($keyword);
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->withQueryString()
         ];
         return view('admin.pegawai.karyawan.index', $data);
     }
@@ -46,12 +46,11 @@ class PegawaiKaryawan extends Controller
     public function createPendidikan(string $id)
     {
         $data = [
-            'page' => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title' => 'Tambah Pendidikan Karyawan',
-            'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first(),
-            'jenjangs' => Jenjangs::all()
-
+            'page'      => 'Karyawan',
+            'selected'  => 'Karyawan',
+            'title'     => 'Tambah Pendidikan Karyawan',
+            'karyawan'  => User::where('id_user', $id)->with(['dataDiri'])->first(),
+            'jenjangs'  => Jenjangs::all()
         ];
         return view('admin.pegawai.karyawan.tambahpendidikan', $data);
     }
@@ -59,318 +58,286 @@ class PegawaiKaryawan extends Controller
     public function storePendidikan(Request $request, string $id)
     {
         $request->validate([
-            'jenjang' => 'required|exists:jenjang,id_jenjang',
-            'institusi' => 'required|string|max:255',
-            'program_studi' => 'nullable|string|max:255',
-            'gelar' => 'nullable|string|max:255',
-            'tahun_lulus' => 'required|date_format:Y',
-            'ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'jenjang'        => 'required|exists:jenjang,id_jenjang',
+            'institusi'      => 'required|string|max:255',
+            'program_studi'  => 'nullable|string|max:255',
+            'gelar'          => 'nullable|string|max:255',
+            'tahun_lulus'    => 'required|date_format:Y',
+            'ijazah'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        // Ambil nomor dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
-        $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+        $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
 
-        $user = User::findOrFail($id);
+        $user    = User::findOrFail($id);
         $jenjang = Jenjangs::findOrFail($request->input('jenjang'));
 
-        // Dokumen foto utama
-        $newIdIjazah = null;
+        $newIdIjazah   = null;
         $newIdTranskip = null;
 
-        // Handle ijazah file upload
+        // ijazah
         if ($request->hasFile('ijazah')) {
             $lastNumber++;
-            $newIdIjazah = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-            $originalName = $request->file('ijazah')->getClientOriginalName();
+            $newIdIjazah     = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+            $originalName    = $request->file('ijazah')->getClientOriginalName();
             $timestampedName = time() . '_' . $originalName;
-            $destinationPathIjazah = "{$user->npp}/pendidikan/{$jenjang->nama_jenjang}/{$timestampedName}";
-            $file = $request->file('ijazah');
-            $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationPathIjazah);
+            $destIjazah      = "{$user->npp}/pendidikan/{$jenjang->nama_jenjang}/{$timestampedName}";
+            $result          = $this->googleDriveService->uploadFileAndGetUrl($request->file('ijazah')->getPathname(), $destIjazah);
 
             if ($result) {
                 Dokumens::create([
-                    'nomor_dokumen' => $newIdIjazah,
-                    'path_file' => $destinationPathIjazah,
-                    'id_user' => $user->id_user,
-                    'file_id' => $result['file_id'],
-                    'view_url' => $result['view_url'],
-                    'download_url' => $result['download_url'],
-                    'preview_url' => $result['preview_url'],
+                    'nomor_dokumen'  => $newIdIjazah,
+                    'path_file'      => $destIjazah,
+                    'id_user'        => $user->id_user,
+                    'file_id'        => $result['file_id'],
+                    'view_url'       => $result['view_url'],
+                    'download_url'   => $result['download_url'],
+                    'preview_url'    => $result['preview_url'],
                     'tanggal_upload' => now()
                 ]);
             }
         }
-        // Handle transkip nilai file upload
+
+        // transkip nilai
         if ($request->hasFile('transkip_nilai')) {
             $lastNumber++;
-            $newIdTranskip = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-            $originalName = $request->file('transkip_nilai')->getClientOriginalName();
+            $newIdTranskip   = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+            $originalName    = $request->file('transkip_nilai')->getClientOriginalName();
             $timestampedName = time() . '_' . $originalName;
-            $destinationPathTranskip = "{$user->npp}/pendidikan/{$jenjang->nama_jenjang}/{$timestampedName}";
-            $file = $request->file('transkip_nilai');
-            $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationPathTranskip);
+            $destTranskip    = "{$user->npp}/pendidikan/{$jenjang->nama_jenjang}/{$timestampedName}";
+            $result          = $this->googleDriveService->uploadFileAndGetUrl($request->file('transkip_nilai')->getPathname(), $destTranskip);
 
             if ($result) {
                 Dokumens::create([
-                    'nomor_dokumen' => $newIdTranskip,
-                    'path_file' => $destinationPathTranskip,
-                    'id_user' => $user->id_user,
-                    'file_id' => $result['file_id'],
-                    'view_url' => $result['view_url'],
-                    'download_url' => $result['download_url'],
-                    'preview_url' => $result['preview_url'],
+                    'nomor_dokumen'  => $newIdTranskip,
+                    'path_file'      => $destTranskip,
+                    'id_user'        => $user->id_user,
+                    'file_id'        => $result['file_id'],
+                    'view_url'       => $result['view_url'],
+                    'download_url'   => $result['download_url'],
+                    'preview_url'    => $result['preview_url'],
                     'tanggal_upload' => now()
                 ]);
             }
         }
 
-
         Pendidikans::create([
-            'id_user' => $user->id_user,
-            'id_jenjang' => $jenjang->id_jenjang,
-            'institusi' => $request->input('institusi'),
-            'program_studi' => $request->input('program_studi'),
-            'gelar' => $request->input('gelar'),
-            'tahun_lulus' => $request->input('tahun_lulus'),
-            'ijazah' => $newIdIjazah,
+            'id_user'        => $user->id_user,
+            'id_jenjang'     => $jenjang->id_jenjang,
+            'institusi'      => $request->input('institusi'),
+            'program_studi'  => $request->input('program_studi'),
+            'gelar'          => $request->input('gelar'),
+            'tahun_lulus'    => $request->input('tahun_lulus'),
+            'ijazah'         => $newIdIjazah,
             'transkip_nilai' => $newIdTranskip
         ]);
 
         return redirect()->route('admin.karyawan.show', $id)->with('success', 'Pendidikan berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $data = [
-            'page' => 'Karyawan',
+            'page'     => 'Karyawan',
             'selected' => 'Karyawan',
-            'title' => 'Tambah Data Karyawan',
+            'title'    => 'Tambah Data Karyawan',
             'jenjangs' => Jenjangs::all(),
         ];
 
         return view('admin.pegawai.karyawan.create', $data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'password' => 'required|string|min:6',
-            'password_confirmation' => 'same:password',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'nik' => 'required|max:20',
-            'no_hp' => 'required|max:20|unique:data_diri,no_ktp',
-            'tanggal_lahir' => 'required|date',
-            'tempat_lahir' => 'required|string|max:255',
-            'agama' => 'required|string|max:50',
-            'desa' => 'required|string|max:255',
-            'rt' => 'required|max:3',
-            'rw' => 'required|max:3',
-            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
-            'kecamatan' => 'required|string|max:255',
-            'kabupaten' => 'required|string|max:255',
-            'provinsi' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'npp' => 'required|max:30|unique:users,npp',
-            'tanggal_bergabung' => 'required|date',
-
-
-            // Pendidikan (array)
-            'pendidikan' => 'required|array|min:1',
-            'pendidikan.*.jenjang' => 'required|integer|max:255',
-            'pendidikan.*.tahun_lulus' => 'required|max:5',
-            'pendidikan.*.program_studi' => 'required|string|max:255',
-            'pendidikan.*.gelar' => 'nullable|string|max:255',
-            'pendidikan.*.institusi' => 'nullable|string|max:255',
-            'pendidikan.*.ijazah' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'pendidikan.*.transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-
-            // Foto
-            'foto' => 'required|image|max:2048',
+            'password'                         => 'required|string|min:6',
+            'password_confirmation'            => 'same:password',
+            'name'                             => 'required|string|max:255',
+            'email'                            => 'required|email|max:255|unique:users,email',
+            'nik'                              => 'required|max:20',
+            'no_hp'                            => 'required|max:20|unique:data_diri,no_ktp',
+            'tanggal_lahir'                    => 'required|date',
+            'tempat_lahir'                     => 'required|string|max:255',
+            'agama'                            => 'required|string|max:50',
+            'desa'                             => 'required|string|max:255',
+            'rt'                               => 'required|max:3',
+            'rw'                               => 'required|max:3',
+            'jenis_kelamin'                    => 'required|in:Laki-Laki,Perempuan',
+            'kecamatan'                        => 'required|string|max:255',
+            'kabupaten'                        => 'required|string|max:255',
+            'provinsi'                         => 'required|string|max:255',
+            'alamat'                           => 'required|string',
+            'npp'                              => 'required|max:30|unique:users,npp',
+            'tanggal_bergabung'                => 'required|date',
+            'pendidikan'                       => 'required|array|min:1',
+            'pendidikan.*.jenjang'             => 'required|integer|max:255',
+            'pendidikan.*.tahun_lulus'         => 'required|max:5',
+            'pendidikan.*.program_studi'       => 'required|string|max:255',
+            'pendidikan.*.gelar'               => 'nullable|string|max:255',
+            'pendidikan.*.institusi'           => 'nullable|string|max:255',
+            'pendidikan.*.ijazah'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pendidikan.*.transkip_nilai'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'foto'                             => 'required|image|max:2048',
         ], [
-            'password.required' => 'Password harus di isi',
-            'password.min' => 'Password minimal 6 karakter',
+            'password.required'      => 'Password harus di isi',
+            'password.min'           => 'Password minimal 6 karakter',
             'password_confirmation.same' => 'Konfirmasi Password tidak sama',
         ]);
 
-
-
-
-
-        // Ambil nomor dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
-        $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+        $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
 
-        // Dokumen foto utama
+        // foto utama
         $lastNumber++;
-        $newId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+        $newId          = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+        $originalName   = $request->file('foto')->getClientOriginalName();
+        $timestamped    = time() . '_' . $originalName;
+        $destFoto       = "{$request->npp}/datadiri/{$timestamped}";
+        $uploadFoto     = $this->googleDriveService->uploadFileAndGetUrl($request->file('foto')->getPathname(), $destFoto);
 
-        $originalName = $request->file('foto')->getClientOriginalName();
-        $timestampedName = time() . '_' . $originalName;
-        $destinationPath = "{$request->npp}/datadiri/{$timestampedName}";
-
-        // Upload ke Google Drive
-        $result = $this->googleDriveService->uploadFileAndGetUrl($request->file('foto')->getPathname(), $destinationPath);
-
-        // tambah user
-        $user  = User::create([
-            'email' => $request->email,
-            'npp' => $request->npp,
-            'password' => Hash::make($request->password),
+        // user
+        $user = User::create([
+            'email'            => $request->email,
+            'npp'              => $request->npp,
+            'password'         => Hash::make($request->password),
             'status_keaktifan' => 'aktif',
-            'role' => 'karyawan'
+            'role'             => 'karyawan'
         ]);
 
-        $dokumenFoto = Dokumens::create([
-            'nomor_dokumen' => $newId,
-            'path_file' => $destinationPath,
-            'file_id' => $result['file_id'],
-            'view_url' => $result['view_url'],
-            'download_url' => $result['download_url'],
-            'preview_url' => $result['preview_url'],
-            'id_user' => $user->id_user,
+        Dokumens::create([
+            'nomor_dokumen'  => $newId,
+            'path_file'      => $destFoto,
+            'file_id'        => $uploadFoto['file_id'],
+            'view_url'       => $uploadFoto['view_url'],
+            'download_url'   => $uploadFoto['download_url'],
+            'preview_url'    => $uploadFoto['preview_url'],
+            'id_user'        => $user->id_user,
             'tanggal_upload' => now()
         ]);
 
         DataDiri::create([
-            'id_user' => $user->id_user,
-            'name' => $request->name,
-            'no_ktp' => $request->nik,
-            'no_hp' => $request->no_hp,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'tempat_lahir' => $request->tempat_lahir,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'agama' => $request->agama,
+            'id_user'          => $user->id_user,
+            'name'             => $request->name,
+            'no_ktp'           => $request->nik,
+            'no_hp'            => $request->no_hp,
+            'tanggal_lahir'    => $request->tanggal_lahir,
+            'tempat_lahir'     => $request->tempat_lahir,
+            'jenis_kelamin'    => $request->jenis_kelamin,
+            'agama'            => $request->agama,
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'alamat' => $request->alamat,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'desa' => $request->desa,
-            'kecamatan' => $request->kecamatan,
-            'kabupaten' => $request->kabupaten,
-            'provinsi' => $request->provinsi,
-            'foto' => $newId,
+            'alamat'           => $request->alamat,
+            'rt'               => $request->rt,
+            'rw'               => $request->rw,
+            'desa'             => $request->desa,
+            'kecamatan'        => $request->kecamatan,
+            'kabupaten'        => $request->kabupaten,
+            'provinsi'         => $request->provinsi,
+            'foto'             => $newId,
         ]);
 
-
+        // pendidikan
         $newIdIjazah = null;
-        $newIdT = null;
-        // Dokumen pendidikan
+        $newIdT      = null;
         foreach ($request->pendidikan as $index => $pendidikanData) {
-
-            // Ambil data jenjang dari DB
             $jenjang = Jenjangs::find($pendidikanData['jenjang']);
-            if (!$jenjang) {
-                continue; // skip kalau jenjang tidak ditemukan
-            }
+            if (!$jenjang) continue;
 
             $namaJenjang = $jenjang->nama_jenjang;
 
             $newIdIjazah = null;
-            $newIdT = null;
+            $newIdT      = null;
 
-            // ==== Upload Ijazah ====
             if ($request->hasFile("pendidikan.$index.ijazah")) {
                 $lastNumber++;
-                $newIdIjazah = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-
-                $originalName = $request->file("pendidikan.$index.ijazah")->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
-
-                $ijazahPath = "{$user->npp}/pendidikan/{$namaJenjang}/{$timestampedName}";
-
-                $ijazahResult = $this->googleDriveService->uploadFileAndGetUrl(
+                $newIdIjazah     = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+                $orig             = $request->file("pendidikan.$index.ijazah")->getClientOriginalName();
+                $ts               = time() . '_' . $orig;
+                $ijazahPath       = "{$user->npp}/pendidikan/{$namaJenjang}/{$ts}";
+                $ijazahUpload     = $this->googleDriveService->uploadFileAndGetUrl(
                     $request->file("pendidikan.$index.ijazah")->getPathname(),
                     $ijazahPath
                 );
 
                 Dokumens::create([
-                    'nomor_dokumen' => $newIdIjazah,
-                    'path_file' => $ijazahPath,
-                    'file_id' => $ijazahResult['file_id'],
-                    'view_url' => $ijazahResult['view_url'],
-                    'download_url' => $ijazahResult['download_url'],
-                    'preview_url' => $ijazahResult['preview_url'],
-                    'id_user' => $user->id_user,
+                    'nomor_dokumen'  => $newIdIjazah,
+                    'path_file'      => $ijazahPath,
+                    'file_id'        => $ijazahUpload['file_id'],
+                    'view_url'       => $ijazahUpload['view_url'],
+                    'download_url'   => $ijazahUpload['download_url'],
+                    'preview_url'    => $ijazahUpload['preview_url'],
+                    'id_user'        => $user->id_user,
                     'tanggal_upload' => now()
                 ]);
             }
 
-            // ==== Upload Transkrip Nilai (jika ada) ====
             if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
                 $lastNumber++;
-                $newIdT = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-
-                $originalNameT = $request->file("pendidikan.$index.transkip_nilai")->getClientOriginalName();
-                $timestampedNameT = time() . '_' . $originalNameT;
-
-                $transkipPath = "{$user->npp}/pendidikan/{$namaJenjang}/{$timestampedNameT}";
-
-                $transkipResult = $this->googleDriveService->uploadFileAndGetUrl(
+                $newIdT           = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+                $origT            = $request->file("pendidikan.$index.transkip_nilai")->getClientOriginalName();
+                $tsT              = time() . '_' . $origT;
+                $transkipPath     = "{$user->npp}/pendidikan/{$namaJenjang}/{$tsT}";
+                $transkipUpload   = $this->googleDriveService->uploadFileAndGetUrl(
                     $request->file("pendidikan.$index.transkip_nilai")->getPathname(),
                     $transkipPath
                 );
 
                 Dokumens::create([
-                    'nomor_dokumen' => $newIdT,
-                    'path_file' => $transkipPath,
-                    'file_id' => $transkipResult['file_id'],
-                    'view_url' => $transkipResult['view_url'],
-                    'download_url' => $transkipResult['download_url'],
-                    'preview_url' => $transkipResult['preview_url'],
-                    'id_user' => $user->id_user,
+                    'nomor_dokumen'  => $newIdT,
+                    'path_file'      => $transkipPath,
+                    'file_id'        => $transkipUpload['file_id'],
+                    'view_url'       => $transkipUpload['view_url'],
+                    'download_url'   => $transkipUpload['download_url'],
+                    'preview_url'    => $transkipUpload['preview_url'],
+                    'id_user'        => $user->id_user,
                     'tanggal_upload' => now()
                 ]);
             }
 
-            // Simpan data pendidikan
             Pendidikans::create([
-                'id_user' => $user->id_user,
-                'id_jenjang' => $jenjang->id_jenjang,
-                'institusi' => $pendidikanData['institusi'] ?? null,
-                'tahun_lulus' => $pendidikanData['tahun_lulus'],
-                'ijazah' => $newIdIjazah ?? null,
+                'id_user'        => $user->id_user,
+                'id_jenjang'     => $jenjang->id_jenjang,
+                'institusi'      => $pendidikanData['institusi'] ?? null,
+                'tahun_lulus'    => $pendidikanData['tahun_lulus'],
+                'ijazah'         => $newIdIjazah ?? null,
                 'transkip_nilai' => $newIdT ?? null,
-                'gelar' => $pendidikanData['gelar'] ?? null,
-                'program_studi' => $pendidikanData['program_studi'],
+                'gelar'          => $pendidikanData['gelar'] ?? null,
+                'program_studi'  => $pendidikanData['program_studi'],
             ]);
         }
 
         return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $data = [
-            'page' => 'Karyawan',
+            'page'     => 'Karyawan',
             'selected' => 'Karyawan',
-            'title' => 'Data Karyawan',
-            'karyawan' => User::where('id_user', $id)->with(['dataDiri.dokumen', 'pendidikan.dokumenIjazah', 'pendidikan.dokumenTranskipNilai'])->first()
-
+            'title'    => 'Data Karyawan',
+            'karyawan' => User::where('id_user', $id)
+                ->with([
+                    'dataDiri.dokumen',
+                    'pendidikan' => function ($q) {
+                        $q->orderBy('id_jenjang', 'asc'); // urutkan pendidikan dari jenjang kecil → besar
+                    },
+                    'pendidikan.dokumenIjazah',
+                    'pendidikan.dokumenTranskipNilai'
+                ])
+                ->first()
         ];
-        // dd($data);
+
         return view('admin.pegawai.karyawan.show', $data);
     }
+
 
     public function dataDiri(string $id)
     {
         $data = [
-            'page' => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title' => 'Edit Profil Pribadi Karyawan',
-            'karyawan' => User::where('id_user', $id)->with(['dataDiri.dokumen'])->first()
-
+            'page'      => 'Karyawan',
+            'selected'  => 'Karyawan',
+            'title'     => 'Edit Profil Pribadi Karyawan',
+            'karyawan'  => User::where('id_user', $id)->with(['dataDiri.dokumen'])->first()
         ];
         return view('admin.pegawai.karyawan.profile', $data);
     }
@@ -378,275 +345,112 @@ class PegawaiKaryawan extends Controller
     public function pendidikan(string $id, string $idPendidikan)
     {
         $data = [
-            'page' => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title' => 'Edit Pendidikan Karyawan',
-            'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first(),
-            'pendidikan' => Pendidikans::where('id_pendidikan', $idPendidikan)->with(['dokumenIjazah', 'dokumenTranskipNilai'])->first(),
-            'jenjangs' => Jenjangs::all()
-
+            'page'        => 'Karyawan',
+            'selected'    => 'Karyawan',
+            'title'       => 'Edit Pendidikan Karyawan',
+            'karyawan'    => User::where('id_user', $id)->with(['dataDiri'])->first(),
+            'pendidikan'  => Pendidikans::where('id_pendidikan', $idPendidikan)->with(['dokumenIjazah', 'dokumenTranskipNilai'])->first(),
+            'jenjangs'    => Jenjangs::all()
         ];
         return view('admin.pegawai.karyawan.pendidikan', $data);
     }
 
-
-
     public function dataDiriUpdate(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $id . ',id_user',
-            'nik' => 'required|max:20',
-            'no_hp' => 'required|max:20',
-            'tanggal_lahir' => 'required|date',
-            'tempat_lahir' => 'required|string|max:255',
-            'agama' => 'required|string|max:50',
-            'desa' => 'required|string|max:255',
-            'rt' => 'required|max:3',
-            'rw' => 'required|max:3',
-            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
-            'kecamatan' => 'required|string|max:255',
-            'kabupaten' => 'required|string|max:255',
-            'provinsi' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'nuptk' => 'required|max:30',
-            'nip' => 'nullable|max:30',
-            'nidk' => 'nullable|max:30',
-            'nidn' => 'nullable|max:30',
+            'name'              => 'required|string|max:255',
+            'email'             => 'required|email|max:255|unique:users,email,' . $id . ',id_user',
+            'nik'               => 'required|max:20',
+            'no_hp'             => 'required|max:20',
+            'tanggal_lahir'     => 'required|date',
+            'tempat_lahir'      => 'required|string|max:255',
+            'agama'             => 'required|string|max:50',
+            'desa'              => 'required|string|max:255',
+            'rt'                => 'required|max:3',
+            'rw'                => 'required|max:3',
+            'jenis_kelamin'     => 'required|in:Laki-Laki,Perempuan',
+            'kecamatan'         => 'required|string|max:255',
+            'kabupaten'         => 'required|string|max:255',
+            'provinsi'          => 'required|string|max:255',
+            'alamat'            => 'required|string',
+            'nuptk'             => 'required|max:30',
+            'nip'               => 'nullable|max:30',
+            'nidk'              => 'nullable|max:30',
+            'nidn'              => 'nullable|max:30',
             'tanggal_bergabung' => 'required|date',
-
-
-            // Foto
-            'foto' => 'nullable|image|max:2048',
+            'foto'              => 'nullable|image|max:2048',
         ]);
-        $user = User::findOrFail($id);
+
+        $user     = User::findOrFail($id);
         $dataDiri = DataDiri::where('id_user', $id)->with(['dokumen'])->first();
 
         $user->update([
             'email' => $request->input('email'),
         ]);
 
-        $fileLama = $dataDiri->dokumen->path_file;
+        $oldFileId = $dataDiri->dokumen->file_id ?? null;
+
         if ($request->hasFile('foto')) {
-            // ===== Simpan foto profil langsung ke Google Drive =====
-            $originalName = $request->file('foto')->getClientOriginalName();
+            $originalName    = $request->file('foto')->getClientOriginalName();
             $timestampedName = time() . '_' . $originalName;
             $destinationPath = "{$user->npp}/datadiri/{$timestampedName}";
-            // Ambil file dari request
-            $file = $request->file('foto');
-            // Upload langsung ke Google Drive
-            $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationPath);
+            $result          = $this->googleDriveService->uploadFileAndGetUrl($request->file('foto')->getPathname(), $destinationPath);
 
             if ($result) {
-                // Jika upload berhasil, simpan URL ke database
                 $dataDiri->dokumen()->update([
-                    'path_file' => $destinationPath,
-                    'file_id' => $result['file_id'],
-                    'view_url' => $result['view_url'],
-                    'download_url' => $result['download_url'],
-                    'preview_url' => $result['preview_url'],
+                    'path_file'      => $destinationPath,
+                    'file_id'        => $result['file_id'],
+                    'view_url'       => $result['view_url'],
+                    'download_url'   => $result['download_url'],
+                    'preview_url'    => $result['preview_url'],
                     'tanggal_upload' => now()
                 ]);
             }
         }
 
-
         $dataDiri->update([
-            'name' => $request->input('name'),
-            'no_ktp' => $request->input('nik'),
-            'no_hp' => $request->input('no_hp'),
-            'tanggal_lahir' => $request->input('tanggal_lahir'),
-            'tempat_lahir' => $request->input('tempat_lahir'),
-            'agama' => $request->input('agama'),
-            'desa' => $request->input('desa'),
-            'rt' => $request->input('rt'),
-            'rw' => $request->input('rw'),
-            'jenis_kelamin' => $request->input('jenis_kelamin'),
-            'kecamatan' => $request->input('kecamatan'),
-            'kabupaten' => $request->input('kabupaten'),
-            'provinsi' => $request->input('provinsi'),
-            'alamat' => $request->input('alamat'),
-            'nuptk' => $request->input('nuptk'),
-            'nip' => $request->input('nip'),
-            'nidk' => $request->input('nidk'),
-            'nidn' => $request->input('nidn'),
+            'name'              => $request->input('name'),
+            'no_ktp'            => $request->input('nik'),
+            'no_hp'             => $request->input('no_hp'),
+            'tanggal_lahir'     => $request->input('tanggal_lahir'),
+            'tempat_lahir'      => $request->input('tempat_lahir'),
+            'agama'             => $request->input('agama'),
+            'desa'              => $request->input('desa'),
+            'rt'                => $request->input('rt'),
+            'rw'                => $request->input('rw'),
+            'jenis_kelamin'     => $request->input('jenis_kelamin'),
+            'kecamatan'         => $request->input('kecamatan'),
+            'kabupaten'         => $request->input('kabupaten'),
+            'provinsi'          => $request->input('provinsi'),
+            'alamat'            => $request->input('alamat'),
+            'nuptk'             => $request->input('nuptk'),
+            'nip'               => $request->input('nip'),
+            'nidk'              => $request->input('nidk'),
+            'nidn'              => $request->input('nidn'),
             'tanggal_bergabung' => $request->input('tanggal_bergabung'),
-
         ]);
 
-        // Hapus file lama dari Google Drive jika ada
-        if ($dataDiri->dokumen && $dataDiri->dokumen->file_id && $request->hasFile('foto')) {
-            if ($fileLama && $fileLama !== $destinationPath) {
-                Gdrive::delete($fileLama);
+        // Hapus file lama di Drive jika ada file baru
+        if ($oldFileId && $request->hasFile('foto')) {
+            try {
+                $this->googleDriveService->deleteById($oldFileId);
+            } catch (\Throwable $e) {
             }
         }
+
         return redirect()->route('admin.karyawan.show', $id)->with('success', 'Data Diri karyawan berhasil diperbarui.');
     }
-
-    // public function pendidikanUpdate(Request $request, string $id, string $idPendidikan)
-    // {
-    //     $request->validate([
-    //         'jenjang' => 'required|exists:jenjang,id_jenjang',
-    //         'institusi' => 'required|string|max:255',
-    //         'program_studi' => 'nullable|string|max:255',
-    //         'gelar' => 'nullable|string|max:255',
-    //         'tahun_lulus' => 'required|date_format:Y',
-    //         'ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-    //         'transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-    //     ]);
-
-    //     $user = User::findOrFail($id);
-    //     $pendidikan = Pendidikans::where('id_pendidikan', $idPendidikan)->with(['dokumenIjazah', 'dokumenTranskipNilai', 'jenjang'])->first();
-
-    //     $oldJenjangName = $pendidikan->jenjang ? $pendidikan->jenjang->nama_jenjang : '';
-    //     $newJenjang = Jenjangs::find($request->jenjang);
-    //     $newJenjangName = $newJenjang ? $newJenjang->nama_jenjang : '';
-
-    //     $fileLamaIjazah = $pendidikan->dokumenIjazah->path_file ?? null;
-    //     $fileLamaTranskip = $pendidikan->dokumenTranskipNilai->path_file ?? null;
-
-    //     // $folderChanged bernilai true jika nama jenjang lama dan baru berbeda, false jika sama
-    //     $folderChanged = $oldJenjangName !== $newJenjangName;
-    //     if ($folderChanged) {
-    //         $oldFolder = "{$user->npp}/pendidikan/{$oldJenjangName}";
-    //         $newFolder = "{$user->npp}/pendidikan/{$newJenjangName}";
-    //         Gdrive::renameDir($oldFolder, $newFolder);
-    //     }
-
-    //     // Rename folder if jenjang changed and no file is uploaded
-    //     if ($folderChanged && !$request->hasFile('ijazah')) {
-    //         // Update dokumenIjazah path_file
-    //         if ($pendidikan->dokumenIjazah && $pendidikan->dokumenIjazah->path_file) {
-    //             $filename = basename($fileLamaIjazah);
-    //             $newIjazahPath = "{$newFolder}/{$filename}";
-    //             $pendidikan->dokumenIjazah()->update(['path_file' => $newIjazahPath]);
-    //         }
-    //     }
-    //     if ($folderChanged && !$request->hasFile('transkip_nilai')) {
-    //         // Update dokumenTranskipNilai path_file
-    //         if ($pendidikan->dokumenTranskipNilai && $pendidikan->dokumenTranskipNilai->path_file) {
-    //             $filename = basename($fileLamaTranskip);
-    //             $newTranskipPath = "{$newFolder}/{$filename}";
-    //             $pendidikan->dokumenTranskipNilai()->update(['path_file' => $newTranskipPath]);
-    //         }
-    //     }
-
-    //     if ($folderChanged && $request->hasFile('ijazah')) {
-    //         if ($pendidikan->dokumenIjazah && $pendidikan->dokumenIjazah->path_file) {
-    //             $filename = basename($fileLamaIjazah);
-    //             $newIjazahPath = "{$newFolder}/{$filename}";
-    //             $pendidikan->dokumenIjazah()->update(['path_file' => $newIjazahPath]);
-    //         }
-    //     }
-    //     if ($folderChanged && $request->hasFile('transkip_nilai')) {
-    //         // Update dokumenTranskipNilai path_file
-    //         if ($pendidikan->dokumenTranskipNilai && $pendidikan->dokumenTranskipNilai->path_file) {
-    //             $filename = basename($fileLamaTranskip);
-    //             $newTranskipPath = "{$newFolder}/{$filename}";
-    //             $pendidikan->dokumenTranskipNilai()->update(['path_file' => $newTranskipPath]);
-    //         }
-    //     }
-
-    //     // Handle ijazah file upload
-    //     if ($request->hasFile('ijazah')) {
-
-    //         $originalName = $request->file('ijazah')->getClientOriginalName();
-    //         $timestampedName = time() . '_' . $originalName;
-    //         $destinationPathIjazah = "{$user->npp}/pendidikan/{$newJenjangName}/{$timestampedName}";
-    //         $file = $request->file('ijazah');
-    //         $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationPathIjazah);
-
-    //         if ($result) {
-    //             $pendidikan->dokumenIjazah()->update([
-    //                 'path_file' => $destinationPathIjazah,
-    //                 'file_id' => $result['file_id'],
-    //                 'view_url' => $result['view_url'],
-    //                 'download_url' => $result['download_url'],
-    //                 'preview_url' => $result['preview_url'],
-    //                 'tanggal_upload' => now()
-    //             ]);
-
-    //             if ($folderChanged) {
-    //                 Gdrive::delete("{$user->npp}/pendidikan/{$newJenjangName}/" . basename($fileLamaIjazah));
-    //             } else {
-
-    //                 Gdrive::delete($fileLamaIjazah);
-    //                 // Hapus file lama ijazah jika ada
-
-    //             }
-    //         }
-    //     }
-
-    //     // Handle transkip_nilai file upload
-    //     if ($request->hasFile('transkip_nilai')) {
-    //         // If jenjang changed, rename folder first and update ijazah path if exists
-
-    //         $originalName = $request->file('transkip_nilai')->getClientOriginalName();
-    //         $timestampedName = time() . '_' . $originalName;
-    //         $destinationPathTranskip = "{$user->npp}/pendidikan/{$newJenjangName}/{$timestampedName}";
-    //         $file = $request->file('transkip_nilai');
-    //         $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationPathTranskip);
-
-    //         if ($result) {
-    //             if ($pendidikan->dokumenTranskipNilai) {
-    //                 $pendidikan->dokumenTranskipNilai()->update([
-    //                     'path_file' => $destinationPathTranskip,
-    //                     'file_id' => $result['file_id'],
-    //                     'view_url' => $result['view_url'],
-    //                     'download_url' => $result['download_url'],
-    //                     'preview_url' => $result['preview_url'],
-    //                     'tanggal_upload' => now()
-    //                 ]);
-    //                 if ($folderChanged) {
-    //                     Gdrive::delete("{$user->npp}/pendidikan/{$newJenjangName}/" . basename($fileLamaTranskip));
-    //                 } else {
-    //                     // Hapus file lama transkip jika ada
-    //                     Gdrive::delete($fileLamaTranskip);
-    //                 }
-    //             } else {
-    //                 $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
-    //                 $lastNumber = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
-    //                 $lastNumber++;
-    //                 $newId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-
-    //                 $pendidikan->dokumenTranskipNilai()->create([
-    //                     'nomor_dokumen' => $newId,
-    //                     'id_user' => $user->id_user,
-    //                     'path_file' => $destinationPathTranskip,
-    //                     'file_id' => $result['file_id'],
-    //                     'view_url' => $result['view_url'],
-    //                     'download_url' => $result['download_url'],
-    //                     'preview_url' => $result['preview_url'],
-    //                     'tanggal_upload' => now()
-    //                 ]);
-    //                 $pendidikan->update([
-    //                     'transkip_nilai' => $newId
-    //                 ]);
-    //             }
-    //         }
-    //     }
-
-    //     $pendidikan->update([
-    //         'id_jenjang' => $request->input('jenjang'),
-    //         'institusi' => $request->input('institusi'),
-    //         'program_studi' => $request->input('program_studi'),
-    //         'gelar' => $request->input('gelar'),
-    //         'tahun_lulus' => $request->input('tahun_lulus'),
-    //     ]);
-
-    //     return redirect()->route('admin.karyawan.show', $id)->with('success', 'Pendidikan karyawan berhasil diperbarui.');
-    // }
 
     public function pendidikanUpdate(Request $request, string $id, string $idPendidikan)
     {
         $request->validate([
-            'jenjang'         => 'required|exists:jenjang,id_jenjang',
-            'institusi'       => 'required|string|max:255',
-            'program_studi'   => 'nullable|string|max:255',
-            'gelar'           => 'nullable|string|max:255',
-            'tahun_lulus'     => 'required|date_format:Y',
-            'ijazah'          => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'transkip_nilai'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'jenjang'        => 'required|exists:jenjang,id_jenjang',
+            'institusi'      => 'required|string|max:255',
+            'program_studi'  => 'nullable|string|max:255',
+            'gelar'          => 'nullable|string|max:255',
+            'tahun_lulus'    => 'required|date_format:Y',
+            'ijazah'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
         return DB::transaction(function () use ($request, $id, $idPendidikan) {
@@ -661,65 +465,44 @@ class PegawaiKaryawan extends Controller
             $newJenjang     = Jenjangs::findOrFail($request->jenjang);
             $newJenjangName = $newJenjang->nama_jenjang ?? '';
 
-            $oldFolder = $oldJenjangName ? "{$user->npp}/pendidikan/{$oldJenjangName}" : null;
             $newFolder = "{$user->npp}/pendidikan/{$newJenjangName}";
 
-            $fileLamaIjazah   = $pendidikan->dokumenIjazah->path_file ?? null;
-            $fileLamaTranskip = $pendidikan->dokumenTranskipNilai->path_file ?? null;
+            $fileLamaIjazahPath   = $pendidikan->dokumenIjazah->path_file ?? null;
+            $fileLamaTranskipPath = $pendidikan->dokumenTranskipNilai->path_file ?? null;
+
+            $oldIjazahId   = $pendidikan->dokumenIjazah->file_id ?? null;
+            $oldTranskipId = $pendidikan->dokumenTranskipNilai->file_id ?? null;
 
             $folderChanged = $oldJenjangName !== $newJenjangName;
 
-            // Pastikan folder tujuan ada (tidak error kalau sudah ada)
-            if ($folderChanged) {
+            // Jika folder berubah & tidak ada upload baru -> pindahkan file lama (by file_id)
+            if ($folderChanged && !$request->hasFile('ijazah') && $oldIjazahId) {
                 try {
-                    Gdrive::makeDir($newFolder);
+                    $this->googleDriveService->moveFileTo($oldIjazahId, [$user->npp, 'pendidikan', $newJenjangName], basename($fileLamaIjazahPath));
+                    $pendidikan->dokumenIjazah()->update(['path_file' => $newFolder . '/' . basename($fileLamaIjazahPath)]);
                 } catch (\Throwable $e) {
                 }
             }
 
-            // Helper: copy → delete per-file di Google Drive
-            $moveOnDrive = function (?string $oldPath, string $targetFolder) {
-                if (!$oldPath) return null;
-                $filename = basename($oldPath);
-                $newPath  = rtrim($targetFolder, '/') . '/' . $filename;
-                if ($oldPath === $newPath) return $newPath;
-
-                // copy
-                $blob = Gdrive::get($oldPath);           // $blob->file (binary), $blob->ext
-                Storage::disk('google')->put($newPath, $blob->file);
-                // delete source
-                Gdrive::delete($oldPath);
-
-                return $newPath;
-            };
-
-            // ===== Jika jenjang berubah & TIDAK upload baru -> pindahkan file lama satu per satu =====
-            if ($folderChanged && !$request->hasFile('ijazah') && $pendidikan->dokumenIjazah && $fileLamaIjazah) {
-                if ($newPath = $moveOnDrive($fileLamaIjazah, $newFolder)) {
-                    $pendidikan->dokumenIjazah()->update(['path_file' => $newPath]);
+            if ($folderChanged && !$request->hasFile('transkip_nilai') && $oldTranskipId) {
+                try {
+                    $this->googleDriveService->moveFileTo($oldTranskipId, [$user->npp, 'pendidikan', $newJenjangName], basename($fileLamaTranskipPath));
+                    $pendidikan->dokumenTranskipNilai()->update(['path_file' => $newFolder . '/' . basename($fileLamaTranskipPath)]);
+                } catch (\Throwable $e) {
                 }
             }
 
-            if ($folderChanged && !$request->hasFile('transkip_nilai') && $pendidikan->dokumenTranskipNilai && $fileLamaTranskip) {
-                if ($newPath = $moveOnDrive($fileLamaTranskip, $newFolder)) {
-                    $pendidikan->dokumenTranskipNilai()->update(['path_file' => $newPath]);
-                }
-            }
-
-            // ===== Upload/replace Ijazah =====
+            // Upload/replace Ijazah
             if ($request->hasFile('ijazah')) {
                 $originalName      = $request->file('ijazah')->getClientOriginalName();
                 $timestampedName   = time() . '_' . $originalName;
                 $destinationIjazah = "{$newFolder}/{$timestampedName}";
-                $file              = $request->file('ijazah');
-
-                // pakai service-mu agar dapat file_id & url
-                $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationIjazah);
+                $result            = $this->googleDriveService->uploadFileAndGetUrl($request->file('ijazah')->getPathname(), $destinationIjazah);
 
                 if ($result) {
                     $pendidikan->dokumenIjazah()
                         ->updateOrCreate(
-                            [], // sesuaikan unique key relasi dokumen ijazah jika ada
+                            [],
                             [
                                 'path_file'      => $destinationIjazah,
                                 'file_id'        => $result['file_id'],
@@ -731,23 +514,21 @@ class PegawaiKaryawan extends Controller
                             ]
                         );
 
-                    if ($fileLamaIjazah && $fileLamaIjazah !== $destinationIjazah) {
+                    if ($oldIjazahId) {
                         try {
-                            Gdrive::delete($fileLamaIjazah);
+                            $this->googleDriveService->deleteById($oldIjazahId);
                         } catch (\Throwable $e) {
                         }
                     }
                 }
             }
 
-            // ===== Upload/replace Transkip Nilai =====
+            // Upload/replace Transkip
             if ($request->hasFile('transkip_nilai')) {
                 $originalName        = $request->file('transkip_nilai')->getClientOriginalName();
                 $timestampedName     = time() . '_' . $originalName;
                 $destinationTranskip = "{$newFolder}/{$timestampedName}";
-                $file                = $request->file('transkip_nilai');
-
-                $result = $this->googleDriveService->uploadFileAndGetUrl($file->getPathname(), $destinationTranskip);
+                $result              = $this->googleDriveService->uploadFileAndGetUrl($request->file('transkip_nilai')->getPathname(), $destinationTranskip);
 
                 if ($result) {
                     if ($pendidikan->dokumenTranskipNilai) {
@@ -778,16 +559,16 @@ class PegawaiKaryawan extends Controller
                         $pendidikan->update(['transkip_nilai' => $newId]);
                     }
 
-                    if ($fileLamaTranskip && $fileLamaTranskip !== $destinationTranskip) {
+                    if ($oldTranskipId) {
                         try {
-                            Gdrive::delete($fileLamaTranskip);
+                            $this->googleDriveService->deleteById($oldTranskipId);
                         } catch (\Throwable $e) {
                         }
                     }
                 }
             }
 
-            // ===== Update data pendidikan =====
+            // Update field pendidikan
             $pendidikan->update([
                 'id_jenjang'    => $request->jenjang,
                 'institusi'     => $request->institusi,
@@ -800,41 +581,33 @@ class PegawaiKaryawan extends Controller
                 ->with('success', 'Pendidikan Karyawan berhasil diperbarui.');
         });
     }
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(string $id)
-    {
-        //
+    { /* kosong */
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
-    {
-        //
+    { /* kosong */
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-
         $user = User::findOrFail($id);
 
-        // Jangan izinkan menghapus user admin lain
-        if ($user->role === 'admin') {
-            return back()->with('error', 'Tidak dapat menghapus admin.');
-        }
+        // larangan sesuai logika kamu
+        if ($user->role === 'admin')   return back()->with('error', 'Tidak dapat menghapus admin.');
+        if ($user->role === 'dosen')   return back()->with('error', 'Tidak dapat menghapus dosen.');
 
-        if ($user->role === 'dosen') {
-            return back()->with('error', 'Tidak dapat menghapus dosen.');
-        }
-
-        // hapus folder user
-        Gdrive::deleteDir($user->npp);
+        // Hapus semua file Drive milik user berdasarkan file_id
+        Dokumens::where('id_user', $user->id_user)
+            ->whereNotNull('file_id')
+            ->chunkById(200, function ($docs) {
+                foreach ($docs as $doc) {
+                    try {
+                        $this->googleDriveService->deleteById($doc->file_id);
+                    } catch (\Throwable $e) {
+                    }
+                }
+            });
 
         $user->delete();
 
@@ -843,15 +616,22 @@ class PegawaiKaryawan extends Controller
 
     public function deletePendidikan(Request $request, string $id, string $idPendidikan)
     {
-        $pendidikan = Pendidikans::where('id_pendidikan', $idPendidikan)->with(['dokumenIjazah', 'dokumenTranskipNilai'])->first();
+        $pendidikan = Pendidikans::where('id_pendidikan', $idPendidikan)
+            ->with(['dokumenIjazah', 'dokumenTranskipNilai'])
+            ->first();
+
         if ($pendidikan) {
-            // Hapus dokumen ijazah jika ada
-            if ($pendidikan->dokumenIjazah) {
-                Gdrive::delete($pendidikan->dokumenIjazah->path_file);
+            if ($pendidikan->dokumenIjazah?->file_id) {
+                try {
+                    $this->googleDriveService->deleteById($pendidikan->dokumenIjazah->file_id);
+                } catch (\Throwable $e) {
+                }
             }
-            // Hapus dokumen transkip nilai jika ada
-            if ($pendidikan->dokumenTranskipNilai) {
-                Gdrive::delete($pendidikan->dokumenTranskipNilai->path_file);
+            if ($pendidikan->dokumenTranskipNilai?->file_id) {
+                try {
+                    $this->googleDriveService->deleteById($pendidikan->dokumenTranskipNilai->file_id);
+                } catch (\Throwable $e) {
+                }
             }
             $pendidikan->delete();
             return redirect()->route('admin.karyawan.show', $id)->with('success', 'Data pendidikan berhasil dihapus.');
@@ -862,48 +642,41 @@ class PegawaiKaryawan extends Controller
     public function password(string $id)
     {
         $data = [
-            'page' => 'Karyawan',
+            'page'     => 'Karyawan',
             'selected' => 'Karyawan',
-            'title' => 'Ubah Password Karyawan',
+            'title'    => 'Ubah Password Karyawan',
             'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
-
         ];
         return view('admin.pegawai.karyawan.password', $data);
     }
+
     public function passwordUpdate(Request $request, string $id)
     {
         $request->validate([
-            'password' => 'required|string|min:6',
+            'password'              => 'required|string|min:6',
             'password_confirmation' => 'same:password',
         ], [
-            'password.required' => 'Password harus di isi',
-            'password.min' => 'Password minimal 6 karakter',
+            'password.required'     => 'Password harus di isi',
+            'password.min'          => 'Password minimal 6 karakter',
             'password_confirmation.same' => 'Konfirmasi Password tidak sama',
         ]);
 
-
         $user = User::findOrFail($id);
-
-        $user->update([
-            'password' => Hash::make($request->password)
-        ]);
+        $user->update(['password' => Hash::make($request->password)]);
 
         return redirect()->route('admin.karyawan.show', $id)->with('success', 'Password berhasil diperbarui');
     }
 
-
     public function npp(string $id)
     {
         $data = [
-            'page' => 'Karyawan',
+            'page'     => 'Karyawan',
             'selected' => 'Karyawan',
-            'title' => 'Ubah NPP Karyawan',
+            'title'    => 'Ubah NPP Karyawan',
             'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
-
         ];
         return view('admin.pegawai.karyawan.npp', $data);
     }
-
 
     public function nppUpdate(Request $request, $id)
     {
@@ -911,17 +684,36 @@ class PegawaiKaryawan extends Controller
             'npp' => 'required|string|max:30|unique:users,npp,' . $id . ',id_user',
         ]);
 
-        // Ambil user dan NPP lama
-        $user = User::findOrFail($id);
+        $user   = User::findOrFail($id);
         $oldNpp = $user->npp;
         $newNpp = $request->npp;
 
-        // Update NPP user
+        // update user
         $user->npp = $newNpp;
         $user->save();
 
-        Gdrive::renameDir($oldNpp, $newNpp);
-        // Update semua dokumen yang path_file diawali dengan NPP lama
+        // Pindahkan file di Google Drive berdasarkan file_id ke struktur folder baru
+        Dokumens::where('id_user', $id)
+            ->where('path_file', 'like', $oldNpp . '/%')
+            ->chunkById(100, function ($docs) use ($oldNpp, $newNpp) {
+                foreach ($docs as $doc) {
+                    if (!$doc->file_id) continue;
+
+                    $relative = preg_replace('#^' . preg_quote($oldNpp, '#') . '/#', '', $doc->path_file);
+                    $parts    = array_values(array_filter(explode('/', $relative)));
+                    if (empty($parts)) continue;
+
+                    $filename        = array_pop($parts);
+                    $folderStructure = array_merge([$newNpp], $parts);
+
+                    try {
+                        $this->googleDriveService->moveFileTo($doc->file_id, $folderStructure, $filename);
+                    } catch (\Throwable $e) {
+                    }
+                }
+            });
+
+        // Update path_file di DB (logika kamu dipertahankan)
         Dokumens::where('id_user', $id)
             ->where('path_file', 'like', $oldNpp . '/%')
             ->chunkById(50, function ($dokumens) use ($oldNpp, $newNpp) {
@@ -941,11 +733,8 @@ class PegawaiKaryawan extends Controller
     public function status(string $id)
     {
         $user = User::findOrFail($id);
-
         $status = $user->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif';
-        $user->update([
-            'status_keaktifan' => $status
-        ]);
+        $user->update(['status_keaktifan' => $status]);
 
         return redirect()->route('admin.karyawan.show', $id)->with('success', 'Status berhasil diperbarui');
     }

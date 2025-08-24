@@ -10,8 +10,6 @@ use App\Models\PengajuanPerubahanPendidikans;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Yaza\LaravelGoogleDriveStorage\Gdrive;
-
 use Illuminate\Support\Facades\DB;
 
 class PengajuanPendikan extends Controller
@@ -22,119 +20,79 @@ class PengajuanPendikan extends Controller
     {
         $this->googleDriveService = $googleDriveService;
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $data = [
-            'page' => 'Pengajuan Pendidikan',
+            'page'     => 'Pengajuan Pendidikan',
             'selected' => 'Pengajuan Pendidikan',
-            'title' => 'Pengajuan Perubahan Pendidikan',
-            'pengajuans' => PengajuanPerubahanPendidikans::where('status', 'pending')->with(['user.dataDiri'])->orderBy('updated_at', 'desc')->paginate(10)->appends(request()->except('page', 'riwayat_page')),
+            'title'    => 'Pengajuan Perubahan Pendidikan',
+            'pengajuans' => PengajuanPerubahanPendidikans::where('status', 'pending')
+                ->with(['user.dataDiri'])
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10)
+                ->appends(request()->except('page', 'riwayat_page')),
             'riwayats' => PengajuanPerubahanPendidikans::with(['user.dataDiri'])
                 ->where('status', '!=', 'pending')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')
-                // jangan bawa-bawa page default saat pindah halaman riwayat
                 ->appends(request()->except('page'))
-                // opsional: auto-scroll ke section riwayat
                 ->fragment('riwayat'),
         ];
 
         return view('admin.pengajuan.pendidikan.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function create() {}
+    public function store(Request $request) {}
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $pengajuan = PengajuanPerubahanPendidikans::where('id_perubahan', $id)->with(['user.dataDiri', 'jenjang', 'pendidikan.dokumenIjazah', 'pendidikan.dokumenTranskipNilai', 'pendidikan.jenjang'])->first();
+        $pengajuan = PengajuanPerubahanPendidikans::where('id_perubahan', $id)
+            ->with([
+                'user.dataDiri',
+                'jenjang',
+                'pendidikan.dokumenIjazah',
+                'pendidikan.dokumenTranskipNilai',
+                'pendidikan.jenjang'
+            ])->first();
+
         $data = [
-            'page' => 'Pengajuan Pendidikan',
+            'page'     => 'Pengajuan Pendidikan',
             'selected' => 'Pengajuan Pendidikan',
-            'title' => 'Pengajuan Perubahan Pendidikan',
+            'title'    => 'Pengajuan Perubahan Pendidikan',
             'pengajuan' => $pengajuan
         ];
 
-        if ($pengajuan->status === 'pending') {
-            return view('admin.pengajuan.pendidikan.show', $data);
-        } else {
-            return view('admin.pengajuan.pendidikan.riwayat', $data);
-        }
+        return $pengajuan && $pengajuan->status === 'pending'
+            ? view('admin.pengajuan.pendidikan.show', $data)
+            : view('admin.pengajuan.pendidikan.riwayat', $data);
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    public function edit(string $id) {}
+    public function update(Request $request, string $id) {}
+    public function destroy(string $id) {}
 
     public function tolak(Request $request, string $id)
     {
-        // Ambil data user
         $perubahan = PengajuanPerubahanPendidikans::findOrFail($id);
 
         if ($perubahan->ijazah && Storage::exists('pendidikan/ijazah/' . $perubahan->ijazah)) {
-            // Hapus file foto jika ada
             Storage::delete('pendidikan/ijazah/' . $perubahan->ijazah);
         }
         if ($perubahan->transkip_nilai && Storage::exists('pendidikan/transkipNilai/' . $perubahan->transkip_nilai)) {
-            // Hapus file foto jika ada
             Storage::delete('pendidikan/transkipNilai/' . $perubahan->transkip_nilai);
         }
 
-
-
         $perubahan->update([
             'id_pendidikan' => null,
-            'status' => 'ditolak',
-            'keterangan' => $request->keterangan
+            'status'        => 'ditolak',
+            'keterangan'    => $request->keterangan
         ]);
 
-
-        return redirect()->route('admin.pengajuan.pendidikan')->with('success', 'Pengajuan perubahan pendidikan ditolak.');
+        return redirect()->route('admin.pengajuan.pendidikan')
+            ->with('success', 'Pengajuan perubahan pendidikan ditolak.');
     }
-
-
-
-
 
     public function setuju(string $id)
     {
@@ -143,65 +101,66 @@ class PengajuanPendikan extends Controller
             'pendidikan.dokumenIjazah',
             'pendidikan.dokumenTranskipNilai',
             'pendidikan.jenjang',
-            'jenjang', // jika pengajuan membawa id_jenjang baru
+            'jenjang',
         ])->findOrFail($id);
 
         $user = $perubahan->user;
 
         return DB::transaction(function () use ($perubahan, $user) {
 
-            // ---- DELETE (hapus pendidikan lama) ----
+            // ---- DELETE ----
             if ($perubahan->jenis === 'delete') {
                 $pendidikan = $perubahan->pendidikan;
                 if ($pendidikan) {
                     if ($pendidikan->dokumenIjazah?->path_file) {
                         try {
-                            Gdrive::delete($pendidikan->dokumenIjazah->path_file);
+                            Storage::disk('google')->delete($pendidikan->dokumenIjazah->path_file);
                         } catch (\Throwable $e) {
                         }
                     }
                     if ($pendidikan->dokumenTranskipNilai?->path_file) {
                         try {
-                            Gdrive::delete($pendidikan->dokumenTranskipNilai->path_file);
+                            Storage::disk('google')->delete($pendidikan->dokumenTranskipNilai->path_file);
                         } catch (\Throwable $e) {
                         }
                     }
+
+                    // (Tetap ikuti logika kamu yang lama)
                     $perubahan->create([
-                        'id_jenjang'    => $pendidikan->id_jenjang,
-                        'id_user' => $perubahan->user->id_user,
-                        'institusi'     => $pendidikan->institusi,
-                        'program_studi' => $pendidikan->program_studi,
-                        'gelar'         => $pendidikan->gelar,
-                        'tahun_lulus'   => $pendidikan->tahun_lulus,
-                        'ijazah' => null,
-                        'transkip_nilai' => null,
-                        'status' => 'disetujui',
-                        'jenis' => 'delete',
-                        'created_at' => $perubahan->created_at
+                        'id_jenjang'      => $pendidikan->id_jenjang,
+                        'id_user'         => $perubahan->user->id_user,
+                        'institusi'       => $pendidikan->institusi,
+                        'program_studi'   => $pendidikan->program_studi,
+                        'gelar'           => $pendidikan->gelar,
+                        'tahun_lulus'     => $pendidikan->tahun_lulus,
+                        'ijazah'          => null,
+                        'transkip_nilai'  => null,
+                        'status'          => 'disetujui',
+                        'jenis'           => 'delete',
+                        'created_at'      => $perubahan->created_at
                     ]);
                     $pendidikan->delete();
                 }
 
                 $perubahan->update(['status' => 'disetujui']);
+
                 return redirect()->route('admin.pengajuan.pendidikan')
                     ->with('success', 'Pengajuan perubahan pendidikan (hapus) disetujui.');
             }
 
-            // ---- TAMBAH (buat record pendidikan baru dari pengajuan) ----
+            // ---- TAMBAH ----
             if ($perubahan->jenis === 'tambah') {
-                // Tentukan folder tujuan di Google Drive
                 $targetJenjang = $perubahan->id_jenjang
                     ? Jenjangs::findOrFail($perubahan->id_jenjang)
                     : null;
 
-                $jenjangName = $targetJenjang?->nama_jenjang ?? 'Tanpa Jenjang';
+                $jenjangName  = $targetJenjang?->nama_jenjang ?? 'Tanpa Jenjang';
                 $targetFolder = "{$user->npp}/pendidikan/{$jenjangName}";
                 try {
-                    Gdrive::makeDir($targetFolder);
+                    Storage::disk('google')->makeDirectory($targetFolder);
                 } catch (\Throwable $e) {
                 }
 
-                // Generator nomor_dokumen aman (lock)
                 $generateNomor = function () {
                     $last = Dokumens::lockForUpdate()->orderBy('nomor_dokumen', 'desc')->first();
                     $num  = $last ? ((int)$last->nomor_dokumen + 1) : 1;
@@ -211,10 +170,9 @@ class PengajuanPendikan extends Controller
                 $newIdIjazah   = null;
                 $newIdTranskip = null;
 
-                // Upload IJAZAH dari storage lokal jika ada nama file di pengajuan
                 if (!empty($perubahan->ijazah)) {
                     $localPath = storage_path("app/private/pendidikan/ijazah/{$perubahan->ijazah}");
-                    if (file_exists($localPath)) {
+                    if (is_file($localPath)) {
                         $destName = $perubahan->ijazah;
                         $destPath = "{$targetFolder}/{$destName}";
                         $result   = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destPath);
@@ -231,19 +189,14 @@ class PengajuanPendikan extends Controller
                                 'preview_url'    => $result['preview_url'] ?? null,
                                 'tanggal_upload' => now(),
                             ]);
-
-                            try {
-                                unlink($localPath);
-                            } catch (\Throwable $e) {
-                            }
+                            @unlink($localPath);
                         }
                     }
                 }
 
-                // Upload TRANSKIP NILAI dari storage lokal jika ada
                 if (!empty($perubahan->transkip_nilai)) {
                     $localPath = storage_path("app/private/pendidikan/transkipNilai/{$perubahan->transkip_nilai}");
-                    if (file_exists($localPath)) {
+                    if (is_file($localPath)) {
                         $destName = $perubahan->transkip_nilai;
                         $destPath = "{$targetFolder}/{$destName}";
                         $result   = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destPath);
@@ -260,16 +213,11 @@ class PengajuanPendikan extends Controller
                                 'preview_url'    => $result['preview_url'] ?? null,
                                 'tanggal_upload' => now(),
                             ]);
-
-                            try {
-                                unlink($localPath);
-                            } catch (\Throwable $e) {
-                            }
+                            @unlink($localPath);
                         }
                     }
                 }
 
-                // Buat record pendidikan baru (pakai data dari pengajuan)
                 Pendidikans::create([
                     'id_user'        => $user->id_user,
                     'id_jenjang'     => $perubahan->id_jenjang,
@@ -277,20 +225,20 @@ class PengajuanPendikan extends Controller
                     'program_studi'  => $perubahan->program_studi,
                     'gelar'          => $perubahan->gelar,
                     'tahun_lulus'    => $perubahan->tahun_lulus ?? date('Y'),
-                    'ijazah'         => $newIdIjazah,      // FK -> dokumen.nomor_dokumen
-                    'transkip_nilai' => $newIdTranskip,    // FK -> dokumen.nomor_dokumen
+                    'ijazah'         => $newIdIjazah,
+                    'transkip_nilai' => $newIdTranskip,
                 ]);
 
                 $perubahan->update([
                     'id_pendidikan' => null,
-                    'status' => 'disetujui',
+                    'status'        => 'disetujui',
                 ]);
 
                 return redirect()->route('admin.pengajuan.pendidikan')
                     ->with('success', 'Pengajuan pendidikan (tambah) disetujui dan data berhasil dibuat.');
             }
 
-            // ---- EDIT (default cabang selain delete/tambah) ----
+            // ---- EDIT ----
             $pendidikan = $perubahan->pendidikan;
             if (!$pendidikan) {
                 return back()->with('error', 'Data pendidikan asal tidak ditemukan.');
@@ -300,10 +248,9 @@ class PengajuanPendikan extends Controller
             $newJenjang     = $perubahan->id_jenjang ? Jenjangs::findOrFail($perubahan->id_jenjang) : $pendidikan->jenjang;
             $newJenjangName = $newJenjang->nama_jenjang ?? $oldJenjangName;
 
-            $oldFolder = $oldJenjangName ? "{$user->npp}/pendidikan/{$oldJenjangName}" : null;
             $newFolder = "{$user->npp}/pendidikan/{$newJenjangName}";
             try {
-                Gdrive::makeDir($newFolder);
+                Storage::disk('google')->makeDirectory($newFolder);
             } catch (\Throwable $e) {
             }
 
@@ -312,10 +259,11 @@ class PengajuanPendikan extends Controller
                 $filename = basename($oldPath);
                 $newPath  = rtrim($targetFolder, '/') . '/' . $filename;
                 if ($oldPath === $newPath) return $newPath;
+
                 $binary = Storage::disk('google')->get($oldPath);
                 Storage::disk('google')->put($newPath, $binary);
                 try {
-                    Gdrive::delete($oldPath);
+                    Storage::disk('google')->delete($oldPath);
                 } catch (\Throwable $e) {
                 }
                 return $newPath;
@@ -331,16 +279,12 @@ class PengajuanPendikan extends Controller
                 return str_pad($num, 7, '0', STR_PAD_LEFT);
             };
 
-            // per-file move: pindahkan yang tidak di-replace
             if ($folderChanged) {
-                // Pindah IJAZAH lama hanya jika tidak ada upload ijazah baru
                 if (empty($perubahan->ijazah) && $fileLamaIjazahPath && $pendidikan->dokumenIjazah) {
                     if ($new = $moveOnDrive($fileLamaIjazahPath, $newFolder)) {
                         $pendidikan->dokumenIjazah()->update(['path_file' => $new]);
                     }
                 }
-
-                // Pindah TRANSKIP lama hanya jika tidak ada upload transkip baru
                 if (empty($perubahan->transkip_nilai) && $fileLamaTrnPath && $pendidikan->dokumenTranskipNilai) {
                     if ($new = $moveOnDrive($fileLamaTrnPath, $newFolder)) {
                         $pendidikan->dokumenTranskipNilai()->update(['path_file' => $new]);
@@ -348,14 +292,14 @@ class PengajuanPendikan extends Controller
                 }
             }
 
-
-            // Replace ijazah dari file lokal pengajuan (jika ada)
+            // Replace ijazah
             if (!empty($perubahan->ijazah)) {
                 $localPath = storage_path("app/private/pendidikan/ijazah/{$perubahan->ijazah}");
-                if (file_exists($localPath)) {
+                if (is_file($localPath)) {
                     $destName = $perubahan->ijazah;
                     $destPath = "{$newFolder}/{$destName}";
                     $result   = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destPath);
+
                     if ($result) {
                         if ($pendidikan->dokumenIjazah) {
                             $old = $pendidikan->dokumenIjazah->path_file;
@@ -369,7 +313,7 @@ class PengajuanPendikan extends Controller
                             ]);
                             if ($old && $old !== $destPath) {
                                 try {
-                                    Gdrive::delete($old);
+                                    Storage::disk('google')->delete($old);
                                 } catch (\Throwable $e) {
                                 }
                             }
@@ -388,21 +332,19 @@ class PengajuanPendikan extends Controller
                             $pendidikan->ijazah = $nomor;
                             $pendidikan->save();
                         }
-                        try {
-                            unlink($localPath);
-                        } catch (\Throwable $e) {
-                        }
+                        @unlink($localPath);
                     }
                 }
             }
 
-            // Replace transkip_nilai dari file lokal pengajuan (jika ada)
+            // Replace transkip_nilai
             if (!empty($perubahan->transkip_nilai)) {
                 $localPath = storage_path("app/private/pendidikan/transkipNilai/{$perubahan->transkip_nilai}");
-                if (file_exists($localPath)) {
+                if (is_file($localPath)) {
                     $destName = $perubahan->transkip_nilai;
                     $destPath = "{$newFolder}/{$destName}";
                     $result   = $this->googleDriveService->uploadFileAndGetUrl($localPath, $destPath);
+
                     if ($result) {
                         if ($pendidikan->dokumenTranskipNilai) {
                             $old = $pendidikan->dokumenTranskipNilai->path_file;
@@ -416,7 +358,7 @@ class PengajuanPendikan extends Controller
                             ]);
                             if ($old && $old !== $destPath) {
                                 try {
-                                    Gdrive::delete($old);
+                                    Storage::disk('google')->delete($old);
                                 } catch (\Throwable $e) {
                                 }
                             }
@@ -435,10 +377,7 @@ class PengajuanPendikan extends Controller
                             $pendidikan->transkip_nilai = $nomor;
                             $pendidikan->save();
                         }
-                        try {
-                            unlink($localPath);
-                        } catch (\Throwable $e) {
-                        }
+                        @unlink($localPath);
                     }
                 }
             }
@@ -454,10 +393,8 @@ class PengajuanPendikan extends Controller
 
             $perubahan->update([
                 'id_pendidikan' => null,
-                'status' => 'disetujui',
+                'status'        => 'disetujui',
             ]);
-
-
 
             return redirect()->route('admin.pengajuan.pendidikan')
                 ->with('success', 'Pengajuan perubahan pendidikan (edit) disetujui.');
