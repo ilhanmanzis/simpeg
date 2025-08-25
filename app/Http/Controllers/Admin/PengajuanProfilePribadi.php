@@ -150,6 +150,10 @@ class PengajuanProfilePribadi extends Controller
         $perubahan->update(['status' => 'disetujui']);
 
         return redirect()->route('admin.pengajuan.profile')
+            ->withHeaders([
+                // Hapus HTTP cache, Cache Storage, dan SW
+                'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+            ])
             ->with('success', 'Pengajuan perubahan profile pribadi disetujui.');
     }
 }

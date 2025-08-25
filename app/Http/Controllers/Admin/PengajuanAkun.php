@@ -228,7 +228,12 @@ class PengajuanAkun extends Controller
 
             $register->update(['status' => 'disetujui']);
 
-            return redirect()->route('admin.pengajuan.akun')->with('success', 'Pengajuan akun disetujui.');
+            return redirect()->route('admin.pengajuan.akun')
+                ->withHeaders([
+                    // Hapus HTTP cache, Cache Storage, dan SW
+                    'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+                ])
+                ->with('success', 'Pengajuan akun disetujui.');
         });
     }
     public function tolak(string $id)

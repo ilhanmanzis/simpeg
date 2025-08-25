@@ -66,18 +66,26 @@ class Auth extends Controller
                 FacadesAuth::logout();
                 return redirect()->route('login')->with('message', 'Akun anda telah di nonaktifkan, silahkan hubungi Admin untuk mengaktifkan akun anda.');
             }
-            // Redirect sesuai dengan role user
-            switch ($user->role) {
-                case 'admin':
-                    return redirect()->route('admin.dashboard');
-                case 'dosen':
-                    return redirect()->route('dosen.dashboard');
-                case 'karyawan':
-                    return redirect()->route('karyawan.dashboard');
-                default:
-                    FacadesAuth::logout();
-                    return redirect()->route('login')->with('message', 'Role tidak dikenal.');
+            // Tentukan rute tujuan berdasar role
+            $route = match ($user->role) {
+                'admin'    => 'admin.dashboard',
+                'dosen'    => 'dosen.dashboard',
+                'karyawan' => 'karyawan.dashboard',
+                default    => null,
+            };
+
+            if (!$route) {
+                FacadesAuth::logout();
+                return redirect()->route('login')->with('message', 'Role tidak dikenal.');
             }
+
+
+
+            // 👉 MINTA BROWSER HAPUS CACHE
+            return redirect()->route($route)->withHeaders([
+                // Hapus HTTP cache, Cache Storage, dan SW
+                'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+            ]);
         } else {
 
             return redirect()->route('login')->with('message', 'Email/NPP dan password salah');

@@ -70,63 +70,24 @@ class FileController extends Controller
     {
         $dok = Dokumens::where('nomor_dokumen', $id)->first();
         if (!$dok || !$dok->file_id) {
-            if ($dok && $dok->view_url) return redirect()->away($dok->view_url);
+            // fallback: kalau belum ada file_id di data lama, arahkan ke link view (kalau ada) 
+            if ($dok && $dok->view_url) {
+                return redirect()->away($dok->view_url);
+            }
             abort(404);
         }
-
-        // Ambil metadata utk ETag & Last-Modified
-        $meta = $this->drive->getFileInfo($dok->file_id) ?? [];
-        $modified = $meta['modifiedTime'] ?? null;
-        $etag = '"' . sha1($dok->file_id . '|' . ($modified ?? '')) . '"';
-
-        // Conditional GET: If-None-Match / If-Modified-Since
-        $req = request();
-        $headers304 = [
-            'ETag'           => $etag,
-            'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, max-age=0',
-            'Pragma'         => 'no-cache',
-            'Expires'        => '0',
-        ];
-        if ($modified) {
-            $headers304['Last-Modified'] = gmdate('D, d M Y H:i:s', strtotime($modified)) . ' GMT';
-        }
-        if ($req->headers->get('If-None-Match') === $etag) {
-            return response('', 304, $headers304);
-        }
-        if ($modified && $req->headers->has('If-Modified-Since')) {
-            $ims = strtotime($req->headers->get('If-Modified-Since'));
-            if ($ims !== false && $ims >= strtotime($modified)) {
-                return response('', 304, $headers304);
-            }
-        }
-
-        // Ambil stream terbaru dari Google Drive
-        $dl = $this->drive->downloadFileStream($dok->file_id);
-
-        $respHeaders = [
-            'Content-Type'        => $dl['mime'],
-            'Content-Disposition' => 'inline; filename="' . addslashes($dl['name']) . '"',
-            // MATIKAN cache agresif; pakai no-store + no-cache + must-revalidate
-            'Cache-Control'       => 'private, no-cache, no-store, must-revalidate, max-age=0',
-            'Pragma'              => 'no-cache',
-            'Expires'             => '0',
-            'ETag'                => $etag,
-            // (opsional) bantu server/proxy
-            'X-Accel-Buffering'   => 'no',
-        ];
-        if (isset($dl['size'])) {
-            $respHeaders['Content-Length'] = (string) $dl['size'];
-        }
-        if ($modified) {
-            $respHeaders['Last-Modified'] = gmdate('D, d M Y H:i:s', strtotime($modified)) . ' GMT';
-        }
-
-        return response()->stream(function () use ($dl) {
+        // Ambil stream dari Google Drive 
+        $dl = $this->drive->downloadFileStream($dok->file_id); // Stream ke browser (tanpa load semua ke RAM) 
+        return response()->stream(function () use ($dl) { // baca dari stream kecil-kecil agar hemat memori 
             $stream = $dl['body'];
             while (!$stream->eof()) {
                 echo $stream->read(8192);
                 flush();
             }
-        }, 200, $respHeaders);
+        }, 200, [
+            'Content-Type' => $dl['mime'],
+            'Content-Disposition' => 'inline; filename="' . addslashes($dl['name']) . '"', // opsional: caching header 
+            'Cache-Control' => 'private, max-age=3600',
+        ]);
     }
 }

@@ -497,7 +497,7 @@ class PegawaiDosen extends Controller
         ]);
 
 
-        
+
         $user     = User::findOrFail($id);
         $dataDiri = DataDiri::where('id_user', $id)->with(['dokumen'])->first();
 
@@ -558,7 +558,16 @@ class PegawaiDosen extends Controller
             }
         }
 
-        return redirect()->route('admin.dosen.show', $id)->with('success', 'Data Diri Dosen berhasil diperbarui.');
+        // 👉 Set flag agar halaman tujuan (200 OK) kirim Clear-Site-Data
+        //session()->put('clear_site_data_once', true);
+
+        return redirect()
+            ->route('admin.dosen.show', $id)
+            ->withHeaders([
+                // Hapus HTTP cache, Cache Storage, dan SW
+                'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+            ])
+            ->with('success', 'Data Diri Dosen berhasil diperbarui.');
     }
 
     public function pendidikanUpdate(Request $request, string $id, string $idPendidikan)

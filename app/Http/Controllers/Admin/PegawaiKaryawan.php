@@ -438,7 +438,11 @@ class PegawaiKaryawan extends Controller
             }
         }
 
-        return redirect()->route('admin.karyawan.show', $id)->with('success', 'Data Diri karyawan berhasil diperbarui.');
+        return redirect()->route('admin.karyawan.show', $id)
+            ->withHeaders([
+                // Hapus HTTP cache, Cache Storage, dan SW
+                'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+            ])->with('success', 'Data Diri karyawan berhasil diperbarui.');
     }
 
     public function pendidikanUpdate(Request $request, string $id, string $idPendidikan)
