@@ -126,7 +126,7 @@
 
                         <div class="w-full mb-2">
                             <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ijazah<span class="text-error-500">*</span> (kosongkan jika tidak diubah)
+                                Ijazah (kosongkan jika tidak diubah)
                                 @if ($pendidikan->ijazah)
                                     <a href="{{ $pendidikan->dokumenIjazah->preview_url }}" target="_blank"
                                         class="text-blue-600 hover:underline">

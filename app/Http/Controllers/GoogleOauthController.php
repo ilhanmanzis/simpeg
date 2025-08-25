@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GoogleDriveService;
 use Google_Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -15,9 +14,12 @@ class GoogleOauthController extends Controller
         $c->setClientId(config('services.google_drive.client_id'));
         $c->setClientSecret(config('services.google_drive.client_secret'));
         $c->setRedirectUri(config('services.google_drive.redirect'));
+
+        // penting agar dapat refresh_token
         $c->setAccessType('offline');
-        $c->setPrompt('consent');
-        $c->setScopes(config('services.google_drive.scopes'));
+        $c->setPrompt('consent select_account');
+
+        $c->setScopes(config('services.google_drive.scopes')); // drive.file
         return $c;
     }
 
@@ -35,9 +37,6 @@ class GoogleOauthController extends Controller
             return redirect('/')->with('error', 'Google OAuth: code tidak ditemukan.');
         }
 
-        // (opsional) verifikasi state jika kamu aktifkan di redirect()
-        // ...
-
         $client = $this->newClient();
         $token  = $client->fetchAccessTokenWithAuthCode($request->query('code'));
 
@@ -45,25 +44,21 @@ class GoogleOauthController extends Controller
             return redirect('/')->with('error', 'Google OAuth gagal: ' . ($token['error_description'] ?? $token['error']));
         }
 
-        $now       = now();
-        $expiresIn = (int)($token['expires_in'] ?? 3600);
-        $expiresAt = $now->copy()->addSeconds($expiresIn)->timestamp;
-        $ttlSec    = max($expiresIn - 120, 60);
+        // struktur token yg konsisten dg service
+        $payload = [
+            'access_token'  => $token['access_token'] ?? null,
+            'expires_in'    => (int)($token['expires_in'] ?? 3600),
+            'refresh_token' => $token['refresh_token']
+                ?? (Cache::get('gdrive:refresh_token') ?? config('services.google_drive.refresh_token')),
+            'created'       => time(),
+        ];
 
-        // Simpan access_token ke cache
-        Cache::put('google_drive_access_token', [
-            'access_token' => $token['access_token'] ?? null,
-            'expires_at'   => $expiresAt,
-        ], $ttlSec);
+        // Simpan access token (TTL pendek, normal)
+        Cache::put('gdrive:token', $payload, max(60, $payload['expires_in'] - 120));
 
-        // Ambil refresh token: pakai yang baru kalau ada; kalau tidak ada, fallback ke env
-        $refreshToken = $token['refresh_token']
-            ?? Cache::get('google_drive_refresh_token')
-            ?? config('services.google_drive.refresh_token');
-
-        if (!empty($refreshToken)) {
-            // simpan ke cache agar service selalu punya yang terbaru
-            Cache::forever('google_drive_refresh_token', $refreshToken);
+        // SIMPAN refresh token SECARA PERSISTEN (tanpa TTL)
+        if (!empty($payload['refresh_token'])) {
+            Cache::forever('gdrive:refresh_token', $payload['refresh_token']);
         }
 
         return redirect('/')->with('success', 'Google Drive terhubung.');

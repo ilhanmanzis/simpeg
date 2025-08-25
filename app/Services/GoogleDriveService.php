@@ -29,13 +29,15 @@ class GoogleDriveService
     private function initializeGoogleClient(): void
     {
         $this->googleClient = new Client([
-            'application_name' => config('app.name', 'Laravel') . ' Drive Uploader',
+            'application_name' => config('app.name', 'simpeg') . ' Drive Uploader',
         ]);
 
-        $this->googleClient->setClientId(config('filesystems.disks.google.clientId'));
-        $this->googleClient->setClientSecret(config('filesystems.disks.google.clientSecret'));
+        $this->googleClient->setClientId(config('services.google_drive.client_id'));
+        $this->googleClient->setClientSecret(config('services.google_drive.client_secret'));
         $this->googleClient->setAccessType('offline');
-        $this->googleClient->setScopes([Drive::DRIVE_FILE]); // akses file yang dibuat app
+        $this->googleClient->setPrompt('consent'); // aman; tidak selalu memunculkan consent ulang
+        $this->googleClient->setScopes(config('services.google_drive.scopes')); // drive.file
+
         $this->googleClient->setHttpClient(new GuzzleClient([
             'timeout'         => 300,
             'read_timeout'    => 300,
@@ -43,17 +45,20 @@ class GoogleDriveService
             'headers'         => ['Expect' => ''],
         ]));
 
-
-        // Token cache
+        // 1) Ambil token dari cache kalau ada
         $cachedToken = Cache::get('gdrive:token');
+
         if (is_array($cachedToken) && !empty($cachedToken['access_token'])) {
-            // pakai token valid dari cache
             $this->googleClient->setAccessToken($cachedToken);
         } else {
-            // tidak ada token valid di cache → tukar baru memakai refresh_token
-            $refresh = config('filesystems.disks.google.refreshToken');
+            // 2) Bootstrap: refresh token dari storage persisten dulu, ENV terakhir
+            $refresh = Cache::get('gdrive:refresh_token')
+                ?? config('services.google_drive.refresh_token'); // fallback TERAKHIR (sebaiknya kosongkan di .env setelah sukses)
+
             if (!$refresh) {
-                throw new \RuntimeException('Google refresh_token missing. Set GOOGLE_DRIVE_REFRESH_TOKEN in .env');
+                throw new \RuntimeException(
+                    'Refresh token belum ada. Jalankan /oauth/google/redirect untuk menghubungkan Google Drive.'
+                );
             }
 
             $new = $this->googleClient->fetchAccessTokenWithRefreshToken($refresh);
@@ -61,17 +66,97 @@ class GoogleDriveService
                 throw new \RuntimeException('Failed to refresh token: ' . ($new['error_description'] ?? $new['error']));
             }
 
-            // set ke client & simpan ke cache (lengkap dgn expires_in/created/refresh_token)
             $this->googleClient->setAccessToken($new);
             $this->cacheToken($this->googleClient->getAccessToken());
+
+            // simpan refresh token baru jika Google merotasi
+            if (!empty($new['refresh_token'])) {
+                Cache::forever('gdrive:refresh_token', $new['refresh_token']);
+            }
         }
 
-
-        // Pastikan valid: refresh jika expired / hampir expired
+        // 3) Pastikan token segar
         $this->ensureFreshToken(300);
 
         $this->driveService = new Drive($this->googleClient);
     }
+
+    private function cacheToken(array $token): void
+    {
+        $current = Cache::get('gdrive:token', []);
+        if (empty($token['refresh_token'])) {
+            $token['refresh_token'] = $current['refresh_token'] ?? null;
+        } else {
+            // simpan persisten kalau ada refresh token baru
+            Cache::forever('gdrive:refresh_token', $token['refresh_token']);
+        }
+
+        if (!isset($token['created'])) {
+            $token['created'] = time();
+        }
+        $expiresIn = (int)($token['expires_in'] ?? 3600);
+        $ttl       = max(60, $expiresIn - 120);
+
+        Cache::put('gdrive:token', $token, $ttl);
+    }
+
+
+    private function ensureFreshToken(int $minRemainingSeconds = 300): void
+    {
+        // Ambil token saat ini (bisa kosong array)
+        $tok = (array) $this->googleClient->getAccessToken();
+
+        // Hitung sisa umur access token sekarang (antisipasi clock skew)
+        $created   = isset($tok['created']) ? (int)$tok['created'] : (time() - 3600);
+        $expiresIn = isset($tok['expires_in']) ? (int)$tok['expires_in'] : 3600;
+        $remaining = ($created + $expiresIn) - time();
+
+        // Jika masih cukup segar & tidak dianggap expired oleh client → selesai
+        if ($remaining > $minRemainingSeconds && !$this->googleClient->isAccessTokenExpired()) {
+            return;
+        }
+
+        // Ambil refresh token: dari token aktif → storage persisten → ENV (fallback TERAKHIR)
+        $refresh = $tok['refresh_token']
+            ?? Cache::get('gdrive:refresh_token')
+            ?? config('services.google_drive.refresh_token');
+
+        if (empty($refresh)) {
+            // Tidak ada refresh token sama sekali → wajib reconnect
+            Cache::forget('gdrive:token');
+            throw new \RuntimeException('Refresh token tidak ditemukan. Silakan hubungkan ulang Google Drive.');
+        }
+
+        // Minta access token baru menggunakan refresh token
+        $new = $this->googleClient->fetchAccessTokenWithRefreshToken($refresh);
+
+        // Tangani error refresh
+        if (isset($new['error'])) {
+            $err = strtolower((string)$new['error']);
+            // Kasus umum: refresh token invalid / dicabut / kedaluwarsa → perlu reconnect
+            if ($err === 'invalid_grant' || str_contains($err, 'invalid')) {
+                Cache::forget('gdrive:token');
+                // Opsional: hapus juga refresh token persisten jika ingin “bersih total”
+                // Cache::forget('gdrive:refresh_token');
+                throw new \RuntimeException('Refresh token invalid/ditolak. Silakan hubungkan ulang Google Drive.');
+            }
+
+            // Error lain (jaringan, quota, dsb.)
+            throw new \RuntimeException('Failed to refresh token: ' . ($new['error_description'] ?? $new['error']));
+        }
+
+        // Set access token baru ke client
+        $this->googleClient->setAccessToken($new);
+
+        // Simpan access token (TTL pendek) + pertahankan refresh token (kalau tidak dikirim ulang)
+        $this->cacheToken($this->googleClient->getAccessToken());
+
+        // Jika Google merotasi & memberi refresh_token baru → simpan persisten (tanpa TTL)
+        if (!empty($new['refresh_token'])) {
+            Cache::forever('gdrive:refresh_token', $new['refresh_token']);
+        }
+    }
+
 
     /**
      * Upload cepat: streaming + resumable, parent by folderId
@@ -82,7 +167,7 @@ class GoogleDriveService
             throw new \InvalidArgumentException("File tidak ditemukan: $localPath");
         }
 
-        $rootId = (string) config('filesystems.disks.google.folderId');
+        $rootId = (string) config('services.google_drive.root_folder');
         if (!$rootId) {
             throw new \RuntimeException('Set GOOGLE_DRIVE_FOLDER_ID di .env.');
         }
@@ -253,14 +338,16 @@ class GoogleDriveService
 
     public function moveFileTo(string $fileId, array $folderStructure, ?string $newName = null): bool
     {
-        $rootId   = (string) config('filesystems.disks.google.folderId');
+        $rootId = (string) config('services.google_drive.root_folder');
         $parentId = $this->resolveFolderPathToId($folderStructure, $rootId);
 
         $file = $this->driveService->files->get($fileId, [
             'fields' => 'id,parents',
             'supportsAllDrives' => true,
         ]);
-        $oldParents = isset($file->parents) ? join(',', $file->parents) : '';
+
+        $parentsArr = $file->getParents() ?: [];
+        $oldParents = $parentsArr ? implode(',', $parentsArr) : '';
 
         $params = [
             'addParents' => $parentId,
@@ -331,49 +418,5 @@ class GoogleDriveService
             'body' => $body, // StreamInterface
             'size' => (int) $size,
         ];
-    }
-
-    private function cacheToken(array $token): void
-    {
-        // Pastikan refresh_token dipertahankan kalau tidak dikirim ulang
-        $current = Cache::get('gdrive:token', []);
-        if (!isset($token['refresh_token']) || !$token['refresh_token']) {
-            $token['refresh_token'] = $current['refresh_token'] ?? config('filesystems.disks.google.refreshToken');
-        }
-
-        // Normalisasi 'created'
-        if (!isset($token['created'])) {
-            $token['created'] = time();
-        }
-
-        // Hitung TTL cache dari expires_in (buffer 120 detik)
-        $expiresIn = (int)($token['expires_in'] ?? 3600);
-        $ttl = max(60, $expiresIn - 120);
-
-        Cache::put('gdrive:token', $token, $ttl);
-    }
-
-    private function ensureFreshToken(int $minRemainingSeconds = 300): void
-    {
-        $tok = $this->googleClient->getAccessToken();
-        // Estimasikan sisa umur token
-        $created   = (int)($tok['created'] ?? (time() - 3600));
-        $expiresIn = (int)($tok['expires_in'] ?? 3600);
-        $remaining = ($created + $expiresIn) - time();
-
-        // Refresh kalau kadaluarsa / hampir kadaluarsa
-        if ($remaining <= $minRemainingSeconds || $this->googleClient->isAccessTokenExpired()) {
-            $refresh = $tok['refresh_token'] ?? config('filesystems.disks.google.refreshToken');
-            if (!$refresh) {
-                throw new \RuntimeException('Google refresh_token missing. Reconnect your Google Drive.');
-            }
-            $new = $this->googleClient->fetchAccessTokenWithRefreshToken($refresh);
-            if (isset($new['error'])) {
-                throw new \RuntimeException('Failed to refresh token: ' . ($new['error_description'] ?? $new['error']));
-            }
-            // Pastikan set ke client + simpan di cache
-            $this->googleClient->setAccessToken($new);
-            $this->cacheToken($this->googleClient->getAccessToken());
-        }
     }
 }

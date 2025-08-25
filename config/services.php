@@ -41,7 +41,7 @@ return [
         'redirect' => env('GOOGLE_DRIVE_REDIRECT_URI', 'http://localhost:8000/oauth/google/callback'),
         'refresh_token' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
         'root_folder'   => env('GOOGLE_DRIVE_FOLDER_ID'),
-        'scopes'        => ['https://www.googleapis.com/auth/drive'],
+        'scopes'        => ['https://www.googleapis.com/auth/drive.file'],
     ],
 
 ];
