@@ -151,16 +151,58 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form
-                                        action="{{ route('admin.pengajuan.pengabdian.setuju', ['id' => $pengajuan['id_pengajuan']]) }}"
-                                        method="post" class="w-1/4">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit"
-                                            class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 mt-5">
-                                            Setuju
-                                        </button>
-                                    </form>
+                                    <!-- SETUJU PENGABDIAN + LOADING MODAL -->
+                                    <div x-data="{ loadingPengabdian: false }" class="w-1/4">
+                                        <form
+                                            action="{{ route('admin.pengajuan.pengabdian.setuju', ['id' => $pengajuan['id_pengajuan']]) }}"
+                                            method="post" @submit="loadingPengabdian = true">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit"
+                                                class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 mt-5 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                :disabled="loadingPengabdian">
+                                                <svg x-show="loadingPengabdian"
+                                                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                                </svg>
+                                                <span x-text="loadingPengabdian ? 'Memproses…' : 'Setuju'"></span>
+                                            </button>
+                                        </form>
+
+                                        <!-- Overlay modal -->
+                                        <div x-show="loadingPengabdian" x-cloak
+                                            class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40"
+                                            aria-live="polite">
+                                            <div role="dialog" aria-modal="true"
+                                                class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                <div class="flex items-start gap-3">
+                                                    <svg class="h-6 w-6 animate-spin mt-0.5"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12"
+                                                            r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                                    </svg>
+                                                    <div>
+                                                        <h3
+                                                            class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                            Mohon tunggu…</h3>
+                                                        <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                            Sedang mengunggah berkas ke Google Drive. Jangan menutup
+                                                            atau memuat ulang halaman.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             @endif
 

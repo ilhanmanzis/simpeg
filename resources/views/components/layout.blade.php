@@ -22,6 +22,10 @@
         .field-error {
             border-color: #ef4444 !important;
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
