@@ -13,6 +13,10 @@ use App\Http\Controllers\Admin\PengajuanAkun;
 use App\Http\Controllers\Admin\PengajuanFungsional as AdminPengajuanFungsional;
 use App\Http\Controllers\Admin\PengajuanGolongan as AdminPengajuanGolongan;
 use App\Http\Controllers\Admin\PengajuanPendikan as AdminPengajuanPendikan;
+use App\Http\Controllers\Admin\PengajuanPenelitian;
+use App\Http\Controllers\Admin\PengajuanPengabdian;
+use App\Http\Controllers\Admin\PengajuanPengajaran;
+use App\Http\Controllers\Admin\PengajuanPenunjang;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Admin\StrukturalUser;
@@ -21,10 +25,14 @@ use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Dosen\Fungsional;
 use App\Http\Controllers\Dosen\Golongan as DosenGolongan;
 use App\Http\Controllers\Dosen\Pendidikan;
+use App\Http\Controllers\Dosen\Penelitian;
+use App\Http\Controllers\Dosen\Pengabdian;
+use App\Http\Controllers\Dosen\Pengajaran;
 use App\Http\Controllers\Dosen\PengajuanFungsional;
 use App\Http\Controllers\Dosen\PengajuanGolongan;
 use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
+use App\Http\Controllers\Dosen\Penunjang;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\Dosen\Struktural;
 use App\Http\Controllers\FileController;
@@ -202,6 +210,34 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/kenaikan-fungsional/{id}/riwayat', [AdminPengajuanFungsional::class, 'riwayat'])->name('pengajuan.fungsional.riwayat');
     Route::put('/kenaikan-fungsional/setuju/{id}', [AdminPengajuanFungsional::class, 'setuju'])->name('pengajuan.fungsional.setuju');
     Route::put('/kenaikan-fungsional/tolak/{id}', [AdminPengajuanFungsional::class, 'tolak'])->name('pengajuan.fungsional.tolak');
+
+    // pengajuan bkd penelitian
+    Route::get('/pengajuan-penelitian', [PengajuanPenelitian::class, 'index'])->name('pengajuan.penelitian');
+    Route::get('/pengajuan-penelitian/{id}', [PengajuanPenelitian::class, 'show'])->name('pengajuan.penelitian.show');
+    Route::get('/pengajuan-penelitian/{id}/riwayat', [PengajuanPenelitian::class, 'riwayat'])->name('pengajuan.penelitian.riwayat');
+    Route::put('/pengajuan-penelitian/setuju/{id}', [PengajuanPenelitian::class, 'setuju'])->name('pengajuan.penelitian.setuju');
+    Route::put('/pengajuan-penelitian/tolak/{id}', [PengajuanPenelitian::class, 'tolak'])->name('pengajuan.penelitian.tolak');
+
+    // pengajuan bkd pengabdian
+    Route::get('/pengajuan-pengabdian', [PengajuanPengabdian::class, 'index'])->name('pengajuan.pengabdian');
+    Route::get('/pengajuan-pengabdian/{id}', [PengajuanPengabdian::class, 'show'])->name('pengajuan.pengabdian.show');
+    Route::get('/pengajuan-pengabdian/{id}/riwayat', [PengajuanPengabdian::class, 'riwayat'])->name('pengajuan.pengabdian.riwayat');
+    Route::put('/pengajuan-pengabdian/setuju/{id}', [PengajuanPengabdian::class, 'setuju'])->name('pengajuan.pengabdian.setuju');
+    Route::put('/pengajuan-pengabdian/tolak/{id}', [PengajuanPengabdian::class, 'tolak'])->name('pengajuan.pengabdian.tolak');
+
+    // pengajuan bkd penunjang
+    Route::get('/pengajuan-penunjang', [PengajuanPenunjang::class, 'index'])->name('pengajuan.penunjang');
+    Route::get('/pengajuan-penunjang/{id}', [PengajuanPenunjang::class, 'show'])->name('pengajuan.penunjang.show');
+    Route::get('/pengajuan-penunjang/{id}/riwayat', [PengajuanPenunjang::class, 'riwayat'])->name('pengajuan.penunjang.riwayat');
+    Route::put('/pengajuan-penunjang/setuju/{id}', [PengajuanPenunjang::class, 'setuju'])->name('pengajuan.penunjang.setuju');
+    Route::put('/pengajuan-penunjang/tolak/{id}', [PengajuanPenunjang::class, 'tolak'])->name('pengajuan.penunjang.tolak');
+
+    // pengajuan bkd pengajaran
+    Route::get('/pengajuan-pengajaran', [PengajuanPengajaran::class, 'index'])->name('pengajuan.pengajaran');
+    Route::get('/pengajuan-pengajaran/{id}', [PengajuanPengajaran::class, 'show'])->name('pengajuan.pengajaran.show');
+    Route::get('/pengajuan-pengajaran/{id}/riwayat', [PengajuanPengajaran::class, 'riwayat'])->name('pengajuan.pengajaran.riwayat');
+    Route::put('/pengajuan-pengajaran/setuju/{id}', [PengajuanPengajaran::class, 'setuju'])->name('pengajuan.pengajaran.setuju');
+    Route::put('/pengajuan-pengajaran/tolak/{id}', [PengajuanPengajaran::class, 'tolak'])->name('pengajuan.pengajaran.tolak');
 });
 
 
@@ -248,6 +284,34 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     Route::get('/kenaikan-fungsional/create', [PengajuanFungsional::class, 'create'])->name('pengajuan.fungsional.create');
     Route::post('/kenaikan-fungsional/store', [PengajuanFungsional::class, 'store'])->name('pengajuan.fungsional.store');
     Route::get('/kenaikan-fungsional/{id}', [PengajuanFungsional::class, 'show'])->name('pengajuan.fungsional.show');
+
+    // bkd penelitian
+    Route::get('/bkd/penelitian', [Penelitian::class, 'index'])->name('penelitian');
+    Route::get('/bkd/penelitian/create', [Penelitian::class, 'create'])->name('penelitian.create');
+    Route::post('/bkd/penelitian/store', [Penelitian::class, 'store'])->name('penelitian.store');
+    Route::get('/bkd/penelitian/{id}', [Penelitian::class, 'show'])->name('penelitian.show');
+    Route::get('/bkd/penelitian-riwayat/{id}', [Penelitian::class, 'riwayat'])->name('penelitian.riwayat');
+
+    // bkd pengabdian
+    Route::get('/bkd/pengabdian', [Pengabdian::class, 'index'])->name('pengabdian');
+    Route::get('/bkd/pengabdian/create', [Pengabdian::class, 'create'])->name('pengabdian.create');
+    Route::post('/bkd/pengabdian/store', [Pengabdian::class, 'store'])->name('pengabdian.store');
+    Route::get('/bkd/pengabdian/{id}', [Pengabdian::class, 'show'])->name('pengabdian.show');
+    Route::get('/bkd/pengabdian-riwayat/{id}', [Pengabdian::class, 'riwayat'])->name('pengabdian.riwayat');
+
+    // bkd penunjang
+    Route::get('/bkd/penunjang', [Penunjang::class, 'index'])->name('penunjang');
+    Route::get('/bkd/penunjang/create', [Penunjang::class, 'create'])->name('penunjang.create');
+    Route::post('/bkd/penunjang/store', [Penunjang::class, 'store'])->name('penunjang.store');
+    Route::get('/bkd/penunjang/{id}', [Penunjang::class, 'show'])->name('penunjang.show');
+    Route::get('/bkd/penunjang-riwayat/{id}', [Penunjang::class, 'riwayat'])->name('penunjang.riwayat');
+
+    // bkd pengajaran
+    Route::get('/bkd/pengajaran', [Pengajaran::class, 'index'])->name('pengajaran');
+    Route::get('/bkd/pengajaran/create', [Pengajaran::class, 'create'])->name('pengajaran.create');
+    Route::post('/bkd/pengajaran/store', [Pengajaran::class, 'store'])->name('pengajaran.store');
+    Route::get('/bkd/pengajaran/{id}', [Pengajaran::class, 'show'])->name('pengajaran.show');
+    Route::get('/bkd/pengajaran-riwayat/{id}', [Pengajaran::class, 'riwayat'])->name('pengajaran.riwayat');
 });
 
 
@@ -256,8 +320,7 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.'
     Route::get('/', [Dashboard::class, 'karyawan'])->name('dashboard');
 
     // profile pribadi
-    Route::get('/profile', [KaryawanProfilePribadi
-    ::class, 'index'])->name('profilepribadi');
+    Route::get('/profile', [KaryawanProfilePribadi::class, 'index'])->name('profilepribadi');
 
     // pengajuan perubahan profile pribadi
     Route::get('/perubahan-profile', [KaryawanPengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
@@ -289,6 +352,7 @@ Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
 
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
     Route::get('/file/sk/{filename}', [FileController::class, 'showSk'])->name('file.sk');
+    Route::get('/file/bkd/{filename}', [FileController::class, 'showBkd'])->name('file.bkd');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');
     Route::get('/file/foto/{filename}', [FileController::class, 'showFoto'])->name('file.foto');
     Route::get('/file/fotodrive/{id}', [FileController::class, 'showFotoDrive'])->name('file.foto.drive');

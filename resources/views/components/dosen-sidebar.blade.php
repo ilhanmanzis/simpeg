@@ -92,6 +92,59 @@
                         <!-- Dropdown Menu End -->
                     </li>
 
+                    {{-- BKD --}}
+                    <li>
+                        <a href="#" @click.prevent="selected = (selected === 'BKD' ? '':'BKD')"
+                            class="menu-item group"
+                            :class="(selected === 'BKD') || (page === 'device' || page === 'formLayout') ?
+                            'menu-item-active' :
+                            'menu-item-inactive'">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                            </svg>
+
+
+
+                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                BKD
+                            </span>
+
+                            <svg class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
+                                :class="[(selected === 'BKD') ? 'menu-item-arrow-active' :
+                                    'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : ''
+                                ]"
+                                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke=""
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <!-- Dropdown Menu Start -->
+                        <div class="overflow-hidden transform translate"
+                            :class="(selected === 'BKD') ? 'block' : 'hidden'">
+                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'"
+                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                                <x-drop-side-link href="{{ route('dosen.penelitian') }}" page="BKD Penelitian">
+                                    Penelitian
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('dosen.pengabdian') }}" page="BKD Pengabdian">
+                                    Pengabdian
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('dosen.penunjang') }}" page="BKD Penunjang">
+                                    Penunjang
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('dosen.pengajaran') }}" page="BKD Pengajaran">
+                                    Pengajaran
+                                </x-drop-side-link>
+                            </ul>
+                        </div>
+                        <!-- Dropdown Menu End -->
+                    </li>
+
                     {{-- pengajuan --}}
                     <li>
                         <a href="#" @click.prevent="selected = (selected === 'Pengajuan' ? '':'Pengajuan')"

@@ -254,6 +254,22 @@
                                     page="Pengajuan Fungsional">
                                     Kenaikan Jabatan Fungsional
                                 </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.penelitian') }}"
+                                    page="Pengajuan BKD Penelitian">
+                                    BKD Penelitian
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.pengabdian') }}"
+                                    page="Pengajuan BKD Pengabdian">
+                                    BKD Pengabdian
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.penunjang') }}"
+                                    page="Pengajuan BKD Penunjang">
+                                    BKD Penunjang
+                                </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.pengajuan.pengajaran') }}"
+                                    page="Pengajuan BKD Pengajaran">
+                                    BKD Pengajaran
+                                </x-drop-side-link>
 
                             </ul>
                         </div>

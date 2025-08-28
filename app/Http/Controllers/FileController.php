@@ -28,6 +28,14 @@ class FileController extends Controller
         }
         return Storage::response($path);
     }
+    public function showBkd($filename)
+    {
+        $path = "bkd/{$filename}";
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+        return Storage::response($path);
+    }
 
     public function showTranskip($filename)
     {

@@ -11,4 +11,9 @@ class Semesters extends Model
     protected $table = 'semester';
     protected $primaryKey = "id_semester";
     protected $guarded = [];
+
+    public function pengajaran()
+    {
+        return $this->hasMany(Pengajarans::class, 'id_semester', 'id_semester');
+    }
 }

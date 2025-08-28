@@ -24,11 +24,7 @@
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
-
                         <!-- Step 1: Account Information -->
-
-
-
                         <div class="w-full flex">
                             <div class="mb-2 w-1/2 mr-5">
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

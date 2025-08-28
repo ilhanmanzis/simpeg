@@ -115,4 +115,40 @@ class User extends Authenticatable
     {
         return $this->hasMany(PengajuanFungsionals::class, 'id_user', 'id_user');
     }
+
+
+    public function penelitian()
+    {
+        return $this->hasMany(Penelitians::class, 'id_user', 'id_user');
+    }
+    public function pengajaran()
+    {
+        return $this->hasMany(Pengajarans::class, 'id_user', 'id_user');
+    }
+    public function penunjang()
+    {
+        return $this->hasMany(Penunjangs::class, 'id_user', 'id_user');
+    }
+    public function pengabdian()
+    {
+        return $this->hasMany(Pengabdians::class, 'id_user', 'id_user');
+    }
+
+
+    public function pengajuanPenelitian()
+    {
+        return $this->hasMany(PengajuanPenelitians::class, 'id_user', 'id_user');
+    }
+    public function pengajuanPengajaran()
+    {
+        return $this->hasMany(PengajuanPengajarans::class, 'id_user', 'id_user');
+    }
+    public function pengajuanPenunjang()
+    {
+        return $this->hasMany(PengajuanPenunjangs::class, 'id_user', 'id_user');
+    }
+    public function pengajuanPengabdian()
+    {
+        return $this->hasMany(PengajuanPengabdians::class, 'id_user', 'id_user');
+    }
 }

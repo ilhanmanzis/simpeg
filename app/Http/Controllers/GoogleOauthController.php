@@ -25,8 +25,25 @@ class GoogleOauthController extends Controller
 
     public function redirect()
     {
+        $cachedToken = Cache::get('gdrive:token');
+
+        if ($cachedToken) {
+            // cek apakah ada refresh_token
+            if (!empty($cachedToken['refresh_token'])) {
+                // cek juga expired
+                $expiry = $cachedToken['created'] + $cachedToken['expires_in'];
+                if ($expiry > time()) {
+                    // token masih valid → langsung ke halaman /
+                    return redirect('/');
+                }
+            }
+        }
+
+        // kalau tidak ada token atau sudah kadaluarsa → ke auth url
         return redirect()->away($this->newClient()->createAuthUrl());
     }
+
+
 
     public function callback(Request $request)
     {

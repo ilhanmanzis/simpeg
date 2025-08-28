@@ -47,4 +47,37 @@ class Dokumens extends Model
     {
         return $this->belongsTo(FungsionalUsers::class, 'sk', 'nomor_dokumen');
     }
+    public function skPengajaran()
+    {
+        return $this->belongsTo(Pengajarans::class, 'sk', 'nomor_dokumen');
+    }
+    public function bapPengajaran()
+    {
+        return $this->belongsTo(PengajaranDetails::class, 'bap', 'nomor_dokumen');
+    }
+    public function nilaiPengajaran()
+    {
+        return $this->belongsTo(PengajaranDetails::class, 'nilai', 'nomor_dokumen');
+    }
+    public function dokumenPenunjang()
+    {
+        return $this->belongsTo(Penunjangs::class, 'dokumen', 'nomor_dokumen');
+    }
+
+    public function permohonanPengabdian()
+    {
+        return $this->belongsTo(Pengabdians::class, 'permohonan', 'nomor_dokumen');
+    }
+    public function tugasPengabdian()
+    {
+        return $this->belongsTo(Pengabdians::class, 'tugas', 'nomor_dokumen');
+    }
+    public function modulPengabdian()
+    {
+        return $this->belongsTo(Pengabdians::class, 'modul', 'nomor_dokumen');
+    }
+    public function fotoPengabdian()
+    {
+        return $this->belongsTo(Pengabdians::class, 'foto', 'nomor_dokumen');
+    }
 }
