@@ -1,13 +1,15 @@
-<div class="flex items-center gap-2 pt-5 sidebar-header pb-5 justify-center mb-10 lg:mb-0">
-    <a href="index.html" class="w-full flex justify-center">
-        <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-            <img class="size-20 lg:block md:hidden sm:hidden dark:hidden " src="{{ asset('storage/logo/logo.webp') }}"
-                alt="Logo" />
-            <img class="size-20 hidden dark:block  md:hidden sm:hidden" src="{{ asset('storage/logo/logo.webp') }}"
-                alt="Logo" />
+<div class="flex items-center justify-center gap-2 pt-5 pb-5 mb-10 lg:mb-0 sidebar-header">
+    <a href="/" class="flex justify-center w-full">
+        <!-- Logo penuh: selalu tampil di mobile; di desktop hanya saat tidak collapsed -->
+        <span class="logo block lg:block" :class="sidebarToggle ? 'lg:hidden' : 'lg:block'">
+            <!-- Light -->
+            <img class="lg:size-20 size-1  block dark:hidden" src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
+            <!-- Dark -->
+            <img class="lg:size-20 size-1  hidden dark:block" src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
         </span>
 
-        <img class="logo-icon hidden" :class="sidebarToggle ? 'lg:block sm:hidden md:hidden' : 'hidden'"
-            src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
+        <!-- Logo icon: hanya tampil di desktop saat collapsed -->
+        <img class="logo-icon hidden lg:block" :class="sidebarToggle ? 'lg:block' : 'lg:hidden'"
+            src="{{ asset('storage/logo/logo.webp') }}" alt="Logo Icon" />
     </a>
 </div>

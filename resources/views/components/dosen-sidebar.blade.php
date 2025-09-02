@@ -1,6 +1,7 @@
-<aside :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full'"
-    class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0">
+<aside x-cloak :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full lg:w-[290px]'"
+    class="sidebar fixed left-0 top-0 z-50 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0">
     <!-- SIDEBAR HEADER -->
+
     <x-logo></x-logo>
     <!-- SIDEBAR HEADER -->
 
