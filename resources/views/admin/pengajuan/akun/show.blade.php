@@ -126,6 +126,20 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->role }}</div>
                                         </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">
+                                                @if ($pengajuan->tersertifikasi === 'sudah' && $pengajuan->serdos)
+                                                    <a href="{{ route('file.register', $pengajuan->serdos) }}"
+                                                        target="_blank" class="text-blue-600 hover:underline">
+                                                        Lihat
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-500">Belum Tersertifikasi</span>
+                                                @endif
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>

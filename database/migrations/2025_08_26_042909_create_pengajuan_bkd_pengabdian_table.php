@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('id_user');
             $table->string('judul');
             $table->string('lokasi');
-            $table->text('terimakasih')->nullable();
+            $table->string('terimakasih')->nullable();
             $table->string('permohonan')->nullable();
             $table->string('tugas')->nullable();
             $table->string('modul')->nullable();

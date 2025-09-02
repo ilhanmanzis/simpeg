@@ -90,7 +90,7 @@
                             matkulList: [{
                                 nama_matkul: '',
                                 sks: '',
-                                bap: null,
+                                
                                 nilai: null
                             }]
                         },
@@ -99,7 +99,7 @@
                             this.formData.matkulList.push({
                                 nama_matkul: '',
                                 sks: '',
-                                bap: null,
+                                
                                 nilai: null
                             });
                         },
@@ -151,21 +151,10 @@
 
 
 
+                                
                                 <div class="w-full mb-2">
                                     <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        BAP<span class="text-error-500">*</span>
-                                    </label>
-                                    <input @change="handleFileUpload($event, 'bap', index)" type="file"
-                                        :name="'matkul[' + index + '][bap]'" accept="application/pdf"
-                                        :class="errors['matkul_' + index + '_bap'] ? 'field-error' : ''"
-                                        class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border border-gray-300 focus:border-brand-300  bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400"
-                                        required />
-                                    <div x-show="errors['matkul_' + index + '_bap']" class="error-message"
-                                        x-text="errors['matkul_' + index + '_bap']"></div>
-                                </div>
-                                <div class="w-full mb-2">
-                                    <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Nilai<span class="text-error-500">*</span>
+                                        BAP dan Nilai<span class="text-error-500">*</span>
                                     </label>
                                     <input @change="handleFileUpload($event, 'nilai', index)" type="file"
                                         :name="'matkul[' + index + '][nilai]'" accept="application/pdf"

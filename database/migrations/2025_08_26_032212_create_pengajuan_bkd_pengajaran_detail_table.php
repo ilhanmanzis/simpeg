@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedInteger('id_pengajuan_pengajaran');
             $table->string('nama_matkul');
             $table->string('sks');
-            $table->string('bap');
             $table->string('nilai');
 
 

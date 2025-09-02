@@ -495,6 +495,60 @@
                                 </div>
 
                             </div>
+                            <div class="mb-2 flex justify-between">
+                                <div class="w-1/2">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Tersertifikasi?<span class="text-error-500">*</span>
+                                    </label>
+                                    <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent">
+                                        <select name="tersertifikasi" x-model="formData.tersertifikasi"
+                                            :value="formData.tersertifikasi"
+                                            :class="errors.tersertifikasi ? 'field-error' : ''" required
+                                            class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10  h-11 w-full appearance-none rounded-lg border bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('waktu') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                            :class="isOptionSelected && 'text-gray-800 dark:text-white/90'"
+                                            @change="isOptionSelected = true">
+
+                                            <option value="tidak" selected
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tidak
+                                            </option>
+                                            <option value="sudah"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Sudah
+                                            </option>
+
+                                        </select>
+                                        <span
+                                            class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                            <svg class="stroke-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke=""
+                                                    stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                            </svg>
+                                        </span>
+
+                                    </div>
+                                    <div x-show="errors.tersertifikasi" class="error-message"
+                                        x-text="errors.tersertifikasi"></div>
+
+                                </div>
+                                <div class="w-1/2 ml-3" x-cloak x-show="formData.tersertifikasi === 'sudah'"
+                                    x-transition.opacity>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Sertifikat Dosen<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="file" id="serdos" name="serdos" accept="application/pdf"
+                                        @change="handleFileUpload($event, 'serdos')"
+                                        :required="formData.tersertifikasi === 'sudah'"
+                                        :disabled="formData.tersertifikasi !== 'sudah'"
+                                        :class="errors.serdos ? 'field-error' : ''"
+                                        class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border border-gray-300 focus:border-brand-300 bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400"
+                                        required />
+                                    <div x-show="errors.serdos" class="error-message" x-text="errors.serdos"></div>
+
+                                </div>
+
+                            </div>
 
                             <div class="w-full flex justify-center py-3 h-20 mb-32">
                                 <button type="button" @click="validateAndNextStep(3)"
@@ -733,6 +787,8 @@
                     nidk: '',
                     nidn: '',
                     tanggal_bergabung: new Date().toISOString().split('T')[0],
+                    tersertifikasi: 'tidak',
+                    serdos: null,
                     pendidikanList: [{
                         jenjang: '',
                         tahun_lulus: '',
@@ -742,6 +798,15 @@
                         ijazah: null,
                         transkip_nilai: null,
                     }],
+                },
+                init() {
+                    // jika user ubah ke "tidak", kosongkan serdos & hapus errornya
+                    this.$watch('formData.tersertifikasi', (val) => {
+                        if (val === 'tidak') {
+                            this.formData.serdos = null;
+                            if (this.errors.serdos) delete this.errors.serdos;
+                        }
+                    });
                 },
                 clearErrors() {
                     this.errors = {};
@@ -905,6 +970,17 @@
                         this.errors.tanggal_bergabung = 'Tanggal bergabung harus diisi';
                         isValid = false;
                     }
+                    // pastikan tersertifikasi dipilih
+                    if (!this.formData.tersertifikasi) {
+                        this.errors.tersertifikasi = 'Tersertifikasi harus dipilih';
+                        isValid = false;
+                    }
+
+                    // serdos WAJIB hanya jika tersertifikasi = sudah
+                    if (this.formData.tersertifikasi === 'sudah' && !this.formData.serdos) {
+                        this.errors.serdos = 'Sertifikat dosen wajib diunggah';
+                        isValid = false;
+                    }
 
                     // NIP, NIDK, NIDN opsional - tidak perlu validasi
 
@@ -1051,7 +1127,23 @@
                             if (this.errors.foto) {
                                 delete this.errors.foto;
                             }
-                        } else if (index !== null) {
+                        }
+                        if (fieldName === 'serdos') {
+                            if (!file.type.startsWith('application/pdf')) {
+                                this.errors.serdos = 'File harus berupa PDF';
+                                event.target.value = '';
+                                return;
+                            }
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.errors.serdos = 'Ukuran file maksimal 2M';
+                                event.target.value = '';
+                                return;
+                            }
+                            this.formData.serdos = file;
+                            if (this.errors.serdos) delete this.errors.serdos;
+                            return;
+                        }
+                        if (index !== null) {
                             // Validasi tipe file untuk PDF
                             if (file.type !== 'application/pdf') {
                                 this.errors[`pendidikan_${index}_${fieldName}`] =

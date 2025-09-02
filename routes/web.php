@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\Jenjang;
 use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
+use App\Http\Controllers\Admin\Penelitian as AdminPenelitian;
+use App\Http\Controllers\Admin\Pengabdian as AdminPengabdian;
+use App\Http\Controllers\Admin\Pengajaran as AdminPengajaran;
 use App\Http\Controllers\Admin\PengajuanAkun;
 use App\Http\Controllers\Admin\PengajuanFungsional as AdminPengajuanFungsional;
 use App\Http\Controllers\Admin\PengajuanGolongan as AdminPengajuanGolongan;
@@ -18,6 +21,7 @@ use App\Http\Controllers\Admin\PengajuanPengabdian;
 use App\Http\Controllers\Admin\PengajuanPengajaran;
 use App\Http\Controllers\Admin\PengajuanPenunjang;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
+use App\Http\Controllers\Admin\Penunjang as AdminPenunjang;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
@@ -98,13 +102,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::put('/struktural/{id}', [JabatanStruktural::class, 'update'])->name('struktural.update');
     Route::delete('/struktural/{id}', [JabatanStruktural::class, 'destroy'])->name('struktural.delete');
 
-    // kategori sertifikat
-    Route::get('/kategorisertifikat', [KategoriSertifikat::class, 'index'])->name('kategorisertifikat');
-    Route::get('/kategorisertifikat/create', [KategoriSertifikat::class, 'create'])->name('kategorisertifikat.create');
-    Route::post('/kategorisertifikat/store', [KategoriSertifikat::class, 'store'])->name('kategorisertifikat.store');
-    Route::get('/kategorisertifikat/{id}', [KategoriSertifikat::class, 'edit'])->name('kategorisertifikat.edit');
-    Route::put('/kategorisertifikat/{id}', [KategoriSertifikat::class, 'update'])->name('kategorisertifikat.update');
-    Route::delete('/kategorisertifikat/{id}', [KategoriSertifikat::class, 'destroy'])->name('kategorisertifikat.delete');
 
     // jenjang
     Route::get('/jenjang', [Jenjang::class, 'index'])->name('jenjang');
@@ -140,6 +137,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::put('/dosen/{id}/npp', [PegawaiDosen::class, 'nppUpdate'])->name('dosen.npp.update');
     Route::put('/dosen/{id}/status', [PegawaiDosen::class, 'status'])->name('dosen.status');
     Route::delete('/dosen/{id}', [PegawaiDosen::class, 'destroy'])->name('dosen.destroy');
+    Route::get('/dosen/{id}/serdos', [PegawaiDosen::class, 'serdos'])->name('dosen.serdos');
+    Route::put('/dosen/{id}/serdos', [PegawaiDosen::class, 'serdosUpdate'])->name('dosen.serdos.update');
 
     // karyawan
     Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
@@ -238,6 +237,31 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/pengajuan-pengajaran/{id}/riwayat', [PengajuanPengajaran::class, 'riwayat'])->name('pengajuan.pengajaran.riwayat');
     Route::put('/pengajuan-pengajaran/setuju/{id}', [PengajuanPengajaran::class, 'setuju'])->name('pengajuan.pengajaran.setuju');
     Route::put('/pengajuan-pengajaran/tolak/{id}', [PengajuanPengajaran::class, 'tolak'])->name('pengajuan.pengajaran.tolak');
+
+
+    // bkd penelitian
+    Route::get('/bkd/penelitian', [AdminPenelitian::class, 'index'])->name('bkd.penelitian');
+    Route::get('/bkd/penelitian/{id}', [AdminPenelitian::class, 'all'])->name('bkd.penelitian.all');
+    Route::get('/bkd/penelitian/{id}/show', [AdminPenelitian::class, 'show'])->name('bkd.penelitian.show');
+    Route::delete('/bkd/penelitian/{id}', [AdminPenelitian::class, 'destroy'])->name('bkd.penelitian.delete');
+
+    // bkd pengabdian
+    Route::get('/bkd/pengabdian', [AdminPengabdian::class, 'index'])->name('bkd.pengabdian');
+    Route::get('/bkd/pengabdian/{id}', [AdminPengabdian::class, 'all'])->name('bkd.pengabdian.all');
+    Route::get('/bkd/pengabdian/{id}/show', [AdminPengabdian::class, 'show'])->name('bkd.pengabdian.show');
+    Route::delete('/bkd/pengabdian/{id}', [AdminPengabdian::class, 'destroy'])->name('bkd.pengabdian.delete');
+
+    // bkd pengajaran
+    Route::get('/bkd/pengajaran', [AdminPengajaran::class, 'index'])->name('bkd.pengajaran');
+    Route::get('/bkd/pengajaran/{id}', [AdminPengajaran::class, 'all'])->name('bkd.pengajaran.all');
+    Route::get('/bkd/pengajaran/{id}/show', [AdminPengajaran::class, 'show'])->name('bkd.pengajaran.show');
+    Route::delete('/bkd/pengajaran/{id}', [AdminPengajaran::class, 'destroy'])->name('bkd.pengajaran.delete');
+
+    // bkd penunjang
+    Route::get('/bkd/penunjang', [AdminPenunjang::class, 'index'])->name('bkd.penunjang');
+    Route::get('/bkd/penunjang/{id}', [AdminPenunjang::class, 'all'])->name('bkd.penunjang.all');
+    Route::get('/bkd/penunjang/{id}/show', [AdminPenunjang::class, 'show'])->name('bkd.penunjang.show');
+    Route::delete('/bkd/penunjang/{id}', [AdminPenunjang::class, 'destroy'])->name('bkd.penunjang.delete');
 });
 
 
@@ -351,6 +375,7 @@ Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
     Route::put('/users/edit', [ManajemenUser::class, 'update'])->name('users.update');
 
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
+    Route::get('/file/register/{filename}', [FileController::class, 'register'])->name('file.register');
     Route::get('/file/sk/{filename}', [FileController::class, 'showSk'])->name('file.sk');
     Route::get('/file/bkd/{filename}', [FileController::class, 'showBkd'])->name('file.bkd');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');

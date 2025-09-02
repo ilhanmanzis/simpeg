@@ -65,7 +65,6 @@ class Pengajaran extends Controller
             'matkul'                => 'required|array|min:1',
             'matkul.*.nama_matkul'  => 'required|string|max:255',
             'matkul.*.sks'          => 'required|integer|min:1',
-            'matkul.*.bap'          => 'required|file|mimes:pdf|max:2048',
             'matkul.*.nilai'        => 'required|file|mimes:pdf|max:2048',
             'sk'                    => 'required|file|mimes:pdf|max:2048',
             'semester'              => 'required|integer|exists:semester,id_semester'
@@ -86,18 +85,12 @@ class Pengajaran extends Controller
             'status' => 'pending'
         ]);
 
-        $bapName = null;
         $nilaiName = null;
         foreach ($request->input('matkul', []) as $index => $row) {
-            // bap
-            $bapFile = $request->file("matkul.$index.bap");
-            $bapName = time() . '_b_' . $bapFile->getClientOriginalName();
-            // Simpan ke storage/app/bkd
-            $bapFile->storeAs('bkd', $bapName);
 
             // nilai
             $nilaiFile =  $request->file("matkul.$index.nilai");
-            $nilaiName = time() . '_n_' . $nilaiFile->getClientOriginalName();
+            $nilaiName = time() . '_' . $nilaiFile->getClientOriginalName();
             // Simpan ke storage/app/bkd
             $nilaiFile->storeAs('bkd', $nilaiName);
 
@@ -105,7 +98,6 @@ class Pengajaran extends Controller
                 'id_pengajuan_pengajaran' => $pengajaran->id_pengajuan_pengajaran,
                 'nama_matkul' => $row['nama_matkul'],
                 'sks' => $row['sks'],
-                'bap' => $bapName,
                 'nilai' => $nilaiName,
             ]);
         }
@@ -118,7 +110,7 @@ class Pengajaran extends Controller
     public function show(string $id)
     {
         $idUser = Auth::user()->id_user;
-        $pengajaran = Pengajarans::where('id_pengajaran', $id)->with(['user.dataDiri', 'skPengajaran', 'detail.bapPengajaran', 'detail.nilaiPengajaran', 'semester'])->first();
+        $pengajaran = Pengajarans::where('id_pengajaran', $id)->with(['user.dataDiri', 'skPengajaran', 'detail.nilaiPengajaran', 'semester'])->first();
         if (!$pengajaran) {
             abort(404);
         }

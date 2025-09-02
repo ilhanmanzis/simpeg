@@ -34,10 +34,14 @@ return new class extends Migration
             $table->string('kabupaten')->nullable();
             $table->string('provinsi')->nullable();
             $table->string('foto')->nullable();
+            $table->enum('tersertifikasi', ['sudah', 'tidak'])->default('tidak');
+            $table->string('serdos')->nullable();
+            $table->enum('pimpinan', ['aktif', 'nonaktif'])->default('nonaktif');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
             $table->foreign('foto')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
+            $table->foreign('serdos')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
         });
     }
 

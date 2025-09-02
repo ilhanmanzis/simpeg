@@ -64,6 +64,10 @@
                                     <div x-show="openDropDown" @click.outside="openDropDown = false"
                                         class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
 
+                                        <a href="{{ route('admin.dosen.serdos', ['id' => $dosen->id_user]) }}"
+                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                            Sertifikat Dosen
+                                        </a>
                                         <a href="{{ route('admin.dosen.datadiri', ['id' => $dosen->id_user]) }}"
                                             class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                             Edit Profile Pribadi
@@ -182,6 +186,25 @@
                                             <div class="w-32 font-semibold">Agama</div>
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $dosen->dataDiri->agama }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">
+                                                @if ($dosen->dataDiri->tersertifikasi === 'sudah')
+                                                    <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
+                                                        target="_blank" class="text-blue-600 hover:underline">
+                                                        Lihat
+                                                    </a> |
+                                                    <button
+                                                        onclick="copyUrl('{{ $dosen->dataDiri->serdosen->view_url }}', this)"
+                                                        class="text-blue-600 hover:underline">
+                                                        Salin URL
+                                                    </button>
+                                                @else
+                                                    Belum Tersertifikasi
+                                                @endif
+                                            </div>
                                         </div>
 
 

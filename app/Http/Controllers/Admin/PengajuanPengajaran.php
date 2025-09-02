@@ -79,9 +79,6 @@ class PengajuanPengajaran extends Controller
 
 
         foreach ($perubahan->detail as $detail) {
-            if ($detail->bap && Storage::exists('bkd/' . $detail->bap)) {
-                Storage::delete('bkd/' . $detail->bap);
-            }
             if ($detail->nilai && Storage::exists('bkd/' . $detail->nilai)) {
                 Storage::delete('bkd/' . $detail->nilai);
             }
@@ -143,37 +140,6 @@ class PengajuanPengajaran extends Controller
 
 
         foreach ($perubahan->detail as $index => $detail) {
-            // bap
-            $lastNumber++;
-            $bapId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
-
-            $bap = storage_path("app/private/bkd/{$detail->bap}");
-
-            if (!file_exists($bap)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'File tidak ditemukan.'
-                ], 404);
-            }
-
-            // Path tujuan di Google Drive
-            $bapDestinationPath = "{$perubahan->user->npp}/bkd/pengajaran/{$perubahan->semester->nama_semester}/{$detail->bap}";
-
-            // Upload ke Google Drive via service (agar dapat file_id & URL)
-            $bapResult = $this->googleDriveService->uploadFileAndGetUrl($bap, $bapDestinationPath);
-
-            Dokumens::create([
-                'nomor_dokumen'  => $bapId,
-                'path_file'      => $bapDestinationPath,
-                'file_id'        => $bapResult['file_id'] ?? null,
-                'view_url'       => $bapResult['view_url'] ?? null,
-                'download_url'   => $bapResult['download_url'] ?? null,
-                'preview_url'    => $bapResult['preview_url'] ?? null,
-                'id_user'        => $perubahan->id_user,
-                'tanggal_upload' => now()
-            ]);
-
-
             // nilai
             $lastNumber++;
             $nilaiId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
@@ -208,7 +174,6 @@ class PengajuanPengajaran extends Controller
                 'id_pengajaran' => $pengajaran->id_pengajaran,
                 'nama_matkul' => $detail->nama_matkul,
                 'sks' => $detail->sks,
-                'bap' => $bapId,
                 'nilai' => $nilaiId
             ]);
         }
@@ -220,9 +185,6 @@ class PengajuanPengajaran extends Controller
 
 
         foreach ($perubahan->detail as $detail) {
-            if ($detail->bap && Storage::exists('bkd/' . $detail->bap)) {
-                Storage::delete('bkd/' . $detail->bap);
-            }
             if ($detail->nilai && Storage::exists('bkd/' . $detail->nilai)) {
                 Storage::delete('bkd/' . $detail->nilai);
             }

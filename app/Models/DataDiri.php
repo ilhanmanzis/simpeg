@@ -22,4 +22,8 @@ class DataDiri extends Model
     {
         return $this->belongsTo(Dokumens::class, 'foto', 'nomor_dokumen');
     }
+    public function serdosen()
+    {
+        return $this->belongsTo(Dokumens::class, 'serdos', 'nomor_dokumen');
+    }
 }

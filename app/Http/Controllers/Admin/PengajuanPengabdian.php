@@ -84,6 +84,9 @@ class PengajuanPengabdian extends Controller
         if ($perubahan->foto && Storage::exists('bkd/' . $perubahan->foto)) {
             Storage::delete('bkd/' . $perubahan->foto);
         }
+        if ($perubahan->terimakasih && Storage::exists('bkd/' . $perubahan->terimakasih)) {
+            Storage::delete('bkd/' . $perubahan->terimakasih);
+        }
 
         $perubahan->update([
             'status'        => 'ditolak',
@@ -97,6 +100,7 @@ class PengajuanPengabdian extends Controller
     public function setuju(string $id)
     {
         $perubahan = PengajuanPengabdians::where('id_pengajuan', $id)->with(['user.dataDiri'])->firstOrFail();
+
         // nomor_dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
         $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
@@ -224,13 +228,43 @@ class PengajuanPengabdian extends Controller
             'tanggal_upload' => now()
         ]);
 
+        // terima kasih
+        $lastNumber++;
+        $terimaKasihId = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+        $terimaKasih = storage_path("app/private/bkd/{$perubahan->terimakasih}");
+
+        if (!file_exists($terimaKasih)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File tidak ditemukan.'
+            ], 404);
+        }
+
+        // Path tujuan di Google Drive
+        $terimaKasihDestinationPath = "{$perubahan->user->npp}/bkd/pengabdian/{$perubahan->judul}/{$perubahan->terimaKasih}";
+
+        // Upload ke Google Drive via service (agar dapat file_id & URL)
+        $terimaKasihResult = $this->googleDriveService->uploadFileAndGetUrl($terimaKasih, $terimaKasihDestinationPath);
+
+        Dokumens::create([
+            'nomor_dokumen'  => $terimaKasihId,
+            'path_file'      => $terimaKasihDestinationPath,
+            'file_id'        => $terimaKasihResult['file_id'] ?? null,
+            'view_url'       => $terimaKasihResult['view_url'] ?? null,
+            'download_url'   => $terimaKasihResult['download_url'] ?? null,
+            'preview_url'    => $terimaKasihResult['preview_url'] ?? null,
+            'id_user'        => $perubahan->id_user,
+            'tanggal_upload' => now()
+        ]);
+
 
 
         Pengabdians::create([
             'id_user' => $perubahan->id_user,
             'judul' => $perubahan->judul,
             'lokasi' => $perubahan->lokasi,
-            'terimakasih' => $perubahan->terimakasih,
+            'terimakasih' => $terimaKasihId,
             'permohonan' => $permohonanId,
             'tugas' => $tugasId,
             'modul' => $modulId,
@@ -242,6 +276,7 @@ class PengajuanPengabdian extends Controller
         @unlink($tugas);
         @unlink($modul);
         @unlink($foto);
+        @unlink($terimaKasih);
 
         $perubahan->status = 'disetujui';
 

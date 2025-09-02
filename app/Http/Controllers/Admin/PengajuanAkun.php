@@ -122,6 +122,29 @@ class PengajuanAkun extends Controller
                 'tanggal_upload' => now()
             ]);
 
+            //sertifikat dosen
+            if ($register->tersertifikasi === 'sudah' && $register->serdos) {
+                $lastNumber++;
+                $newIdSerdos = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+                $serdosLocalPath = storage_path("app/private/register/{$register->serdos}");
+                $serdosPath      = "{$register->npp}/datadiri/serdos/{$register->serdos}";
+                if (file_exists($serdosLocalPath)) {
+                    $serdosResult = $this->googleDriveService->uploadFileAndGetUrl($serdosLocalPath, $serdosPath);
+                    if ($serdosResult && !empty($serdosResult['file_id'])) {
+                        Dokumens::create([
+                            'nomor_dokumen'  => $newIdSerdos,
+                            'path_file'      => $serdosPath,
+                            'file_id'        => $serdosResult['file_id'] ?? null,
+                            'view_url'       => $serdosResult['view_url'] ?? null,
+                            'download_url'   => $serdosResult['download_url'] ?? null,
+                            'preview_url'    => $serdosResult['preview_url'] ?? null,
+                            'id_user'        => $user->id_user,
+                            'tanggal_upload' => now()
+                        ]);
+                    }
+                }
+            }
             // data diri
             DataDiri::create([
                 'id_user'           => $user->id_user,
@@ -145,6 +168,8 @@ class PengajuanAkun extends Controller
                 'kabupaten'         => $register->kabupaten,
                 'provinsi'          => $register->provinsi,
                 'foto'              => $newId,
+                'tersertifikasi'    => $register->tersertifikasi,
+                'serdos'            => $newIdSerdos ?? null
             ]);
 
             // dokumen pendidikan
@@ -242,6 +267,9 @@ class PengajuanAkun extends Controller
 
         if ($register->foto && Storage::exists('register/' . $register->foto)) {
             Storage::delete('register/' . $register->foto);
+        }
+        if ($register->serdos && Storage::exists('register/' . $register->serdos)) {
+            Storage::delete('register/' . $register->serdos);
         }
 
         $pendidikans = RegisterPendidikans::where('id_register', $register->id_register)->get();

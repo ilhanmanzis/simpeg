@@ -104,7 +104,14 @@
                                 <div class="w-48 font-semibold">Ucapan Terima Kasih</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    {{ $pengajuan->terimakasih }}
+                                    @if ($pengajuan->status !== 'ditolak')
+                                        <a href="{{ route('file.bkd', $pengajuan->terimakasih) }}" target="_blank"
+                                            class="text-blue-600 hover:underline">
+                                            Lihat
+                                        </a>
+                                    @else
+                                        <span class="text-gray-500 italic">-</span>
+                                    @endif
                                 </div>
                             </div>
 

@@ -81,8 +81,9 @@ class StrukturalUser extends Controller
             'sk'              => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        $user        = User::findOrFail($request->user);
+        $user        = User::where($request->user)->with('dataDiri')->first();
         $struktural  = JabatanStrukturals::findOrFail($id);
+
         $sebelumnya  = StrukturalUsers::where('id_struktural', $id)
             ->where('status', 'aktif')
             ->with(['struktural'])
@@ -131,6 +132,16 @@ class StrukturalUser extends Controller
             $sebelumnya->update([
                 'status'          => 'nonaktif',
                 'tanggal_selesai' => $sebelumnya->tanggal_selesai ?? now(),
+            ]);
+        }
+        if ($struktural->id_struktural === 1 || $struktural->id_struktural === 2) {
+            $user->dataDiri->update([
+                'pimpinan' => 'aktif'
+            ]);
+        } else {
+
+            $user->dataDiri->update([
+                'pimpinan' => 'nonaktif'
             ]);
         }
 
@@ -188,6 +199,7 @@ class StrukturalUser extends Controller
                 // sengaja di-skip sesuai pola kode sebelumnya
             }
         }
+
 
         $struktural->delete();
 

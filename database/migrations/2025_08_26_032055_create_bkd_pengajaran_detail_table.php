@@ -16,12 +16,10 @@ return new class extends Migration
             $table->unsignedInteger('id_pengajaran');
             $table->string('nama_matkul');
             $table->string('sks');
-            $table->string('bap');
             $table->string('nilai');
             $table->timestamps();
 
             $table->foreign('id_pengajaran')->references('id_pengajaran')->on('bkd_pengajaran')->onDelete('cascade');
-            $table->foreign('bap')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
             $table->foreign('nilai')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
         });
     }

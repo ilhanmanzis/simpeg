@@ -27,6 +27,8 @@
                         // Minimal dari pilihan fungsional
                         golonganMinimalId: 0,
                         golonganMinimalName: '',
+                        // TAMBAHAN: state loading untuk modal
+                        loading: false,
                     
                         fungsionals: @js($fungsionals),
                     
@@ -43,17 +45,20 @@
                         },
                     
                         handleSubmit(e) {
-                            // Cek hanya jika user sudah memilih fungsional (punya minimal)
+                            // validasi syarat golongan minimal
                             if (this.golonganMinimalId > 0) {
                                 if (Number(this.currentGolonganId) < Number(this.golonganMinimalId)) {
-                                    alert(`Golongan saat ini belum memenuhi syarat, minimal (${this.golonganMinimalName }).`);
+                                    alert(`Golongan saat ini belum memenuhi syarat, minimal (${this.golonganMinimalName}).`);
                                     return; // batalkan submit
                                 }
                             }
-                            e.target.submit(); // lanjut submit
+                            // LOLOS: tampilkan modal loading lalu submit
+                            this.loading = true;
+                            e.target.submit();
                         }
                     }"
                     @submit.prevent="handleSubmit($event)">
+
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
@@ -210,9 +215,41 @@
 
 
                     <button type="submit"
-                        class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium mt-5 text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mb-5">
-                        Simpan
+                        class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium mt-5 text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mb-5 disabled:opacity-60 disabled:cursor-not-allowed"
+                        :disabled="loading">
+                        <svg x-show="loading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                            </path>
+                        </svg>
+                        <span x-text="loading ? 'Menyimpan…' : 'Simpan'"></span>
                     </button>
+                    <div x-show="loading" x-cloak
+                        class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40" aria-live="polite">
+                        <div role="dialog" aria-modal="true"
+                            class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                            <div class="flex items-start gap-3">
+                                <svg class="h-6 w-6 animate-spin mt-0.5" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Mohon tunggu…
+                                    </h3>
+                                    <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                        Sedang memproses pengajuan dan/atau mengunggah berkas. Jangan menutup atau
+                                        memuat ulang halaman.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </form>
 

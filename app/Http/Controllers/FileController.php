@@ -19,6 +19,14 @@ class FileController extends Controller
         }
         return Storage::response($path);
     }
+    public function register($filename)
+    {
+        $path = "register/{$filename}";
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+        return Storage::response($path);
+    }
 
     public function showSk($filename)
     {

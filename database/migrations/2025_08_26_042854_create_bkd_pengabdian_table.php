@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('id_user');
             $table->string('judul');
             $table->string('lokasi');
-            $table->text('terimakasih')->nullable();
+            $table->string('terimakasih')->nullable();
             $table->string('permohonan')->nullable();
             $table->string('tugas')->nullable();
             $table->string('modul')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreign('tugas')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
             $table->foreign('modul')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
             $table->foreign('foto')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
+            $table->foreign('terimakasih')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
         });
     }
 

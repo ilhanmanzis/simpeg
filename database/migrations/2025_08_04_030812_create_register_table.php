@@ -36,6 +36,8 @@ return new class extends Migration
             $table->string('kabupaten')->nullable();
             $table->string('provinsi')->nullable();
             $table->string('foto')->nullable();
+            $table->enum('tersertifikasi', ['sudah', 'tidak'])->default('tidak');
+            $table->string('serdos')->nullable();
             $table->enum('role', ['dosen', 'karyawan'])->default('dosen');
             $table->enum('status', ['disetujui', 'pending', 'ditolak'])->default('pending');
 

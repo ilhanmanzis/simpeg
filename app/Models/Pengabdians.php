@@ -36,6 +36,10 @@ class Pengabdians extends Model
     {
         return $this->belongsTo(Dokumens::class, 'foto', 'nomor_dokumen');
     }
+    public function terimaKasihPengabdian()
+    {
+        return $this->belongsTo(Dokumens::class, 'terimakasih', 'nomor_dokumen');
+    }
 
     // scope untuk pencarian judul
     public function scopeSearchJudul($query, $keyword)

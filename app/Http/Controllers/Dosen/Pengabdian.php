@@ -58,7 +58,7 @@ class Pengabdian extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
-            'terima_kasih' => 'required',
+            'terima_kasih' => 'required|file|mimes:pdf|max:2048',
             'permohonan' => 'required|file|mimes:pdf|max:2048',
             'tugas' => 'required|file|mimes:pdf|max:2048',
             'modul' => 'required|file|mimes:pdf|max:2048',
@@ -88,11 +88,16 @@ class Pengabdian extends Controller
         $fotoName = time() . '_' . $fotoFile->getClientOriginalName();
         $fotoFile->storeAs('bkd', $fotoName);
 
+        // terima kasih
+        $terimaKasihFile = $request->file("terima_kasih");
+        $terimaKasihName = time() . '_' . $terimaKasihFile->getClientOriginalName();
+        $terimaKasihFile->storeAs('bkd', $terimaKasihName);
+
         PengajuanPengabdians::create([
             'id_user' => $idUser,
             'judul' => $request->input('judul'),
             'lokasi' => $request->input('lokasi'),
-            'terimakasih' => $request->input('terima_kasih'),
+            'terimakasih' => $terimaKasihName,
             'permohonan' => $permohonanName,
             'tugas' => $tugasName,
             'modul' => $modulName,

@@ -78,6 +78,7 @@ class PegawaiDosen extends Controller
             'nip'                    => 'nullable|max:30|unique:data_diri,nip',
             'nidk'                   => 'nullable|max:30|unique:data_diri,nidk',
             'nidn'                   => 'nullable|max:30|unique:data_diri,nidn',
+            'tersertifikasi'         => 'required',
             'tanggal_bergabung'      => 'required|date',
             'pendidikan'                             => 'required|array|min:1',
             'pendidikan.*.jenjang'                   => 'required|integer|max:255',
@@ -85,9 +86,10 @@ class PegawaiDosen extends Controller
             'pendidikan.*.program_studi'             => 'required|string|max:255',
             'pendidikan.*.gelar'                     => 'nullable|string|max:255',
             'pendidikan.*.institusi'                 => 'nullable|string|max:255',
-            'pendidikan.*.ijazah'                    => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'pendidikan.*.transkip_nilai'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'pendidikan.*.ijazah'                    => 'required|file|mimes:pdf|max:2048',
+            'pendidikan.*.transkip_nilai'            => 'nullable|file|mimes:pdf|max:2048',
             'foto'                                   => 'required|image|max:2048',
+            'serdos'                                 => 'nullable|file|mimes:pdf|max:2048',
         ], [
             'password.required'      => 'Password harus di isi',
             'password.min'           => 'Password minimal 6 karakter',
@@ -132,6 +134,32 @@ class PegawaiDosen extends Controller
             'tanggal_upload' => now()
         ]);
 
+        if ($request->tersertifikasi === 'sudah') {
+
+            $lastNumber++;
+            $newIdSerdos = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+            $originalName    = $request->file('serdos')->getClientOriginalName();
+            $timestampedName = time() . '_' . $originalName;
+            $destinationSerdosPath = "{$request->npp}/datadiri/serdos/{$timestampedName}";
+
+            // Upload ke Google Drive
+            $resultSerdos = $this->googleDriveService->uploadFileAndGetUrl(
+                $request->file('serdos')->getPathname(),
+                $destinationSerdosPath
+            );
+            Dokumens::create([
+                'nomor_dokumen'  => $newIdSerdos,
+                'path_file'      => $destinationSerdosPath,
+                'file_id'        => $resultSerdos['file_id'],
+                'view_url'       => $resultSerdos['view_url'],
+                'download_url'   => $resultSerdos['download_url'],
+                'preview_url'    => $resultSerdos['preview_url'],
+                'id_user'        => $user->id_user,
+                'tanggal_upload' => now()
+            ]);
+        }
+
         DataDiri::create([
             'id_user'          => $user->id_user,
             'nuptk'            => $request->nuptk,
@@ -154,6 +182,8 @@ class PegawaiDosen extends Controller
             'kabupaten'        => $request->kabupaten,
             'provinsi'         => $request->provinsi,
             'foto'             => $newId,
+            'tersertifikasi'   => $request->tersertifikasi,
+            'serdos'             => $newIdSerdos ?? null,
         ]);
 
         $newIdIjazah = null;
@@ -335,6 +365,7 @@ class PegawaiDosen extends Controller
             'dosen'    => User::where('id_user', $id)
                 ->with([
                     'dataDiri.dokumen',
+                    'dataDiri.serdosen',
                     'pendidikan' => function ($q) {
                         $q->orderBy('id_jenjang', 'asc'); // <-- urut dari kecil ke besar
                     },
@@ -344,6 +375,7 @@ class PegawaiDosen extends Controller
                 ->first()
         ];
 
+        // dd($data);
         return view('admin.pegawai.dosen.show', $data);
     }
 
@@ -775,5 +807,110 @@ class PegawaiDosen extends Controller
         $user->delete();
 
         return redirect()->route('admin.dosen')->with('success', 'Data berhasil dihapus');
+    }
+
+    public function serdos(string $id)
+    {
+        $data = [
+            'page'     => 'Dosen',
+            'selected' => 'Dosen',
+            'title'    => 'Ubah Serdos Dosen',
+            'dosen'    => User::where('id_user', $id)->with(['dataDiri.serdosen'])->first()
+        ];
+        return view('admin.pegawai.dosen.serdos', $data);
+    }
+
+    public function serdosUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'tersertifikasi'         => 'required',
+            'serdos'                 => 'nullable|file|mimes:pdf|max:2048',
+        ]);
+
+        $user   = User::where('id_user', $id)->with('dataDiri.serdosen')->first();
+        $oldFileId = $user->dataDiri->serdosen->file_id ?? null;
+
+        $tersertifikasi = $request->tersertifikasi;
+
+        if ($request->tersertifikasi === 'sudah') {
+
+            if ($user->dataDiri->serdos !== null && $user->dataDiri->serdos !== '') {
+                // simpan file_id lama sebelum diupdate
+
+                $originalName    = $request->file('serdos')->getClientOriginalName();
+                $timestampedName = time() . '_' . $originalName;
+                $destinationSerdosPath = "{$user->npp}/datadiri/serdos/{$timestampedName}";
+
+                // Upload ke Google Drive
+                $resultSerdos = $this->googleDriveService->uploadFileAndGetUrl(
+                    $request->file('serdos')->getPathname(),
+                    $destinationSerdosPath
+                );
+
+                $user->dataDiri->serdosen()->update([
+                    'path_file'      => $destinationSerdosPath,
+                    'file_id'        => $resultSerdos['file_id'],
+                    'view_url'       => $resultSerdos['view_url'],
+                    'download_url'   => $resultSerdos['download_url'],
+                    'preview_url'    => $resultSerdos['preview_url'],
+                    'tanggal_upload' => now()
+                ]);
+
+                // Hapus file lama di Drive kalau ada file baru & punya file_id lama
+                if ($oldFileId && $request->hasFile('serdos')) {
+                    try {
+                        $this->googleDriveService->deleteById($oldFileId);
+                    } catch (\Throwable $e) {
+                        // diamkan agar alur tetap sama
+                    }
+                }
+            } else {
+                // Ambil nomor dokumen terakhir
+                $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
+                $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
+
+                $lastNumber++;
+                $newIdSerdos = str_pad($lastNumber, 7, '0', STR_PAD_LEFT);
+
+                $originalName    = $request->file('serdos')->getClientOriginalName();
+                $timestampedName = time() . '_' . $originalName;
+                $destinationSerdosPath = "{$user->npp}/datadiri/serdos/{$timestampedName}";
+
+                // Upload ke Google Drive
+                $resultSerdos = $this->googleDriveService->uploadFileAndGetUrl(
+                    $request->file('serdos')->getPathname(),
+                    $destinationSerdosPath
+                );
+                Dokumens::create([
+                    'nomor_dokumen'  => $newIdSerdos,
+                    'path_file'      => $destinationSerdosPath,
+                    'file_id'        => $resultSerdos['file_id'],
+                    'view_url'       => $resultSerdos['view_url'],
+                    'download_url'   => $resultSerdos['download_url'],
+                    'preview_url'    => $resultSerdos['preview_url'],
+                    'id_user'        => $user->id_user,
+                    'tanggal_upload' => now()
+                ]);
+
+                $user->dataDiri->update([
+                    'tersertifikasi' => $tersertifikasi,
+                    'serdos'        => $newIdSerdos,
+                ]);
+            }
+        } else {
+            // Hapus file lama di Drive kalau ada file baru & punya file_id lama
+            if ($oldFileId) {
+                try {
+                    $this->googleDriveService->deleteById($oldFileId);
+                } catch (\Throwable $e) {
+                    // diamkan agar alur tetap sama
+                }
+            }
+            $user->dataDiri->update([
+                'tersertifikasi' => $tersertifikasi,
+                'serdos'        => null,
+            ]);
+        }
+        return redirect()->route('admin.dosen.show', $id)->with('success', 'Sertifikat Dosen berhasil diperbarui.');
     }
 }

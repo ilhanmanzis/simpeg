@@ -24,6 +24,10 @@ class Dokumens extends Model
     {
         return $this->belongsTo(DataDiri::class, 'foto', 'nomor_dokumen');
     }
+    public function serdosen()
+    {
+        return $this->belongsTo(DataDiri::class, 'serdos', 'nomor_dokumen');
+    }
 
     public function pendidikansSebagaiIjazah()
     {
@@ -51,10 +55,7 @@ class Dokumens extends Model
     {
         return $this->belongsTo(Pengajarans::class, 'sk', 'nomor_dokumen');
     }
-    public function bapPengajaran()
-    {
-        return $this->belongsTo(PengajaranDetails::class, 'bap', 'nomor_dokumen');
-    }
+
     public function nilaiPengajaran()
     {
         return $this->belongsTo(PengajaranDetails::class, 'nilai', 'nomor_dokumen');
@@ -79,5 +80,9 @@ class Dokumens extends Model
     public function fotoPengabdian()
     {
         return $this->belongsTo(Pengabdians::class, 'foto', 'nomor_dokumen');
+    }
+    public function terimaKasihPengabdian()
+    {
+        return $this->belongsTo(Pengabdians::class, 'terimakasih', 'nomor_dokumen');
     }
 }

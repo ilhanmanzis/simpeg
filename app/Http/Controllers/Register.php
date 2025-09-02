@@ -95,6 +95,8 @@ class Register extends Controller
 
             // Foto
             'foto' => 'required|image|max:2048',
+            'serdos' => 'required|file|mimes:pdf|max:2048',
+            'tersertifikasi' => 'required'
         ]);
 
         // ===== Simpan foto profil =====
@@ -102,6 +104,13 @@ class Register extends Controller
         $timestampedName = time() . '_' . $originalName;
         // Simpan ke storage/app/register
         $request->file('foto')->storeAs('register', $timestampedName);
+
+        if ($request->hasFile('serdos') && $request->tersertifikasi === 'sudah') {
+            $originalNameSerdos = $request->file('serdos')->getClientOriginalName();
+            $timestampedNameSerdos = time() . '_' . $originalNameSerdos;
+            // Simpan ke storage/app/register
+            $request->file('serdos')->storeAs('register', $timestampedNameSerdos);
+        }
 
         // ===== Simpan data utama =====
         $register = Registers::create([
@@ -129,7 +138,9 @@ class Register extends Controller
             'role' => 'dosen',
             'status' => 'pending',
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'foto' => $timestampedName
+            'tersertifikasi' => $request->tersertifikasi,
+            'foto' => $timestampedName,
+            'serdos' => $timestampedNameSerdos ?? null
         ]);
 
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====

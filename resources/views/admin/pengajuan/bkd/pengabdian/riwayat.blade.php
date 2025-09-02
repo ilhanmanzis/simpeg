@@ -71,7 +71,7 @@
                                 <div class="w-48 font-semibold">Ucapan Terima Kasih</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    {{ $pengajuan->terimakasih }}
+                                    -
                                 </div>
                             </div>
 

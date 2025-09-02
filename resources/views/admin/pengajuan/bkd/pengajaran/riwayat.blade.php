@@ -98,15 +98,9 @@
                                                     <div class="flex-1">{{ $detail->sks }}</div>
                                                 </div>
 
+                                                
                                                 <div class="flex">
-                                                    <div class="w-32 font-semibold">BAP</div>
-                                                    <div class="w-4">:</div>
-                                                    <div class="flex-1">
-                                                        <span class="text-gray-500 italic">-</span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex">
-                                                    <div class="w-32 font-semibold">Nilai</div>
+                                                    <div class="w-32 font-semibold">BAP dan Nilai</div>
                                                     <div class="w-4">:</div>
                                                     <div class="flex-1">
                                                         <span class="text-gray-500 italic">-</span>

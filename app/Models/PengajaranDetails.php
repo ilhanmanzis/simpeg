@@ -17,10 +17,6 @@ class PengajaranDetails extends Model
         return $this->belongsTo(Pengajarans::class, 'id_pengajaran', 'id_pengajaran');
     }
 
-    public function bapPengajaran()
-    {
-        return $this->belongsTo(Dokumens::class, 'bap', 'nomor_dokumen');
-    }
 
     public function nilaiPengajaran()
     {
