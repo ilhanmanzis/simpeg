@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -18,6 +19,7 @@ class Auth extends Controller
             'page' => 'Login',
             'selected' => 'Login',
             'title' => 'Login',
+            'setting' => Settings::first()
 
         ];
         return view('auth.login', $data);

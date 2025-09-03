@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\GolonganUser;
 use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
-use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\Penelitian as AdminPenelitian;
@@ -21,8 +20,11 @@ use App\Http\Controllers\Admin\PengajuanPengabdian;
 use App\Http\Controllers\Admin\PengajuanPengajaran;
 use App\Http\Controllers\Admin\PengajuanPenunjang;
 use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfilePribadi;
+use App\Http\Controllers\Admin\PengajuanSerdos as AdminPengajuanSerdos;
+use App\Http\Controllers\Admin\PengajuanSertifikat as AdminPengajuanSertifikat;
 use App\Http\Controllers\Admin\Penunjang as AdminPenunjang;
 use App\Http\Controllers\Admin\Semester;
+use App\Http\Controllers\Admin\Sertifikat as AdminSertifikat;
 use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
@@ -36,8 +38,11 @@ use App\Http\Controllers\Dosen\PengajuanFungsional;
 use App\Http\Controllers\Dosen\PengajuanGolongan;
 use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
+use App\Http\Controllers\Dosen\PengajuanSerdos;
+use App\Http\Controllers\Dosen\PengajuanSertifikat;
 use App\Http\Controllers\Dosen\Penunjang;
 use App\Http\Controllers\Dosen\ProfilePribadi;
+use App\Http\Controllers\Dosen\Sertifikat;
 use App\Http\Controllers\Dosen\Struktural;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GoogleOauthController;
@@ -45,8 +50,10 @@ use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanProfilePribadi;
 use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
+use App\Http\Controllers\Karyawan\Sertifikat as KaryawanSertifikat;
 use App\Http\Controllers\ManajemenUser;
 use App\Http\Controllers\Register;
+use App\Http\Controllers\Setting;
 use App\Models\StrukturalUsers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -262,6 +269,31 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/bkd/penunjang/{id}', [AdminPenunjang::class, 'all'])->name('bkd.penunjang.all');
     Route::get('/bkd/penunjang/{id}/show', [AdminPenunjang::class, 'show'])->name('bkd.penunjang.show');
     Route::delete('/bkd/penunjang/{id}', [AdminPenunjang::class, 'destroy'])->name('bkd.penunjang.delete');
+
+    // pengajuan sertifikat
+    Route::get('/pengajuan-sertifikat', [AdminPengajuanSertifikat::class, 'index'])->name('pengajuan.sertifikat');
+    Route::get('/pengajuan-sertifikat/{id}', [AdminPengajuanSertifikat::class, 'show'])->name('pengajuan.sertifikat.show');
+    Route::put('/pengajuan-sertifikat/setuju/{id}', [AdminPengajuanSertifikat::class, 'setuju'])->name('pengajuan.sertifikat.setuju');
+    Route::put('/pengajuan-sertifikat/tolak/{id}', [AdminPengajuanSertifikat::class, 'tolak'])->name('pengajuan.sertifikat.tolak');
+
+    // sertifikat
+    Route::get('/sertifikat', [AdminSertifikat::class, 'index'])->name('sertifikat');
+    Route::get('/sertifikat/{id}', [AdminSertifikat::class, 'all'])->name('sertifikat.all');
+    Route::get('/sertifikat/{id}/show', [AdminSertifikat::class, 'show'])->name('sertifikat.show');
+    Route::delete('/sertifikat/{id}', [AdminSertifikat::class, 'destroy'])->name('sertifikat.delete');
+    Route::get('/sertifikat/create/{id}', [AdminSertifikat::class, 'create'])->name('sertifikat.create');
+    Route::post('/sertifikat/store/{id}', [AdminSertifikat::class, 'store'])->name('sertifikat.store');
+    Route::get('/sertifikat-edit/{id}', [AdminSertifikat::class, 'edit'])->name('sertifikat.edit');
+    Route::put('/sertifikat/{id}', [AdminSertifikat::class, 'update'])->name('sertifikat.update');
+
+    Route::get('/setting', [Setting::class, 'index'])->name('setting');
+    Route::put('/setting', [Setting::class, 'update'])->name('setting.update');
+
+    // serdos
+    Route::get('/pengajuan-serdos', [AdminPengajuanSerdos::class, 'index'])->name('pengajuan.serdos');
+    Route::get('/pengajuan-serdos/{id}', [AdminPengajuanSerdos::class, 'show'])->name('pengajuan.serdos.show');
+    Route::put('/pengajuan-serdos/setuju/{id}', [AdminPengajuanSerdos::class, 'setuju'])->name('pengajuan.serdos.setuju');
+    Route::put('/pengajuan-serdos/tolak/{id}', [AdminPengajuanSerdos::class, 'tolak'])->name('pengajuan.serdos.tolak');
 });
 
 
@@ -336,6 +368,22 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     Route::post('/bkd/pengajaran/store', [Pengajaran::class, 'store'])->name('pengajaran.store');
     Route::get('/bkd/pengajaran/{id}', [Pengajaran::class, 'show'])->name('pengajaran.show');
     Route::get('/bkd/pengajaran-riwayat/{id}', [Pengajaran::class, 'riwayat'])->name('pengajaran.riwayat');
+
+    // sertifikat
+    Route::get('/sertifikat', [Sertifikat::class, 'index'])->name('sertifikat');
+    Route::get('/sertifikat/create', [Sertifikat::class, 'create'])->name('sertifikat.create');
+    Route::post('/sertifikat/store', [Sertifikat::class, 'store'])->name('sertifikat.store');
+    Route::get('/sertifikat-edit/{id}', [Sertifikat::class, 'edit'])->name('sertifikat.edit');
+    Route::put('/sertifikat/{id}', [Sertifikat::class, 'update'])->name('sertifikat.update');
+    Route::delete('/sertifikat/{id}', [Sertifikat::class, 'destroy'])->name('sertifikat.delete');
+    Route::get('/sertifikat/{id}', [Sertifikat::class, 'show'])->name('sertifikat.show');
+    Route::get('/sertifikat-riwayat/{id}', [Sertifikat::class, 'riwayat'])->name('sertifikat.riwayat');
+
+    // serdos
+    Route::get('/serdos', [PengajuanSerdos::class, 'index'])->name('pengajuan.serdos');
+    Route::get('/serdos/create', [PengajuanSerdos::class, 'create'])->name('pengajuan.serdos.create');
+    Route::post('/serdos/store', [PengajuanSerdos::class, 'store'])->name('pengajuan.serdos.store');
+    Route::get('/serdos/{id}', [PengajuanSerdos::class, 'show'])->name('pengajuan.serdos.show');
 });
 
 
@@ -362,6 +410,15 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.'
     Route::get('/perubahan-pendidikan/{id}', [PengajuanPendidikan::class, 'show'])->name('pengajuan.pendidikan.show');
 
     Route::get('/pendidikan', [KaryawanPendidikan::class, 'index'])->name('pendidikan');
+    // sertifikat
+    Route::get('/sertifikat', [KaryawanSertifikat::class, 'index'])->name('sertifikat');
+    Route::get('/sertifikat/create', [KaryawanSertifikat::class, 'create'])->name('sertifikat.create');
+    Route::post('/sertifikat/store', [KaryawanSertifikat::class, 'store'])->name('sertifikat.store');
+    Route::get('/sertifikat-edit/{id}', [KaryawanSertifikat::class, 'edit'])->name('sertifikat.edit');
+    Route::put('/sertifikat/{id}', [KaryawanSertifikat::class, 'update'])->name('sertifikat.update');
+    Route::delete('/sertifikat/{id}', [KaryawanSertifikat::class, 'destroy'])->name('sertifikat.delete');
+    Route::get('/sertifikat/{id}', [KaryawanSertifikat::class, 'show'])->name('sertifikat.show');
+    Route::get('/sertifikat-riwayat/{id}', [KaryawanSertifikat::class, 'riwayat'])->name('sertifikat.riwayat');
 });
 
 
@@ -376,6 +433,7 @@ Route::middleware(['auth', 'role:admin,dosen,karyawan'])->group(function () {
 
     Route::get('/file/ijazah/{filename}', [FileController::class, 'showIjazah'])->name('file.ijazah');
     Route::get('/file/register/{filename}', [FileController::class, 'register'])->name('file.register');
+    Route::get('/file/sertifikat/{filename}', [FileController::class, 'sertifikat'])->name('file.sertifikat');
     Route::get('/file/sk/{filename}', [FileController::class, 'showSk'])->name('file.sk');
     Route::get('/file/bkd/{filename}', [FileController::class, 'showBkd'])->name('file.bkd');
     Route::get('/file/transkip/{filename}', [FileController::class, 'showTranskip'])->name('file.transkip');

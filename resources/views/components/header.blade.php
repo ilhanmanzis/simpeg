@@ -33,8 +33,8 @@
             <!-- Hamburger Toggle BTN -->
 
             <a href="/" class="lg:hidden flex justify-start items-center">
-                <img class="size-10" src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
-                <h2 class="text-md font-bold text-black dark:text-white ml-2">Sistem Kepegawaian El-Rahma</h2>
+                <img class="size-10" src="{{ asset('storage/logo/' . $setting->logo) }}" alt="Logo" />
+                <h2 class="text-md font-bold text-black dark:text-white ml-2">{{ $setting->name }}</h2>
             </a>
 
             <!-- Application nav menu button -->

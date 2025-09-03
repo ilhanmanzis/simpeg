@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Jenjangs;
 use App\Models\RegisterPendidikans;
 use App\Models\Registers;
+use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,33 +16,45 @@ class Register extends Controller
      */
     public function index()
     {
+        $setting = Settings::first();
+        if ($setting->register === 'nonaktif') {
+            return redirect()->route('login')->with('message', 'Registrasi sudah ditutup');
+        }
         $data = [
             'page' => 'Register',
             'selected' => 'Register',
             'title' => 'Register',
-
+            'setting' => $setting
         ];
         return view('register.index', $data);
     }
     public function dosen()
     {
+        $setting = Settings::first();
+        if ($setting->register === 'nonaktif') {
+            return redirect()->route('login')->with('message', 'Registrasi sudah ditutup');
+        }
         $data = [
             'page' => 'Register Dosen',
             'selected' => 'Register Dosen',
             'title' => 'Register Dosen',
-            'jenjangs' => Jenjangs::all()
-
+            'jenjangs' => Jenjangs::all(),
+            'setting' => $setting
         ];
         return view('register.dosen.index', $data);
     }
     public function karyawan()
     {
+        $setting = Settings::first();
+        if ($setting->register === 'nonaktif') {
+            return redirect()->route('login')->with('message', 'Registrasi sudah ditutup');
+        }
         $data = [
             'page' => 'Register Karyawan',
             'selected' => 'Register Karyawan',
             'title' => 'Register Karyawan',
-            'jenjangs' => Jenjangs::all()
-
+            'jenjangs' => Jenjangs::all(),
+            'setting' => $setting
         ];
         return view('register.karyawan.index', $data);
     }
@@ -59,6 +72,10 @@ class Register extends Controller
      */
     public function storeDosen(Request $request)
     {
+        $setting = Settings::first();
+        if ($setting->register === 'nonaktif') {
+            return redirect()->route('login')->with('message', 'Registrasi sudah ditutup');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
@@ -174,6 +191,10 @@ class Register extends Controller
     }
     public function storeKaryawan(Request $request)
     {
+        $setting = Settings::first();
+        if ($setting->register === 'nonaktif') {
+            return redirect()->route('login')->with('message', 'Registrasi sudah ditutup');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',

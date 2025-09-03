@@ -8,6 +8,7 @@
     <title>
         {{ $title }}
     </title>
+    <link rel="icon" href="{{ asset('storage/logo/' . $setting->logo) }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Vite CSS --}}

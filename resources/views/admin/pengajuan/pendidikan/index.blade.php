@@ -379,7 +379,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat->jenis }}
+                                                                    {{ $riwayat->user->role }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -390,7 +390,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat->user->role }}
+                                                                    {{ $riwayat->jenis }}
                                                                 </p>
                                                             </div>
                                                         </div>

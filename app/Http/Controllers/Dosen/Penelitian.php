@@ -28,7 +28,7 @@ class Penelitian extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->appends(request()->except('page', 'riwayat_page')),
-            'riwayats' => PengajuanPenelitians::where('status', '!=', 'disetujui')
+            'riwayats' => PengajuanPenelitians::where('id_user', $id)->where('status', '!=', 'disetujui')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')
                 ->appends(request()->except('page'))

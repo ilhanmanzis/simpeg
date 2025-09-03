@@ -28,6 +28,15 @@ class FileController extends Controller
         return Storage::response($path);
     }
 
+    public function sertifikat($filename)
+    {
+        $path = "sertifikat/{$filename}";
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+        return Storage::response($path);
+    }
+
     public function showSk($filename)
     {
         $path = "sk/{$filename}";

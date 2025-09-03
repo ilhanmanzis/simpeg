@@ -16,7 +16,7 @@ class ProfilePribadi extends Controller
     {
         $id = Auth::user()->id_user;
 
-        $dosen = User::where('id_user', $id)->with(['dataDiri'])->first();
+        $dosen = User::where('id_user', $id)->with(['dataDiri.serdosen'])->first();
 
         $data = [
             'page' => 'Profile Pribadi',

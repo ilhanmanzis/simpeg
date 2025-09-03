@@ -8,6 +8,7 @@ use App\Models\JabatanStrukturals;
 use App\Models\Jenjangs;
 use App\Models\KategoriSertifikats;
 use App\Models\Semesters;
+use App\Models\Settings;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -104,7 +105,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'nama_jabatan' => 'Lektor',
-                'id_golongan' => 11 // III/c
+                'id_golongan' => 9 // III/A
             ],
 
             [
@@ -125,8 +126,8 @@ class DatabaseSeeder extends Seeder
 
         // jabatan struktural
         $strukturals = [
-            ['nama_jabatan' => 'Rektor'],
-            ['nama_jabatan' => 'Wakil Rektor'],
+            ['nama_jabatan' => 'Ketua'],
+            ['nama_jabatan' => 'Wakil Ketua'],
             ['nama_jabatan' => 'Kaprodi Informatika'],
             ['nama_jabatan' => 'Kaprodi Sistem Informasi'],
         ];
@@ -134,8 +135,6 @@ class DatabaseSeeder extends Seeder
             JabatanStrukturals::factory()->create($struktural);
         }
 
-        // kategori sertifikat
-        KategoriSertifikats::factory()->create();
 
         // semester
         $semesters = [
@@ -162,5 +161,7 @@ class DatabaseSeeder extends Seeder
         foreach ($semesters as $semester) {
             Semesters::factory()->create($semester);
         }
+
+        Settings::factory()->create();
     }
 }

@@ -69,9 +69,6 @@ class PengajuanPendikan extends Controller
             : view('admin.pengajuan.pendidikan.riwayat', $data);
     }
 
-    public function edit(string $id) {}
-    public function update(Request $request, string $id) {}
-    public function destroy(string $id) {}
 
     public function tolak(Request $request, string $id)
     {

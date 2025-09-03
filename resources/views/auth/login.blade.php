@@ -13,7 +13,7 @@
 
                     <div class="flex flex-col items-center max-w-xs">
                         <a href="index.html" class="block mb-4">
-                            <img src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
+                            <img src="{{ asset('storage/logo/' . $setting->logo) }}" alt="Logo" />
                         </a>
 
                     </div>
@@ -62,7 +62,8 @@
                 <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
                     <div>
                         <div class="flex justify-center flex-col items-center">
-                            <img class="size-20 mb-2" src="{{ asset('storage/logo/logo.webp') }}" alt="logo">
+                            <img class="size-20 mb-2" src="{{ asset('storage/logo/' . $setting->logo) }}"
+                                alt="logo">
                             <h1 class="mb-2 font-bold text-gray-800 text-xl dark:text-white/90 ">
                                 Sistem Kepegawaian
                             </h1>
@@ -128,10 +129,12 @@
                                         <p
                                             class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
 
-                                            <a href="{{ route('register') }}"
-                                                class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Registrasi
-                                                Akun
-                                                Baru</a>
+                                            @if ($setting->register === 'aktif')
+                                                <a href="{{ route('register') }}"
+                                                    class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Registrasi
+                                                    Akun
+                                                    Baru</a>
+                                            @endif
 
                                         </p>
                                         {{-- <a href="/reset-password.html"

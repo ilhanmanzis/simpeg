@@ -91,6 +91,18 @@ class User extends Authenticatable
             });
     }
 
+    // di model User
+    public function scopeSearchPegawai($query, $keyword)
+    {
+        return $query->where(function ($q) use ($keyword) {
+            $q->where('npp', 'like', "%{$keyword}%")
+                ->orWhereHas('dataDiri', function ($q2) use ($keyword) {
+                    $q2->where('name', 'like', "%{$keyword}%");
+                });
+        });
+    }
+
+
 
 
     public function golongan()
@@ -150,5 +162,20 @@ class User extends Authenticatable
     public function pengajuanPengabdian()
     {
         return $this->hasMany(PengajuanPengabdians::class, 'id_user', 'id_user');
+    }
+
+    public function pengajuanSertifikat()
+    {
+        return $this->hasMany(PengajuanSertifikats::class, 'id_user', 'id_user');
+    }
+
+    public function sertifikat()
+    {
+        return $this->hasMany(Sertifikats::class, 'id_user', 'id_user');
+    }
+
+    public function pengajuanSerdos()
+    {
+        return $this->hasMany(PengajuanSerdoss::class, 'id_user', 'id_user');
     }
 }

@@ -241,6 +241,9 @@ class PengajuanAkun extends Controller
             if (file_exists($localPath)) {
                 @unlink($localPath);
             }
+            if (file_exists($register->role === 'dosen' && $serdosLocalPath)) {
+                @unlink($serdosLocalPath);
+            }
             foreach (($register->registerPendidikan ?? []) as $pendidikan) {
                 $ijazahPathLocal = storage_path("app/private/pendidikan/ijazah/{$pendidikan->ijazah}");
                 if (file_exists($ijazahPathLocal)) @unlink($ijazahPathLocal);

@@ -30,7 +30,7 @@ class Pengajaran extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->appends(request()->except('page', 'riwayat_page')),
-            'riwayats' => PengajuanPengajarans::where('status', '!=', 'disetujui')
+            'riwayats' => PengajuanPengajarans::where('id_user', $id)->where('status', '!=', 'disetujui')
                 ->with('semester')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')

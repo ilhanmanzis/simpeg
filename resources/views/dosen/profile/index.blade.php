@@ -138,6 +138,25 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $dosen->dataDiri->agama }}</div>
                                         </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">
+                                                @if ($dosen->dataDiri->tersertifikasi === 'sudah')
+                                                    <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
+                                                        target="_blank" class="text-blue-600 hover:underline">
+                                                        Lihat
+                                                    </a> |
+                                                    <button
+                                                        onclick="copyUrl('{{ $dosen->dataDiri->serdosen->view_url }}', this)"
+                                                        class="text-blue-600 hover:underline">
+                                                        Salin URL
+                                                    </button>
+                                                @else
+                                                    Belum Tersertifikasi
+                                                @endif
+                                            </div>
+                                        </div>
 
 
                                     </div>

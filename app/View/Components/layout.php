@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Models\Settings;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -21,6 +22,9 @@ class layout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.layout');
+        $data = [
+            'setting' => Settings::first()
+        ];
+        return view('components.layout', $data);
     }
 }

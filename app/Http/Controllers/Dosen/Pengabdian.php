@@ -27,7 +27,7 @@ class Pengabdian extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->appends(request()->except('page', 'riwayat_page')),
-            'riwayats' => PengajuanPengabdians::where('status', '!=', 'disetujui')
+            'riwayats' => PengajuanPengabdians::where('id_user', $id)->where('status', '!=', 'disetujui')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')
                 ->appends(request()->except('page'))

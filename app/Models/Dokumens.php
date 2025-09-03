@@ -85,4 +85,9 @@ class Dokumens extends Model
     {
         return $this->belongsTo(Pengabdians::class, 'terimakasih', 'nomor_dokumen');
     }
+
+    public function sertifikat()
+    {
+        return $this->belongsTo(Sertifikats::class, 'dokumen', 'nomor_dokumen');
+    }
 }
