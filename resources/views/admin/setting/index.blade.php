@@ -11,7 +11,7 @@
 
         </div>
         <!-- Breadcrumb End -->
-        <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="mb-5  rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
 
             <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
@@ -86,7 +86,7 @@
                         </div>
                         <div class="w-full mt-5">
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Register<span class="text-error-500">*</span>
+                                Pendaftaran Akun<span class="text-error-500">*</span>
                             </label>
                             <div class="flex flex-col justify-start mt-1.5">
                                 <label class="inline-flex items-center">
@@ -124,6 +124,69 @@
 
             </div>
         </div>
+
+
+        <!-- Kartu Integrasi Google Drive -->
+        <div class="p-6 bg-white rounded-xl shadow-md dark:bg-gray-900 dark:border-gray-800 border border-gray-200"
+            x-data="{ openModal: false }" @keydown.escape.window="openModal = false">
+
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                Integrasi Google Drive
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                Hubungkan akun Google Anda untuk menyimpan file langsung ke Google Drive.
+            </p>
+
+            <!-- Tombol Hubungkan Google -->
+            <a href="#" @click.prevent="openModal = true"
+                class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition duration-200">
+                <svg class="w-5 h-5 mr-2" viewBox="0 0 48 48">
+                    <path fill="#EA4335"
+                        d="M24 9.5c3.54 0 6 1.54 7.38 2.83l5.45-5.36C33.14 3.64 28.94 2 24 2 14.82 2 7.27 7.98 4.26 16.17l6.79 5.26C12.44 14.62 17.74 9.5 24 9.5z" />
+                    <path fill="#4285F4"
+                        d="M46.1 24.5c0-1.54-.14-3.02-.39-4.5H24v8.52h12.59c-.56 3.01-2.23 5.56-4.74 7.25l7.31 5.67C43.59 37.42 46.1 31.45 46.1 24.5z" />
+                    <path fill="#FBBC05"
+                        d="M10.94 28.01c-.48-1.39-.75-2.86-.75-4.51s.27-3.12.75-4.51l-6.79-5.26C2.73 16.9 2 20.34 2 23.5s.73 6.6 2.15 9.77l6.79-5.26z" />
+                    <path fill="#34A853"
+                        d="M24 46c6.48 0 11.9-2.14 15.87-5.83l-7.31-5.67c-2.04 1.38-4.66 2.2-8.56 2.2-6.26 0-11.56-5.12-12.95-11.93l-6.79 5.26C7.27 40.02 14.82 46 24 46z" />
+                </svg>
+                Hubungkan Google
+            </a>
+
+            <!-- Modal -->
+            <div x-show="openModal" x-transition.opacity
+                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black/50"
+                @click.self="openModal = false" style="display: none;">
+                <div x-show="openModal" x-transition.scale.origin.center
+                    class="bg-white dark:bg-gray-900 rounded-xl shadow-lg w-full max-w-md p-6">
+
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                        Peringatan
+                    </h2>
+
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                        Tindakan ini akan menghapus token Google Drive lama dari sistem.
+                        Setelah Anda berhasil login kembali dengan akun Google, token akan diperbarui secara otomatis.
+                        Jika login tidak berhasil, Anda perlu melakukan login ulang agar sistem dapat terhubung kembali.
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Pastikan menggunakan akun Google yang akan
+                        digunakan untuk penyimpanan default Google Drive.</p>
+
+                    <div class="flex justify-end gap-3">
+                        <button @click="openModal = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                            Batal
+                        </button>
+                        <a href="{{ route('google.oauth.redirect') }}"
+                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
+                            Lanjut
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
 
 

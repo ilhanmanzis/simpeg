@@ -6,11 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Jenjangs;
 use App\Models\Pendidikans;
 use App\Models\PengajuanPerubahanPendidikans;
+use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PengajuanPendikan extends Controller
 {
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
     /**
      * Display a listing of the resource.
      */

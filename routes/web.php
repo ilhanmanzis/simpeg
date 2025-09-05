@@ -44,6 +44,7 @@ use App\Http\Controllers\Dosen\Penunjang;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\Dosen\Sertifikat;
 use App\Http\Controllers\Dosen\Struktural;
+use App\Http\Controllers\DriveFail;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GoogleOauthController;
 use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
@@ -57,6 +58,8 @@ use App\Http\Controllers\Setting;
 use App\Models\StrukturalUsers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+
+
 
 
 Route::get('/', function () {
@@ -75,7 +78,14 @@ Route::get('/', function () {
     }
 });
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // OAuth flow
+    Route::get('/oauth/google/redirect', [GoogleOauthController::class, 'redirect'])->name('google.oauth.redirect');
+    Route::get('/oauth/google/callback', [GoogleOauthController::class, 'callback'])->name('google.oauth.callback');
+});
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(function () {
+
+
     // Dashboard
     Route::get('/', [Dashboard::class, 'admin'])->name('dashboard');
 
@@ -466,6 +476,5 @@ Route::get('/check-email', function (Illuminate\Http\Request $request) {
 });
 
 
-// OAuth flow
-Route::get('/oauth/google/redirect', [GoogleOauthController::class, 'redirect'])->name('google.oauth.redirect');
-Route::get('/oauth/google/callback', [GoogleOauthController::class, 'callback'])->name('google.oauth.callback');
+// error google drive
+Route::get('/drive-fail', [DriveFail::class, 'driveFail'])->name('drive.fail');

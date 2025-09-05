@@ -6,11 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
 use App\Models\User;
+use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class Penelitian extends Controller
 {
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
     /**
      * Display a listing of the resource.
      */

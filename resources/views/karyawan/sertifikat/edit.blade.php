@@ -20,7 +20,7 @@
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
-                <form action="{{ route('dosen.sertifikat.update', $sertifikat->id_sertifikat) }}" method="post"
+                <form action="{{ route('karyawan.sertifikat.update', $sertifikat->id_sertifikat) }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')

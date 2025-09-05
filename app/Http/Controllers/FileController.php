@@ -103,6 +103,9 @@ class FileController extends Controller
         }
         // Ambil stream dari Google Drive 
         $dl = $this->drive->downloadFileStream($dok->file_id); // Stream ke browser (tanpa load semua ke RAM) 
+        if (!$dl) {
+            abort(404);
+        }
         return response()->stream(function () use ($dl) { // baca dari stream kecil-kecil agar hemat memori 
             $stream = $dl['body'];
             while (!$stream->eof()) {

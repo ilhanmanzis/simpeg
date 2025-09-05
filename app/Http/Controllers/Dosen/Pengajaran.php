@@ -7,16 +7,24 @@ use App\Models\Pengajarans;
 use App\Models\PengajuanPengajaranDetails;
 use App\Models\PengajuanPengajarans;
 use App\Models\Semesters;
+use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class Pengajaran extends Controller
 {
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+
         // $judul = $request->get('judul');
         $id = Auth::user()->id_user;
 

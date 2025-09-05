@@ -56,14 +56,21 @@ class GoogleDriveService
                 ?? config('services.google_drive.refresh_token'); // fallback TERAKHIR (sebaiknya kosongkan di .env setelah sukses)
 
             if (!$refresh) {
-                throw new \RuntimeException(
-                    'Refresh token belum ada. Jalankan /oauth/google/redirect untuk menghubungkan Google Drive.'
-                );
+                // langsung redirect ke halaman fail
+                redirect()
+                    ->route('drive.fail')
+                    ->with('error', 'Refresh token belum ada. Silakan login sebagai admin untuk menghubungkan Google Drive.')
+                    ->send();
+                exit;
             }
 
             $new = $this->googleClient->fetchAccessTokenWithRefreshToken($refresh);
             if (isset($new['error'])) {
-                throw new \RuntimeException('Failed to refresh token: ' . ($new['error_description'] ?? $new['error']));
+                redirect()
+                    ->route('drive.fail')
+                    ->with('error', 'Failed to refresh token: ' . ($new['error_description'] ?? $new['error']))
+                    ->send();
+                exit;
             }
 
             $this->googleClient->setAccessToken($new);
@@ -124,7 +131,11 @@ class GoogleDriveService
         if (empty($refresh)) {
             // Tidak ada refresh token sama sekali → wajib reconnect
             Cache::forget('gdrive:token');
-            throw new \RuntimeException('Refresh token tidak ditemukan. Silakan hubungkan ulang Google Drive.');
+            redirect()
+                ->route('drive.fail')
+                ->with('error', 'Refresh token belum ada. Silakan login sebagai admin untuk menghubungkan Google Drive.')
+                ->send();
+            exit;
         }
 
         // Minta access token baru menggunakan refresh token
@@ -138,11 +149,19 @@ class GoogleDriveService
                 Cache::forget('gdrive:token');
                 // Opsional: hapus juga refresh token persisten jika ingin “bersih total”
                 // Cache::forget('gdrive:refresh_token');
-                throw new \RuntimeException('Refresh token invalid/ditolak. Silakan hubungkan ulang Google Drive.');
+                redirect()
+                    ->route('drive.fail')
+                    ->with('error', 'Refresh token invalid/ditolak. Silakan hubungkan ulang Google Drive.')
+                    ->send();
+                exit;
             }
 
             // Error lain (jaringan, quota, dsb.)
-            throw new \RuntimeException('Failed to refresh token: ' . ($new['error_description'] ?? $new['error']));
+            redirect()
+                ->route('drive.fail')
+                ->with('error', 'Failed to refresh token: ' . ($new['error_description'] ?? $new['error']))
+                ->send();
+            exit;
         }
 
         // Set access token baru ke client

@@ -9,11 +9,18 @@ use App\Models\GolonganUsers;
 use App\Models\JabatanFungsionals;
 use App\Models\PengajuanFungsionals;
 use App\Models\User;
+use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PengajuanFungsional extends Controller
 {
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
     /**
      * Display a listing of the resource.
      */
