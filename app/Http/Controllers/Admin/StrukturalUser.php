@@ -86,7 +86,7 @@ class StrukturalUser extends Controller
 
         $sebelumnya  = StrukturalUsers::where('id_struktural', $id)
             ->where('status', 'aktif')
-            ->with(['struktural'])
+            ->with(['struktural', 'user.dataDiri'])
             ->orderBy('id_struktural_user', 'desc')
             ->first();
 
@@ -132,6 +132,9 @@ class StrukturalUser extends Controller
             $sebelumnya->update([
                 'status'          => 'nonaktif',
                 'tanggal_selesai' => $sebelumnya->tanggal_selesai ?? now(),
+            ]);
+            $sebelumnya->user->dataDiri->update([
+                'pimpinan' => 'nonaktif'
             ]);
         }
         if (in_array($struktural->id_struktural, [1, 2])) {
