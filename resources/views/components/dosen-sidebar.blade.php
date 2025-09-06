@@ -221,7 +221,7 @@
                 <div>
                     <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
                         <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
-                            MENU
+                            MENU Pimpinan
                         </span>
 
                         <svg :class="sidebarToggle ? 'lg:block hidden' : 'hidden'"
