@@ -81,7 +81,7 @@ class StrukturalUser extends Controller
             'sk'              => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        $user        = User::where($request->user)->with('dataDiri')->first();
+        $user        = User::where('id_user', $request->user)->with('dataDiri')->first();
         $struktural  = JabatanStrukturals::findOrFail($id);
 
         $sebelumnya  = StrukturalUsers::where('id_struktural', $id)
