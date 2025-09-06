@@ -31,6 +31,7 @@ use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Dosen\Fungsional;
 use App\Http\Controllers\Dosen\Golongan as DosenGolongan;
+use App\Http\Controllers\Dosen\Laporan as DosenLaporan;
 use App\Http\Controllers\Dosen\Pendidikan;
 use App\Http\Controllers\Dosen\Penelitian;
 use App\Http\Controllers\Dosen\Pengabdian;
@@ -319,6 +320,10 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
 
     // profile pribadi
     Route::get('/profile', [ProfilePribadi::class, 'index'])->name('profilepribadi');
+
+    // laporan
+    Route::get('/laporan', [DosenLaporan::class, 'index'])->name('laporan');
+    Route::post('/laporan/create', [DosenLaporan::class, 'create'])->name('laporan.create');
 
     // pengajuan perubahan profile pribadi
     Route::get('/perubahan-profile', [PengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
