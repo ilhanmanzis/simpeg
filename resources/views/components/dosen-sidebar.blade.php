@@ -217,7 +217,7 @@
             </div>
 
             {{-- menu pimpinan --}}
-            @if (auth()->user()->pimpinan === 'aktif')
+            @if (auth()->user()->dataDiri->pimpinan === 'aktif')
                 <div>
                     <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
                         <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
