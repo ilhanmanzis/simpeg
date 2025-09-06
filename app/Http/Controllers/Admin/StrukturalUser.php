@@ -134,12 +134,11 @@ class StrukturalUser extends Controller
                 'tanggal_selesai' => $sebelumnya->tanggal_selesai ?? now(),
             ]);
         }
-        if ($struktural->id_struktural === 1 || $struktural->id_struktural === 2) {
+        if (in_array($struktural->id_struktural, [1, 2])) {
             $user->dataDiri->update([
                 'pimpinan' => 'aktif'
             ]);
         } else {
-
             $user->dataDiri->update([
                 'pimpinan' => 'nonaktif'
             ]);
