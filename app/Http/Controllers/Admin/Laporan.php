@@ -78,7 +78,7 @@ class Laporan extends Controller
         // Bentuk baris yang siap dipakai di view PDF
         $rows = $users->map(function ($u) use ($pegawai, $isSudah) {
             $dd   = $u->dataDiri;
-            $npp  = $dd->npp ?? ($dd->nip ?? '-');
+            $npp  = $u->npp ?? '-';
             $nama = $dd->name ?? '-';
 
             // Ambil 1 record aktif & terbaru (sudah di-limit(1) saat eager load)

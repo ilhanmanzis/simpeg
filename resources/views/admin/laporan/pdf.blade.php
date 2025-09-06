@@ -137,23 +137,36 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <table style="width:100%;">
+        <table style="width:100%; margin-bottom:8px;">
             <tr>
                 <td>
-                    <h2>{{ $title ?? 'Laporan Pegawai' }}</h2>
+                    <h2 style="margin:0; font-size:16px;">{{ $title ?? 'Laporan Pegawai' }}</h2>
                     <div class="meta">Dicetak: {{ $now->format('d M Y H:i') }} WIB</div>
-                    <div class="chips">
-                        <span class="chip">Pegawai: <strong
-                                style="margin-left:4px;">{{ $filterPegawai }}</strong></span>
-                        @if ($isDosen)
-                            <span class="chip">Tersertifikasi: <strong
-                                    style="margin-left:4px;">{{ $filterSert }}</strong></span>
-                        @endif
-                        <span class="chip">Total: <strong style="margin-left:4px;">{{ $total }}</strong></span>
-                    </div>
                 </td>
             </tr>
         </table>
+
+        {{-- Tabel filter --}}
+        <table
+            style="width:100%; border:1px solid #e5e7eb; border-collapse:collapse; font-size:11px; margin-bottom:10px;">
+            <tr>
+                <td style="border:1px solid #e5e7eb; padding:6px; width:25%;"><strong>Pegawai</strong></td>
+                <td style="border:1px solid #e5e7eb; padding:6px;">
+                    {{ $filterPegawai }}
+                </td>
+                @if ($isDosen)
+                    <td style="border:1px solid #e5e7eb; padding:6px; width:25%;"><strong>Tersertifikasi</strong></td>
+                    <td style="border:1px solid #e5e7eb; padding:6px;">
+                        {{ $filterSert }}
+                    </td>
+                @endif
+                <td style="border:1px solid #e5e7eb; padding:6px; width:20%;"><strong>Total</strong></td>
+                <td style="border:1px solid #e5e7eb; padding:6px;">
+                    {{ $total }}
+                </td>
+            </tr>
+        </table>
+
     </div>
 
     {{-- FOOTER --}}
@@ -172,7 +185,7 @@
             <thead>
                 <tr>
                     <th class="w-xxs center">No</th>
-                    <th class="w-sm2">NPP / NIP</th>
+                    <th class="w-sm2">NPP</th>
                     <th class="w-sm">Nama</th>
 
                     @if ($isAll || $isDosen)
