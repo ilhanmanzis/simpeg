@@ -86,9 +86,9 @@ class Laporan extends Controller
             $funAktif  = optional($u->fungsional->first());
             $strAktif  = optional($u->struktural->first());
 
-            $golName = optional($golAktif->golongan)->nama ?? ($dd->golongan ?? null);
-            $funName = optional($funAktif->fungsional)->nama ?? ($dd->jabatan_fungsional ?? null);
-            $strName = optional($strAktif->struktural)->nama ?? ($dd->jabatan_struktural ?? null);
+            $golName = optional($golAktif->golongan)->nama_golongan ?? null;
+            $funName = optional($funAktif->fungsional)->nama_jabatan ?? null;
+            $strName = optional($strAktif->struktural)->nama_jabatan ?? null;
 
             // Aturan tampilan kolom:
             // - pegawai = all -> jika karyawan maka 3 kolom jabatan diisi '-'
