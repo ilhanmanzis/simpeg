@@ -18,8 +18,9 @@
     <meta charset="UTF-8">
     <title>{{ $title ?? 'Laporan Pegawai' }}</title>
     <style>
+        /* beri ruang lebih utk header (+ filter) */
         @page {
-            margin: 100px 36px 60px 36px;
+            margin: 140px 36px 60px 36px;
         }
 
         body {
@@ -30,10 +31,10 @@
 
         .header {
             position: fixed;
-            top: -70px;
+            top: -120px;
             left: 0;
             right: 0;
-            height: 70px;
+            height: 120px;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -58,28 +59,38 @@
             color: #6b7280;
         }
 
-        .chips {
-            margin-top: 6px;
-            display: inline-flex;
-            gap: 6px;
-            flex-wrap: wrap;
+        /* === TABEL FILTER (header) === */
+        .filter-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 8px;
         }
 
-        .chip {
+        .filter-table td {
             border: 1px solid #e5e7eb;
-            background: #f9fafb;
-            border-radius: 999px;
-            padding: 3px 8px;
-            font-size: 10px;
+            padding: 6px 8px;
+            vertical-align: middle;
         }
 
-        table {
+        .filter-label {
+            width: 22%;
+            background: #f9fafb;
+            font-weight: 700;
+        }
+
+        .filter-value {
+            width: 28%;
+        }
+
+        /* === TABEL DATA (konten) === */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
 
-        thead th {
+        .data-table thead th {
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
             padding: 7px 8px;
@@ -88,14 +99,14 @@
             font-size: 10.5px;
         }
 
-        tbody td {
+        .data-table tbody td {
             border: 1px solid #e5e7eb;
             padding: 6px 8px;
             vertical-align: top;
             font-size: 10.5px;
         }
 
-        tbody tr:nth-child(even) {
+        .data-table tbody tr:nth-child(even) {
             background: #fcfcfd;
         }
 
@@ -115,12 +126,12 @@
             width: 30px;
         }
 
-        .w-sm {
-            width: 22%;
-        }
-
         .w-sm2 {
             width: 18%;
+        }
+
+        .w-sm {
+            width: 22%;
         }
 
         .w-xs {
@@ -131,42 +142,37 @@
             width: 20%;
         }
     </style>
+
 </head>
 
 <body>
 
     {{-- HEADER --}}
     <div class="header">
-        <table style="width:100%; margin-bottom:8px;">
+        <table style="width:100%;">
             <tr>
                 <td>
-                    <h2 style="margin:0; font-size:16px;">{{ $title ?? 'Laporan Pegawai' }}</h2>
+                    <h2>{{ $title ?? 'Laporan Pegawai' }}</h2>
                     <div class="meta">Dicetak: {{ $now->format('d M Y H:i') }} WIB</div>
                 </td>
             </tr>
         </table>
 
-        {{-- Tabel filter --}}
-        <table
-            style="width:100%; border:1px solid #e5e7eb; border-collapse:collapse; font-size:11px; margin-bottom:10px;">
+        {{-- Tabel filter rapi --}}
+        <table class="filter-table">
             <tr>
-                <td style="border:1px solid #e5e7eb; padding:6px; width:25%;"><strong>Pegawai</strong></td>
-                <td style="border:1px solid #e5e7eb; padding:6px;">
-                    {{ $filterPegawai }}
-                </td>
+                <td class="filter-label">Pegawai</td>
+                <td class="filter-value">{{ $filterPegawai }}</td>
+
                 @if ($isDosen)
-                    <td style="border:1px solid #e5e7eb; padding:6px; width:25%;"><strong>Tersertifikasi</strong></td>
-                    <td style="border:1px solid #e5e7eb; padding:6px;">
-                        {{ $filterSert }}
-                    </td>
+                    <td class="filter-label">Tersertifikasi</td>
+                    <td class="filter-value">{{ $filterSert }}</td>
                 @endif
-                <td style="border:1px solid #e5e7eb; padding:6px; width:20%;"><strong>Total</strong></td>
-                <td style="border:1px solid #e5e7eb; padding:6px;">
-                    {{ $total }}
-                </td>
+
+                <td class="filter-label">Total</td>
+                <td class="filter-value">{{ $total }}</td>
             </tr>
         </table>
-
     </div>
 
     {{-- FOOTER --}}
@@ -181,7 +187,7 @@
 
     {{-- KONTEN --}}
     <main>
-        <table>
+        <table class="data-table">
             <thead>
                 <tr>
                     <th class="w-xxs center">No</th>
