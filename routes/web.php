@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\GolonganUser;
 use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
+use App\Http\Controllers\Admin\Laporan;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\Penelitian as AdminPenelitian;
@@ -94,6 +95,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/akun/{id}', [PengajuanAkun::class, 'show'])->name('pengajuan.akun.show');
     Route::put('/akun/setuju/{id}', [PengajuanAkun::class, 'setuju'])->name('pengajuan.akun.setuju');
     Route::put('/akun/tolak/{id}', [PengajuanAkun::class, 'tolak'])->name('pengajuan.akun.tolak');
+
+    // laporan
+    Route::get('/laporan', [Laporan::class, 'index'])->name('laporan');
+    Route::post('/laporan/create', [Laporan::class, 'create'])->name('laporan.create');
 
     // golongan
     Route::get('/golongan', [Golongan::class, 'index'])->name('golongan');
