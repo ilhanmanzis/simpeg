@@ -134,6 +134,7 @@ class Laporan extends Controller
                 'fungsional'    => $funName ?? '-',
                 'struktural'    => $strName ?? '-',
                 'tersertifikasi' => $sert, // hanya terpakai jika pegawai=dosen
+                'status_keaktifan'           => $status_keaktifan,
             ];
         });
 
@@ -169,6 +170,8 @@ class Laporan extends Controller
                 $logoFileSrc = $original;
             }
         }
+
+
         // Export PDF
         $title = 'Laporan Pegawai';
         if ($request->filled('export') && $validated['export'] === 'pdf') {
@@ -191,6 +194,7 @@ class Laporan extends Controller
 
             return $pdf->download('laporan-pegawai.pdf');
         }
+
 
         // Optional: render halaman non-PDF
         return view('dosen.laporan.index', [
