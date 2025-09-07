@@ -50,56 +50,74 @@
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Profile Pribadi</h2>
 
-                                <div x-data="{ openDropDown: false }" class="-mt-5 relative h-fit ">
-                                    <button @click="openDropDown = !openDropDown"
-                                        :class="openDropDown ? 'text-gray-700 dark:text-white' :
-                                            'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                                        <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                                                fill="" />
-                                        </svg>
-                                    </button>
-                                    <div x-show="openDropDown" @click.outside="openDropDown = false"
-                                        class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
+                                <div class="flex justify-between -mt-5">
+                                    <a href="{{ route('admin.laporan.individu', ['id' => $dosen['id_user']]) }}"
+                                        target="_blank"
+                                        class="-mt-2 inline-flex items-center gap-2 rounded-lg bg-warning-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-warning-600 ml-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
 
-                                        <a href="{{ route('admin.dosen.serdos', ['id' => $dosen->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Sertifikat Dosen
-                                        </a>
-                                        <a href="{{ route('admin.dosen.datadiri', ['id' => $dosen->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Edit Profile Pribadi
-                                        </a>
-                                        <a href="{{ route('admin.dosen.npp', ['id' => $dosen->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Edit NPP
-                                        </a>
-                                        <a href="{{ route('admin.dosen.password', ['id' => $dosen->id_user]) }}"
-                                            class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                            Ubah Password
-                                        </a>
-                                        <form method="POST"
-                                            action="{{ route('admin.dosen.status', ['id' => $dosen->id_user]) }}"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin mengubah status dosen ini menjadi {{ $dosen->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit"
+
+
+                                        </svg>
+                                        PDF
+
+                                    </a>
+
+
+                                    <div x-data="{ openDropDown: false }" class=" relative h-fit ">
+                                        <button @click="openDropDown = !openDropDown"
+                                            :class="openDropDown ? 'text-gray-700 dark:text-white' :
+                                                'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
+                                            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
+                                                    fill="" />
+                                            </svg>
+                                        </button>
+                                        <div x-show="openDropDown" @click.outside="openDropDown = false"
+                                            class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
+
+                                            <a href="{{ route('admin.dosen.serdos', ['id' => $dosen->id_user]) }}"
                                                 class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                                Ubah Status
-                                            </button>
-                                        </form>
-                                        <form method="POST"
-                                            action="{{ route('admin.dosen.destroy', ['id' => $dosen->id_user]) }}"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data dosen ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
-                                                Delete
-                                            </button>
-                                        </form>
+                                                Sertifikat Dosen
+                                            </a>
+                                            <a href="{{ route('admin.dosen.datadiri', ['id' => $dosen->id_user]) }}"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                Edit Profile Pribadi
+                                            </a>
+                                            <a href="{{ route('admin.dosen.npp', ['id' => $dosen->id_user]) }}"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                Edit NPP
+                                            </a>
+                                            <a href="{{ route('admin.dosen.password', ['id' => $dosen->id_user]) }}"
+                                                class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                Ubah Password
+                                            </a>
+                                            <form method="POST"
+                                                action="{{ route('admin.dosen.status', ['id' => $dosen->id_user]) }}"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin mengubah status dosen ini menjadi {{ $dosen->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit"
+                                                    class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                    Ubah Status
+                                                </button>
+                                            </form>
+                                            <form method="POST"
+                                                action="{{ route('admin.dosen.destroy', ['id' => $dosen->id_user]) }}"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data dosen ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
 

@@ -31,7 +31,7 @@
 
                         <div class="w-full mb-2">
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Nama Company<span class="text-error-500">*</span>
+                                Nama Sistem<span class="text-error-500">*</span>
                             </label>
 
                             <input type="text" name="name" value="{{ $setting->name }}"

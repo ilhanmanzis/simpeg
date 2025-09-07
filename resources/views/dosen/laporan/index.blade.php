@@ -23,6 +23,7 @@
                             <div x-data="{
                                 pegawai: 'all',
                                 tersertifikasi: 'all',
+                                status: 'all'
                             }" class="mb-4 w-full">
 
                                 <div class="flex flex-col gap-3 lg:flex-row lg:items-start">
@@ -79,6 +80,30 @@
                                         </span>
                                         <p class="mt-1 text-xs text-gray-500 dark:text-white/50">Hanya muncul & wajib
                                             diisi jika Pegawai = Dosen.</p>
+                                    </div>
+                                    <div class="relative z-20 bg-transparent lg:w-64">
+                                        <label
+                                            class="mb-1 block text-sm text-gray-600 dark:text-white/70">Status</label>
+                                        <select
+                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                                            x-model="status" name="status" required>
+                                            <option value="all"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Semua
+                                            </option>
+                                            <option value="aktif"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Aktif</option>
+                                            <option value="nonaktif"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Nonaktif
+                                            </option>
+                                        </select>
+                                        <span
+                                            class="pointer-events-none absolute top-[40px] right-4 z-30 text-gray-500 dark:text-gray-400">
+                                            <svg class="stroke-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
+                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </span>
                                     </div>
 
                                     <div class="flex items-center justify-center mb-4 my-6">

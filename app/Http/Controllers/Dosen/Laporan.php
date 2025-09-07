@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Models\Settings;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -41,6 +42,7 @@ class Laporan extends Controller
             'pegawai'        => 'required|in:all,dosen,karyawan',
             // required_if untuk dosen; nilai yang valid: all/ya/tidak
             'tersertifikasi' => 'nullable|required_if:pegawai,dosen|in:all,ya,tidak',
+            'status' => 'nullable|required|in:all,aktif,nonaktif',
             'export'         => 'nullable|in:pdf',
         ], [
             'pegawai.required' => 'Pilih jenis pegawai.',
@@ -51,7 +53,7 @@ class Laporan extends Controller
 
 
 
-
+        $status        = $validated['status'];
         $pegawai        = $validated['pegawai'];
         $tersertifikasi = $pegawai === 'dosen' ? ($validated['tersertifikasi'] ?? 'all') : null;
 
@@ -74,6 +76,9 @@ class Laporan extends Controller
                     $qq->where('tersertifikasi', $tersertifikasi); // 'ya'/'tidak' atau 'sudah'/'tidak' sesuai DB
                 });
             })
+            ->when($status === 'all', fn($q) => $q->whereIn('status_keaktifan', ['aktif', 'nonaktif']))
+            // selain all -> filter exact role
+            ->when($status !== 'all', fn($q) => $q->where('status_keaktifan', $status))
             ->orderBy('id_user', 'asc');
 
         $users = $query->get();
@@ -88,6 +93,7 @@ class Laporan extends Controller
             $dd   = $u->dataDiri;
             $npp  = $u->npp ?? '-';
             $nama = $dd->name ?? '-';
+            $status_keaktifan  = $u->status_keaktifan ?? '-';
 
             // Ambil 1 record aktif & terbaru (sudah di-limit(1) saat eager load)
             $golAktif  = optional($u->golongan->first());
@@ -131,16 +137,56 @@ class Laporan extends Controller
             ];
         });
 
-        // Export PDF
-        if ($request->filled('export') && $validated['export'] === 'pdf') {
-            $title = 'Laporan Pegawai';
 
-            $pdf = PDF::loadView('dosen.laporan.pdf', [
+        $setting = Settings::first();
+
+        $original = public_path('storage/logo/' . ($setting->logo ?? ''));
+
+        $logoFileSrc   = null;
+        $logoPngData64 = null; // untuk WEBP → hasil konversi PNG (base64)
+
+        if (is_file($original)) {
+            $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+
+            if ($ext === 'webp') {
+                // Pastikan GD support webp
+                if (function_exists('imagecreatefromwebp')) {
+                    $im = @imagecreatefromwebp($original);
+                    if ($im) {
+                        // render ke PNG di buffer (TANPA menyentuh disk)
+                        ob_start();
+                        imagepng($im, null, 9);
+                        imagedestroy($im);
+                        $png = ob_get_clean();
+                        if ($png !== false && strlen($png) > 0) {
+                            $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
+                        }
+                    }
+                }
+                // Jika server GD tidak support WEBP, kita biarkan $logoPngData64 null (logo skip).
+            } else {
+                // Sudah format didukung → pakai path file lokal
+                $logoFileSrc = $original;
+            }
+        }
+        // Export PDF
+        $title = 'Laporan Pegawai';
+        if ($request->filled('export') && $validated['export'] === 'pdf') {
+
+            $pdf = PDF::setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled'      => true, // penting utk img dari URL
+                'chroot' => public_path(),
+            ])->loadView('dosen.laporan.pdf', [
                 'title'          => $title,
                 'pegawai'        => $pegawai,
                 'tersertifikasi' => $tersertifikasi,
                 'data'           => $users, // kalau view butuh akses original user
                 'rows'           => $rows,  // view utama pakai ini (sudah diringkas)
+                'logoFileSrc'   => $logoFileSrc,
+                'logoPngData64' => $logoPngData64,
+                'setting'      => $setting,
+                'status_keaktifan' => $status
             ])->setPaper('A4', 'portrait');
 
             return $pdf->stream('laporan-pegawai.pdf');
@@ -148,11 +194,15 @@ class Laporan extends Controller
 
         // Optional: render halaman non-PDF
         return view('dosen.laporan.index', [
-            'title'          => 'Laporan Pegawai',
+            'title'          => $title,
             'pegawai'        => $pegawai,
             'tersertifikasi' => $tersertifikasi,
-            'data'           => $users,
-            'rows'           => $rows,
+            'data'           => $users, // kalau view butuh akses original user
+            'rows'           => $rows,  // view utama pakai ini (sudah diringkas)
+            'logoFileSrc'   => $logoFileSrc,
+            'logoPngData64' => $logoPngData64,
+            'setting'      => $setting,
+            'status_keaktifan' => $status
         ]);
     }
 }

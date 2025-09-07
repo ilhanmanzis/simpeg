@@ -100,6 +100,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     // laporan
     Route::get('/laporan', [Laporan::class, 'index'])->name('laporan');
     Route::post('/laporan/create', [Laporan::class, 'create'])->name('laporan.create');
+    Route::get('/laporan/create/{id}', [Laporan::class, 'individu'])->name('laporan.individu');
 
     // golongan
     Route::get('/golongan', [Golongan::class, 'index'])->name('golongan');
