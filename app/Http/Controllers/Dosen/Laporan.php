@@ -189,7 +189,7 @@ class Laporan extends Controller
                 'status_keaktifan' => $status
             ])->setPaper('A4', 'portrait');
 
-            return $pdf->stream('laporan-pegawai.pdf');
+            return $pdf->download('laporan-pegawai.pdf');
         }
 
         // Optional: render halaman non-PDF

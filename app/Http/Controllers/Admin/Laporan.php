@@ -185,7 +185,7 @@ class Laporan extends Controller
                 'status_keaktifan' => $status
             ])->setPaper('A4', 'portrait');
 
-            return $pdf->stream('laporan-pegawai.pdf');
+            return $pdf->download('laporan-pegawai.pdf');
         }
 
         // Optional: render halaman non-PDF
@@ -340,6 +340,6 @@ class Laporan extends Controller
             'setting'      => $setting,
         ])->setPaper('A4', 'portrait');
 
-        return $pdf->stream("biodata-{$user->dataDiri->name}.pdf");
+        return $pdf->download("biodata-{$user->dataDiri->name}.pdf");
     }
 }
