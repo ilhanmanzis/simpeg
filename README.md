@@ -1,61 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📌 SIMPEG - Sistem Informasi Kepegawaian
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+STMIK El Rahma Yogyakarta
 
-## About Laravel
+SIMPEG adalah aplikasi Sistem Informasi Kepegawaian yang dikembangkan untuk memenuhi kebutuhan mata kuliah **Kerja Praktek** di kampus **STMIK El Rahma Yogyakarta**.  
+Sistem ini ditujukan untuk membantu pengelolaan data kepegawaian dengan tiga jenis pengguna utama:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Admin** → mengelola data pegawai, dokumen, serta akses pengguna.
+-   **Dosen** → mengunggah dan mengelola dokumen/arsip terkait (Sertifikasi, BKD, dan lain-lain).
+-   **Karyawan** → mengunggah dan mengelola dokumen/arsip terkait(Sertifikasi dan lain lain).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Semua file dan foto yang diunggah oleh pengguna **disimpan di Google Drive** menggunakan integrasi API, sehingga lebih aman dan terstruktur.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚙️ Cara Install & Menjalankan Aplikasi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone Repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone https://github.com/ilhanmanzis/simpeg.git
+cd simpeg
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependency
 
-## Laravel Sponsors
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+composer install
+npm install
 
-### Premium Partners
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 3. Konfigurasi Environment
 
-## Contributing
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+cp .env.example .env
 
-## Code of Conduct
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Edit file .env, contoh:
 
-## Security Vulnerabilities
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=simpeg
+DB_USERNAME=root
+DB_PASSWORD=
 
-## License
+# setup google drive
+FILESYSTEM_CLOUD=google
+GOOGLE_DRIVE_CLIENT_ID=""
+GOOGLE_DRIVE_CLIENT_SECRET=""
+GOOGLE_DRIVE_REFRESH_TOKEN=""
+GOOGLE_DRIVE_FOLDER_ID=""
+# Redirect otomatis di-generate dari route; tapi sediakan fallback:
+GOOGLE_DRIVE_REDIRECT_URI="${APP_URL}/oauth/google/callback"
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+
+### 4. Generate Key
+
+```
+
+php artisan key:generate
+
+```
+
+### 5. Migrasi Database dan Seeder
+
+```
+
+php artisan migrate --seed
+
+```
+
+### 6. Jalankan Aplikasi
+
+```
+
+php artisan serve
+
+```
+
+### 7. link storage
+
+```
+
+php artisan storage:link
+
+```
+
+##
+
+### Develpoment
+
+```
+
+npm run dev
+
+```
+
+### Build Vite
+
+```
+
+npm run build
+
+```
+
+---
+
+## 🔑 Konfigurasi Google Drive API
+
+Aplikasi ini menggunakan **Google Drive API** untuk menyimpan file/dokumen.  
+Ikuti langkah berikut untuk mendapatkan `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_CLIENT_SECRET`, dan `GOOGLE_DRIVE_FOLDER_ID`.
+
+### 1. Membuat Project di Google Cloud Console
+
+1. Buka [Google Cloud Console](https://console.cloud.google.com/).
+2. Login dengan akun Google Anda.
+3. Klik menu **Select a Project** → **New Project**.
+4. Beri nama project (misalnya: `simpeg-drive`), lalu klik **Create**.
+
+### 2. Mengaktifkan Google Drive API
+
+1. Masuk ke project yang baru dibuat.
+2. Buka menu **API & Services** → **Library**.
+3. Cari **Google Drive API**.
+4. Klik **Enable**.
+
+### 3. Membuat OAuth 2.0 Client ID & Secret
+
+1. Masuk ke menu **API & Services** → **Credentials**.
+2. Klik **Create Credentials** → pilih **OAuth Client ID**.
+3. Jika diminta, isi **OAuth Consent Screen**:
+    - User Type: pilih **External** (agar bisa login pakai akun Google biasa).
+    - Isi **App name**, **User support email**, dan **Developer contact email**.
+    - Simpan & Continue hingga selesai.
+4. Kembali ke **Credentials**, pilih **OAuth Client ID**:
+    - Application type: **Web Application**.
+    - Authorized redirect URIs → tambahkan URL berikut (sesuaikan dengan domain lokal/production):
+        - `http://localhost:8000/oauth/google/callback`
+        - `https://your-domain.com/oauth/google/callback`
+5. Klik **Create** → akan muncul **Client ID** dan **Client Secret**.
+6. Salin ke file `.env`:
+    ```env
+    GOOGLE_DRIVE_CLIENT_ID="xxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+    GOOGLE_DRIVE_CLIENT_SECRET="xxxxxxxxxxxxxxxxxxx"
+    ```
+
+### 4. Mendapatkan Folder ID Google Drive
+
+1. Buka [Google Drive](https://drive.google.com/).
+2. Buat folder baru untuk penyimpanan file (misalnya simpeg-uploads).
+3. Klik kanan folder → Get Link.
+4. Salin URL yang muncul, contohnya:
+    ```
+    https://drive.google.com/drive/folders/xxxxxxxxxxxxxxxx
+    ```
+5. Folder ID adalah bagian setelah /folders/, contoh:
+
+    ```
+    xxxxxxxxxxxxxxx
+    ```
+
+6. Tambahkan ke file .env:
+
+    ```
+    GOOGLE_DRIVE_FOLDER_ID="xxxxxxxxxxxxxxx"
+    ```
