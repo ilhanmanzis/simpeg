@@ -162,6 +162,10 @@ class DatabaseSeeder extends Seeder
             Semesters::factory()->create($semester);
         }
 
-        Settings::factory()->create();
+        Settings::factory()->create([
+            'name' => 'Sistem Kepegawaian El-Rahma',
+            'logo' => 'logo.webp',
+            'register' => 'aktif'
+        ]);
     }
 }
