@@ -6,7 +6,12 @@ use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class Auth extends Controller
 {
@@ -15,14 +20,14 @@ class Auth extends Controller
      */
     public function index()
     {
-        $data = [
-            'page' => 'Login',
-            'selected' => 'Login',
-            'title' => 'Login',
-            'setting' => Settings::first()
+        $settings = Cache::remember('app_settings', 300, fn() => Settings::first());
 
-        ];
-        return view('auth.login', $data);
+        return view('auth.login', [
+            'page'     => 'Login',
+            'selected' => 'Login',
+            'title'    => 'Login',
+            'setting'  => $settings,
+        ]);
     }
 
     /**
@@ -46,52 +51,49 @@ class Auth extends Controller
             'password.required' => 'password tidak boleh kosong',
         ]);
 
-        $login = $request->input('email'); // Bisa npp atau email
+        // Throttle (5 kali percobaan/menit per IP+login)
+        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            throw ValidationException::withMessages([
+                'email' => ['Terlalu banyak percobaan. Coba lagi dalam beberapa saat.'],
+            ]);
+        }
+
+        $login    = $request->input('email'); // bisa email atau NPP
         $password = $request->input('password');
 
-        $user = User::with('dataDiri')
-            ->where(function ($query) use ($login) {
-                $query->where('email', $login)
-                    ->orWhere('npp', $login);
-            })
-            ->first();
+        // Coba autentikasi by email lalu by npp
+        $ok = FacadesAuth::attempt(['email' => $login, 'password' => $password])
+            || FacadesAuth::attempt(['npp'   => $login, 'password' => $password]);
 
-
-
-
-        if ($user && Hash::check($password, $user->password)) {
-            FacadesAuth::login($user);
-            $request->session()->regenerate();
-
-
-            if ($user->status_keaktifan === 'nonaktif') {
-                FacadesAuth::logout();
-                return redirect()->route('login')->with('message', 'Akun anda telah di nonaktifkan, silahkan hubungi Admin untuk mengaktifkan akun anda.');
-            }
-            // Tentukan rute tujuan berdasar role
-            $route = match ($user->role) {
-                'admin'    => 'admin.dashboard',
-                'dosen'    => 'dosen.dashboard',
-                'karyawan' => 'karyawan.dashboard',
-                default    => null,
-            };
-
-            if (!$route) {
-                FacadesAuth::logout();
-                return redirect()->route('login')->with('message', 'Role tidak dikenal.');
-            }
-
-
-
-            // 👉 MINTA BROWSER HAPUS CACHE
-            return redirect()->route($route)->withHeaders([
-                // Hapus HTTP cache, Cache Storage, dan SW
-                'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
-            ]);
-        } else {
-
-            return redirect()->route('login')->with('message', 'Email/NPP dan password salah');
+        if (! $ok) {
+            RateLimiter::hit($throttleKey, 60); // reset 1 menit
+            return back()->with('message', 'Email/NPP dan password salah');
         }
+
+        RateLimiter::clear($throttleKey);
+        $request->session()->regenerate();
+        $user = FacadesAuth::user();
+
+        if ($user->status_keaktifan === 'nonaktif') {
+            FacadesAuth::logout();
+            return redirect()->route('login')
+                ->with('message', 'Akun anda telah di nonaktifkan, silahkan hubungi Admin untuk mengaktifkan akun anda.');
+        }
+
+        $route = match ($user->role) {
+            'admin'    => 'admin.dashboard',
+            'dosen'    => 'dosen.dashboard',
+            'karyawan' => 'karyawan.dashboard',
+            default    => null,
+        };
+
+        if (! $route) {
+            FacadesAuth::logout();
+            return redirect()->route('login')->with('message', 'Role tidak dikenal.');
+        }
+
+        return redirect()->route($route);
     }
 
     /**
@@ -127,6 +129,9 @@ class Auth extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // Bersihkan cache/storage saat KELUAR, bukan saat login
+        return redirect()->route('login')->withHeaders([
+            'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
+        ]);
     }
 }
