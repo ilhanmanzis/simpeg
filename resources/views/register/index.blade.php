@@ -54,7 +54,7 @@
                                 </svg>
 
                             </a>
-                            {{-- karyawan --}}
+                            {{-- Tenaga Pendidik --}}
                             <a href="{{ route('register.karyawan') }}"
                                 class="group inline-flex items-center justify-between  py-3 text-sm mt-5 w-full  shadow-md font-normal text-gray-900 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-brand-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10 border border-gray-100 dark:border-white/5 hover:border-brand-500 dark:hover:border-brand-500">
 
@@ -65,8 +65,8 @@
                                 </svg>
 
                                 <div class="flex justify-start flex-col w-full ml-3">
-                                    <p class="text-xl mb-2">Karyawan</p>
-                                    <p class="text-sm">Layanan bagi Karyawan untuk mendaftar akun</p>
+                                    <p class="text-xl mb-2">Tenaga Pendidik</p>
+                                    <p class="text-sm">Layanan bagi Tenaga Pendidik untuk mendaftar akun</p>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">

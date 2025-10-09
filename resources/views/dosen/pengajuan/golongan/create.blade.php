@@ -25,11 +25,9 @@
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
-                        @if ($dosen)
-                            <h3 class="text-base font-medium text-gray-800 dark:text-white/90 mb-5">
-                                Golongan Saat Ini : {{ $dosen->golongan->nama_golongan }}
-                            </h3>
-                        @endif
+                        <h3 class="text-base font-medium text-gray-800 dark:text-white/90 mb-5">
+                            Golongan Saat Ini : {{ $dosen->golongan->nama_golongan ?? '-' }}
+                        </h3>
                         <div class="flex justify-between mb-2">
                             <div class="w-1/3">
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

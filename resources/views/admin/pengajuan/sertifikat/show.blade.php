@@ -41,11 +41,7 @@
                                 <div class="w-48 font-semibold">Kategori</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    @if ($pengajuan->jenis === 'hapus')
-                                        {{ $pengajuan->sertifikat->kategori }}
-                                    @else
-                                        {{ $pengajuan->kategori }}
-                                    @endif
+                                    {{ $pengajuan->kategori->name }}
                                 </div>
                             </div>
                             <div class="flex">
@@ -75,9 +71,9 @@
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
                                     @if ($pengajuan->jenis === 'hapus')
-                                        {{ $pengajuan->sertifikat->tanggal_selesai }}
+                                        {{ $pengajuan->sertifikat->tanggal_selesai ?? '-' }}
                                     @else
-                                        {{ $pengajuan->tanggal_selesai }}
+                                        {{ $pengajuan->tanggal_selesai ?? '-' }}
                                     @endif
                                 </div>
                             </div>

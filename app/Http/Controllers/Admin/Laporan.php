@@ -251,6 +251,14 @@ class Laporan extends Controller
             'Kecamatan'         => $dd->kecamatan ?? '-',
             'Kabupaten'         => $dd->kabupaten ?? '-',
             'Provinsi'          => $dd->provinsi ?? '-',
+            'Golongan Darah'          => $dd->golongan_darah ?? '-',
+            'Nomor BPJS'          => $dd->bpjs ?? '-',
+            'Jumlah Anak'          => $dd->anak ?? '-',
+            ...(
+                (($dd->jenis_kelamin ?? '') === 'Laki-Laki')
+                ? ['Jumlah Istri' => ($dd->istri ?? '-')]
+                : []
+            ),
             'Tanggal Bergabung' => $dd->tanggal_bergabung ? \Carbon\Carbon::parse($dd->tanggal_bergabung)->format('d M Y') : '-',
             'Status'          => $user->status_keaktifan ?? '-',
         ];

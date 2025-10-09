@@ -79,37 +79,42 @@
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NUPTK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NIP</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nip }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nip ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NIDK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidk }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nidk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NIDN</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidn }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nidn ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-48 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->bpjs ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Golongan</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $golongan }}</div>
+                                            <div class="flex-1">{{ $golongan ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Jabatan Fungsional</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $fungsional }}</div>
+                                            <div class="flex-1">{{ $fungsional ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Jabatan Struktural</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $struktural }}</div>
+                                            <div class="flex-1">{{ $struktural ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Tersertifikasi</div>

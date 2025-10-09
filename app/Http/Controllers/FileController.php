@@ -118,4 +118,33 @@ class FileController extends Controller
             'Cache-Control' => 'private, max-age=3600',
         ]);
     }
+
+
+    public function showFotoPublic(string $id)
+    {
+        $dok = Dokumens::where('file_id', $id)->first();
+        if (!$dok || !$dok->file_id) {
+            // fallback: kalau belum ada file_id di data lama, arahkan ke link view (kalau ada) 
+            if ($dok && $dok->view_url) {
+                return redirect()->away($dok->view_url);
+            }
+            abort(404);
+        }
+        // Ambil stream dari Google Drive 
+        $dl = $this->drive->downloadFileStream($dok->file_id); // Stream ke browser (tanpa load semua ke RAM) 
+        if (!$dl) {
+            abort(404);
+        }
+        return response()->stream(function () use ($dl) { // baca dari stream kecil-kecil agar hemat memori 
+            $stream = $dl['body'];
+            while (!$stream->eof()) {
+                echo $stream->read(8192);
+                flush();
+            }
+        }, 200, [
+            'Content-Type' => $dl['mime'],
+            'Content-Disposition' => 'inline; filename="' . addslashes($dl['name']) . '"', // opsional: caching header 
+            'Cache-Control' => 'private, max-age=3600',
+        ]);
+    }
 }

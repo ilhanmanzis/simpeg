@@ -93,6 +93,14 @@ php artisan storage:link
 
 ```
 
+### 8. Bahasa Indonseia untuk validasi input
+
+```
+
+php artisan lang:add id
+
+```
+
 ##
 
 ### Develpoment

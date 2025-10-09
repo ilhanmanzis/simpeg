@@ -81,26 +81,19 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->npp }}</div>
                                         </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NUPTK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nuptk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nip }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidk }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDN</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidn }}</div>
-                                        </div>
+                                        @if ($pengajuan->role === 'dosen')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">NUPTK</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->nuptk ?? '-' }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">NIP</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->nip ?? '-' }}</div>
+                                            </div>
+                                        @endif
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Email</div>
                                             <div class="w-4">:</div>
@@ -124,27 +117,66 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Role</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->role }}</div>
+                                            <div class="flex-1">
+                                                {{ $pengajuan->role === 'karyawan' ? 'Tendik' : 'Dosen' }}</div>
+                                        </div>
+                                        @if ($pengajuan->role === 'dosen')
+
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">
+                                                    @if ($pengajuan->tersertifikasi === 'sudah' && $pengajuan->serdos)
+                                                        <a href="{{ route('file.register', $pengajuan->serdos) }}"
+                                                            target="_blank" class="text-blue-600 hover:underline">
+                                                            Lihat
+                                                        </a>
+                                                    @else
+                                                        <span class="text-gray-500">Belum Tersertifikasi</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Anak</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->anak }}</div>
+                                        </div>
+                                        @if ($pengajuan->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->istri }}</div>
+                                            </div>
+                                        @endif
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->bpjs ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
-                                            <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                            <div class="w-32 font-semibold">Golongan Darah</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">
-                                                @if ($pengajuan->tersertifikasi === 'sudah' && $pengajuan->serdos)
-                                                    <a href="{{ route('file.register', $pengajuan->serdos) }}"
-                                                        target="_blank" class="text-blue-600 hover:underline">
-                                                        Lihat
-                                                    </a>
-                                                @else
-                                                    <span class="text-gray-500">Belum Tersertifikasi</span>
-                                                @endif
-                                            </div>
+                                            <div class="flex-1">{{ $pengajuan->golongan_darah ?? '-' }}</div>
                                         </div>
 
                                     </div>
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
+                                        @if ($pengajuan->role === 'dosen')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">NIDK</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->nidk ?? '-' }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">NIDN</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->nidn ?? '-' }}</div>
+                                            </div>
+                                        @endif
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Tempat Lahir</div>
                                             <div class="w-4">:</div>

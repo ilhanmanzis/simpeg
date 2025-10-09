@@ -69,8 +69,13 @@
                                             Foto telah dihapus dari sistem
                                         </p>
                                     @else
-                                        <img src="{{ route('file.foto.perubahan', $pengajuan->foto) }}"
-                                            alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
+                                        @if ($pengajuan->foto)
+                                            <img src="{{ route('file.foto.perubahan', $pengajuan->foto) }}"
+                                                alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
+                                        @else
+                                            <img src="{{ route('file.foto.drive', $pengajuan->user->dataDiri->foto) }}"
+                                                alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
+                                        @endif
                                     @endif
 
 
@@ -97,12 +102,6 @@
                                             <div class="flex-1">{{ $pengajuan->no_ktp }}</div>
                                         </div>
 
-
-                                        {{-- <div class="flex">
-                                            <div class="w-32 font-semibold">Email</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->email }}</div>
-                                        </div> --}}
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nomor HP</div>
                                             <div class="w-4">:</div>
@@ -128,6 +127,30 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->tanggal_lahir }}</div>
                                         </div>
+                                        @if ($pengajuan->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->istri }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Anak</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->anak }}</div>
+                                            </div>
+                                        @else
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Anak</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->anak }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Golongan Darah</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->golongan_darah ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
                                         @if ($pengajuan->status === 'ditolak')
                                             <div class="flex">
                                                 <div class="w-32 font-semibold">Keterangan</div>
@@ -144,7 +167,20 @@
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->bpjs ?? '-' }}</div>
+                                        </div>
 
+                                        @if ($pengajuan->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Golongan Darah</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->golongan_darah ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Alamat</div>
                                             <div class="w-4">:</div>

@@ -22,7 +22,11 @@
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
                 <form action="{{ route('karyawan.pengajuan.profile.store') }}" method="post"
-                    enctype="multipart/form-data">
+                    enctype="multipart/form-data" x-data="{
+                        gender: @js($karyawan->dataDiri->jenis_kelamin ?? ''),
+                        istri: @js((int) ($karyawan->dataDiri->istri ?? 0)),
+                    }"
+                    x-effect="if (gender !== 'Laki-Laki') { istri = 0 }">
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
@@ -87,62 +91,10 @@
                                 </script>
                             </div>
 
-                            {{-- <div class="mb-2 w-1/2">
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Email Aktif<span class="text-error-500">*</span>
-                                </label>
-                                <input type="email" name="email" value="{{ $karyawan->email }}"
-                                    class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('email') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
-                                    required />
-                                @error('email')
-                                    <p class="text-theme-xs text-error-500 my-1.5">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div> --}}
+
 
                         </div>
-                        {{-- <div class="w-full">
-                            <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Pilih Foto Profil (kosongkan jika tidak ingin diubah)
-                            </label>
-                            <input type="file" id="fotoInput" name="foto" accept="image/*" id="fotoInput"
-                                @change="handleFileUpload($event, 'foto')"
-                                class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border  {{ $errors->has('foto') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}   bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900  dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400" />
-                            @error('foto')
-                                <p class="text-theme-xs text-error-500 my-1.5">
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                            <div id="previewFoto" class="mt-4">
-                                @if (!empty($karyawan->dataDiri->foto))
-                                    <img src="{{ route('file.foto.drive', $karyawan->dataDiri->foto) }}"
-                                        alt="{{ $karyawan->dataDiri->foto }}"
-                                        class="max-w-[200px] mt-2 rounded shadow">
-                                @endif
-                            </div>
 
-                            Tempat preview foto
-                            <script>
-                                document.getElementById('fotoInput').addEventListener('change', function(e) {
-                                    const file = e.target.files[0];
-                                    const previewDiv = document.getElementById('previewFoto');
-                                    previewDiv.innerHTML = ''; // Clear preview sebelumnya
-
-                                    if (file && file.type.startsWith('image/')) {
-                                        const reader = new FileReader();
-                                        reader.onload = function(event) {
-                                            const img = document.createElement('img');
-                                            img.src = event.target.result;
-                                            img.alt = 'Preview Foto';
-                                            img.classList = 'max-w-[200px] mt-2 rounded shadow';
-                                            previewDiv.appendChild(img);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }
-                                });
-                            </script>
-                        </div> --}}
                         <div class="w-full">
                             <div class="lg:flex md:flex sm:block justify-between mb-2">
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full lg:mr-3 md:mr-3 sm:mr-0">
@@ -172,6 +124,79 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="flex justify-start mb-2">
+                                <div class="lg:w-3/12 md:w-3/12 sm:5/12">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jenis Kelamin<span class="text-error-500">*</span>
+                                    </label>
+                                    <div class="flex flex-col justify-start mt-1.5">
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" name="jenis_kelamin" value="Laki-Laki"
+                                                x-model="gender"
+                                                {{ $karyawan->dataDiri->jenis_kelamin == 'Laki-Laki' ? 'checked' : '' }}
+                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
+                                                required />
+                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Laki-laki</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" name="jenis_kelamin" value="Perempuan"
+                                                x-model="gender"
+                                                {{ $karyawan->dataDiri->jenis_kelamin == 'Perempuan' ? 'checked' : '' }}
+                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
+                                                required />
+                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Perempuan</span>
+                                        </label>
+                                    </div>
+                                    @error('jenis_kelamin')
+                                        <p class="text-theme-xs text-error-500 my-1.5">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+
+
+                                {{-- Jumlah Anak --}}
+                                <div class="w-2/12">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Anak<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" min="0" name="anak" required
+                                        value="{{ old('anak', (int) ($karyawan->dataDiri->anak ?? 0)) }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm {{ $errors->has('anak') ? 'border-error-300 focus:border-error-300 dark:border-error-700' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
+                                    @error('anak')
+                                        <p class="text-theme-xs text-error-500 my-1.5">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- Jumlah Istri (muncul hanya jika Laki-Laki) --}}
+                                <div class="w-2/12 ml-3" x-cloak x-show="gender === 'Laki-Laki'">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Istri<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" min="0" name="istri" x-model="istri"
+                                        :required="gender === 'Laki-Laki'" :disabled="gender !== 'Laki-Laki'"
+                                        value="{{ old('istri', (int) ($karyawan->dataDiri->istri ?? 0)) }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm {{ $errors->has('istri') ? 'border-error-300 focus:border-error-300 dark:border-error-700' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
+                                    @error('istri')
+                                        <p class="text-theme-xs text-error-500 my-1.5">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- BPJS --}}
+                                <div class="w-5/12 ml-3">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Nomor BPJS
+                                    </label>
+                                    <input type="text" name="bpjs"
+                                        value="{{ old('bpjs', $karyawan->dataDiri->bpjs) }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm {{ $errors->has('bpjs') ? 'border-error-300 focus:border-error-300 dark:border-error-700' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
+                                    @error('bpjs')
+                                        <p class="text-theme-xs text-error-500 my-1.5">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
 
                             <div class="flex justify-between mb-2">
                                 <div class="lg:w-1/3 md:w-1/3 sm:w-2/4">
@@ -181,13 +206,15 @@
 
                                     <div class="relative">
                                         <input type="date" name="tanggal_lahir"
-                                            value="{{ $karyawan->dataDiri->tanggal_lahir }}" placeholder="Select date"
+                                            value="{{ $karyawan->dataDiri->tanggal_lahir }}"
+                                            placeholder="Select date"
                                             class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('tanggal_lahir') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
                                             onclick="this.showPicker()" required />
                                         <span
                                             class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <svg class="fill-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                                     d="M6.66659 1.5415C7.0808 1.5415 7.41658 1.87729 7.41658 2.2915V2.99984H12.5833V2.2915C12.5833 1.87729 12.919 1.5415 13.3333 1.5415C13.7475 1.5415 14.0833 1.87729 14.0833 2.2915V2.99984L15.4166 2.99984C16.5212 2.99984 17.4166 3.89527 17.4166 4.99984V7.49984V15.8332C17.4166 16.9377 16.5212 17.8332 15.4166 17.8332H4.58325C3.47868 17.8332 2.58325 16.9377 2.58325 15.8332V7.49984V4.99984C2.58325 3.89527 3.47868 2.99984 4.58325 2.99984L5.91659 2.99984V2.2915C5.91659 1.87729 6.25237 1.5415 6.66659 1.5415ZM6.66659 4.49984H4.58325C4.30711 4.49984 4.08325 4.7237 4.08325 4.99984V6.74984H15.9166V4.99984C15.9166 4.7237 15.6927 4.49984 15.4166 4.49984H13.3333H6.66659ZM15.9166 8.24984H4.08325V15.8332C4.08325 16.1093 4.30711 16.3332 4.58325 16.3332H15.4166C15.6927 16.3332 15.9166 16.1093 15.9166 15.8332V8.24984Z"
                                                     fill="" />
@@ -221,9 +248,8 @@
                                     </label>
                                     <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent">
                                         <select name="agama" required
-                                            class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('agama') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
-                                            :class="isOptionSelected && 'text-gray-800 dark:text-white/90'"
-                                            @change="isOptionSelected = true">
+                                            aria-invalid="{{ $errors->has('agama') ? 'true' : 'false' }}"
+                                            class="block w-full h-11 appearance-none rounded-lg border px-4 pr-10 text-sm bg-white text-gray-800 dark:bg-gray-900 dark:text-white/90 focus:outline-none focus:ring-2 {{ $errors->has('agama') ? 'border-error-300 focus:border-error-500 focus:ring-error-200/70' : 'border-gray-300 focus:border-brand-500 focus:ring-brand-500/20 dark:border-gray-700' }}">
 
                                             <option value="Islam"
                                                 {{ $karyawan->dataDiri->agama == 'Islam' ? 'selected' : '' }}
@@ -252,15 +278,15 @@
 
                                         </select>
                                         <span
-                                            class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400">
                                             <svg class="stroke-current" width="20" height="20"
-                                                viewBox="0 0 20 20" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke=""
-                                                    stroke-width="1.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
+                                                viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                                aria-hidden="true">
+                                                <path d="M4.792 7.396L10 12.604 15.208 7.396" stroke-width="1.5"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         </span>
+
 
                                     </div>
                                     @error('agama')
@@ -313,32 +339,38 @@
                                         </p>
                                     @enderror
                                 </div>
+                                {{-- Golongan Darah --}}
                                 <div class="lg:w-3/12 md:w-3/12 sm:5/12 ml-3">
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Jenis Kelamin<span class="text-error-500">*</span>
+                                        Golongan Darah<span class="text-error-500">*</span>
                                     </label>
-                                    <div class="flex flex-col justify-start mt-1.5">
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" name="jenis_kelamin" value="Laki-Laki"
-                                                {{ $karyawan->dataDiri->jenis_kelamin == 'Laki-Laki' ? 'checked' : '' }}
-                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
-                                                required />
-                                            <span
-                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Laki-laki</span>
-                                        </label>
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" name="jenis_kelamin" value="Perempuan"
-                                                {{ $karyawan->dataDiri->jenis_kelamin == 'Perempuan' ? 'checked' : '' }}
-                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
-                                                required />
-                                            <span
-                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Perempuan</span>
-                                        </label>
+                                    @php $golDar = old('golongan_darah', $karyawan->dataDiri->golongan_darah ?? '-'); @endphp
+                                    <div class="relative z-20 bg-transparent">
+                                        <select name="golongan_darah" required
+                                            class="dark:bg-dark-900 shadow-theme-xs h-11 w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-11 text-sm {{ $errors->has('golongan_darah') ? 'border-error-300 focus:border-error-300 dark:border-error-700' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}">
+                                            <option value="-" {{ $golDar === '-' ? 'selected' : '' }}>Tidak
+                                                Diketahui</option>
+                                            <option value="A" {{ $golDar === 'A' ? 'selected' : '' }}>A
+                                            </option>
+                                            <option value="B" {{ $golDar === 'B' ? 'selected' : '' }}>B
+                                            </option>
+                                            <option value="AB" {{ $golDar === 'AB' ? 'selected' : '' }}>AB
+                                            </option>
+                                            <option value="O" {{ $golDar === 'O' ? 'selected' : '' }}>O
+                                            </option>
+                                        </select>
+                                        <span
+                                            class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                            <svg class="stroke-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4.79 7.396L10 12.604 15.208 7.396" stroke-width="1.5"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </span>
                                     </div>
-                                    @error('jenis_kelamin')
-                                        <p class="text-theme-xs text-error-500 my-1.5">
-                                            {{ $message }}
-                                        </p>
+                                    @error('golongan_darah')
+                                        <p class="text-theme-xs text-error-500 my-1.5">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>

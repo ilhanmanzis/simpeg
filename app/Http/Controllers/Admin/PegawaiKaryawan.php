@@ -27,11 +27,11 @@ class PegawaiKaryawan extends Controller
      */
     public function index(Request $request)
     {
-        $keyword = $request->get('karyawan');
+        $keyword = $request->get('tendik');
         $data = [
-            'page'      => 'Karyawan',
-            'selected'  => 'Karyawan',
-            'title'     => 'Data Karyawan',
+            'page'      => 'Tenaga Pendidik',
+            'selected'  => 'Tenaga Pendidik',
+            'title'     => 'Data Tenaga Pendidik',
             'karyawans' => User::where('role', 'karyawan')->with(['dataDiri'])
                 ->when($keyword, function ($query) use ($keyword) {
                     $query->searchKaryawan($keyword);
@@ -46,9 +46,9 @@ class PegawaiKaryawan extends Controller
     public function createPendidikan(string $id)
     {
         $data = [
-            'page'      => 'Karyawan',
-            'selected'  => 'Karyawan',
-            'title'     => 'Tambah Pendidikan Karyawan',
+            'page'      => 'Tenaga Pendidik',
+            'selected'  => 'Tenaga Pendidik',
+            'title'     => 'Tambah Pendidikan Tenaga Pendidik',
             'karyawan'  => User::where('id_user', $id)->with(['dataDiri'])->first(),
             'jenjangs'  => Jenjangs::all()
         ];
@@ -139,9 +139,9 @@ class PegawaiKaryawan extends Controller
     public function create()
     {
         $data = [
-            'page'     => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title'    => 'Tambah Data Karyawan',
+            'page'     => 'Tenaga Pendidik',
+            'selected' => 'Tenaga Pendidik',
+            'title'    => 'Tambah Data Tenaga Pendidik',
             'jenjangs' => Jenjangs::all(),
         ];
 
@@ -179,6 +179,11 @@ class PegawaiKaryawan extends Controller
             'pendidikan.*.ijazah'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'pendidikan.*.transkip_nilai'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'foto'                             => 'required|image|max:2048',
+
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'anak'           => 'required|integer|min:0',
+            'istri'          => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
         ], [
             'password.required'      => 'Password harus di isi',
             'password.min'           => 'Password minimal 6 karakter',
@@ -234,6 +239,10 @@ class PegawaiKaryawan extends Controller
             'kabupaten'        => $request->kabupaten,
             'provinsi'         => $request->provinsi,
             'foto'             => $newId,
+            'bpjs'             => $request->bpjs ?? null,
+            'istri'           => $request->istri ?? 0,
+            'anak'            => $request->anak,
+            'golongan_darah'  => $request->golongan_darah,
         ]);
 
         // pendidikan
@@ -312,9 +321,9 @@ class PegawaiKaryawan extends Controller
     public function show(string $id)
     {
         $data = [
-            'page'     => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title'    => 'Data Karyawan',
+            'page'     => 'Tenaga Pendidik',
+            'selected' => 'Tenaga Pendidik',
+            'title'    => 'Data Tenaga Pendidik',
             'karyawan' => User::where('id_user', $id)
                 ->with([
                     'dataDiri.dokumen',
@@ -334,9 +343,9 @@ class PegawaiKaryawan extends Controller
     public function dataDiri(string $id)
     {
         $data = [
-            'page'      => 'Karyawan',
-            'selected'  => 'Karyawan',
-            'title'     => 'Edit Profil Pribadi Karyawan',
+            'page'      => 'Tenaga Pendidik',
+            'selected'  => 'Tenaga Pendidik',
+            'title'     => 'Edit Profil Pribadi Tenaga Pendidik',
             'karyawan'  => User::where('id_user', $id)->with(['dataDiri.dokumen'])->first()
         ];
         return view('admin.pegawai.karyawan.profile', $data);
@@ -345,9 +354,9 @@ class PegawaiKaryawan extends Controller
     public function pendidikan(string $id, string $idPendidikan)
     {
         $data = [
-            'page'        => 'Karyawan',
-            'selected'    => 'Karyawan',
-            'title'       => 'Edit Pendidikan Karyawan',
+            'page'        => 'Tenaga Pendidik',
+            'selected'    => 'Tenaga Pendidik',
+            'title'       => 'Edit Pendidikan Tenaga Pendidik',
             'karyawan'    => User::where('id_user', $id)->with(['dataDiri'])->first(),
             'pendidikan'  => Pendidikans::where('id_pendidikan', $idPendidikan)->with(['dokumenIjazah', 'dokumenTranskipNilai'])->first(),
             'jenjangs'    => Jenjangs::all()
@@ -373,12 +382,14 @@ class PegawaiKaryawan extends Controller
             'kabupaten'         => 'required|string|max:255',
             'provinsi'          => 'required|string|max:255',
             'alamat'            => 'required|string',
-            'nuptk'             => 'required|max:30',
-            'nip'               => 'nullable|max:30',
-            'nidk'              => 'nullable|max:30',
-            'nidn'              => 'nullable|max:30',
+
             'tanggal_bergabung' => 'required|date',
             'foto'              => 'nullable|image|max:2048',
+
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'anak'    => 'required|integer|min:0',
+            'istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
         ]);
 
         $user     = User::findOrFail($id);
@@ -428,6 +439,10 @@ class PegawaiKaryawan extends Controller
             'nidk'              => $request->input('nidk'),
             'nidn'              => $request->input('nidn'),
             'tanggal_bergabung' => $request->input('tanggal_bergabung'),
+            'bpjs'              => $request->input('bpjs') ?? null,
+            'istri'              => $request->input('istri') ?? 0,
+            'anak'              => $request->input('anak'),
+            'golongan_darah'              => $request->input('golongan_darah'),
         ]);
 
         // Hapus file lama di Drive jika ada file baru
@@ -646,9 +661,9 @@ class PegawaiKaryawan extends Controller
     public function password(string $id)
     {
         $data = [
-            'page'     => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title'    => 'Ubah Password Karyawan',
+            'page'     => 'Tenaga Pendidik',
+            'selected' => 'Tenaga Pendidik',
+            'title'    => 'Ubah Password Tenaga Pendidik',
             'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
         ];
         return view('admin.pegawai.karyawan.password', $data);
@@ -674,9 +689,9 @@ class PegawaiKaryawan extends Controller
     public function npp(string $id)
     {
         $data = [
-            'page'     => 'Karyawan',
-            'selected' => 'Karyawan',
-            'title'    => 'Ubah NPP Karyawan',
+            'page'     => 'Tenaga Pendidik',
+            'selected' => 'Tenaga Pendidik',
+            'title'    => 'Ubah NPP Tenaga Pendidik',
             'karyawan' => User::where('id_user', $id)->with(['dataDiri'])->first()
         ];
         return view('admin.pegawai.karyawan.npp', $data);

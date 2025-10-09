@@ -41,7 +41,8 @@
                                             <option value="dosen"
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Dosen</option>
                                             <option value="karyawan"
-                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Karyawan
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tenaga
+                                                Pendidik
                                             </option>
                                         </select>
                                         <span

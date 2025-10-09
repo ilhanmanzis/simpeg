@@ -4,20 +4,13 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="p-8">
 
-        <!-- Breadcrumb Start -->
-        <div x-data="{ pageName: `{{ $title }}` }">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
-            </div>
 
-        </div>
-        <!-- Breadcrumb End -->
         <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
 
             <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
                 <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                    Data Jenjang
+                    {{ $title }}
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">

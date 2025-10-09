@@ -42,6 +42,7 @@ class StrukturalUser extends Controller
                 ];
             });
 
+        // dd($items);
         $data = [
             'page'     => 'Jabatan Struktural',
             'selected' => 'Jabatan Struktural',
@@ -168,7 +169,7 @@ class StrukturalUser extends Controller
     {
         $struktural = JabatanStrukturals::findOrFail($id);
         $riwayats   = StrukturalUsers::where('id_struktural', $id)
-            ->where('status', 'nonaktif')
+
             ->with(['user.dataDiri', 'struktural', 'dokumen'])
             ->orderBy('created_at', 'desc')
             ->paginate(10)

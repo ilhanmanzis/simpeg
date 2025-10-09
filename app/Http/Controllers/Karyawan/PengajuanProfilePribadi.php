@@ -72,6 +72,10 @@ class PengajuanProfilePribadi extends Controller
             'provinsi' => 'required|string|max:255',
             'alamat' => 'required|string',
             'tanggal_bergabung' => 'required|date',
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'anak'    => 'required|integer|min:0',
+            'istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
 
 
             // Foto
@@ -111,6 +115,10 @@ class PengajuanProfilePribadi extends Controller
             'nidk' => null,
             'nidn' => null,
             'tanggal_bergabung' => $request->input('tanggal_bergabung'),
+            'bpjs'              => $request->input('bpjs') ?? null,
+            'istri'             => $request->input('istri') ?? 0,
+            'anak'              => $request->input('anak') ?? 0,
+            'golongan_darah'              => $request->input('golongan_darah'),
             'foto' => $timestampedName ?? null,
         ]);
 

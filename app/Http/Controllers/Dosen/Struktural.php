@@ -28,7 +28,7 @@ class Struktural extends Controller
             'title' => 'Data Jabatan Struktural Dosen',
             'dosen' => StrukturalUsers::where('id_user', $id)->where('status', 'aktif')->with(['user.dataDiri', 'struktural', 'dokumen'])->orderBy('id_struktural_user', 'desc')->first(),
 
-            'riwayats' => StrukturalUsers::where('id_user', $id)->where('status', 'nonaktif')->with(['user', 'struktural', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
+            'riwayats' => StrukturalUsers::where('id_user', $id)->with(['user', 'struktural', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
         ];
 
         return view('dosen.jabatan.struktural.index', $data);

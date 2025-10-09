@@ -61,8 +61,8 @@
                                     $tglMulai = $isActive ? $r->tanggal_mulai ?? '-' : '-';
 
                                     // kalau fallback, boleh ambil info lain dari $r
-                                    $tglSelesai = $r->tanggal_selesai ?? '-';
-                                    $noSk = $r->sk ?? '-';
+                                    $tglSelesai = $isActive ? $r->tanggal_selesai : '-';
+                                    $noSk = $isActive ? $r->sk : '-';
                                     $status = $isActive ? 'aktif' : 'tidak ada yang aktif';
                                 @endphp
                                 <div class="mt-5 border border-gray-100 dark:border-gray-800 ">
@@ -130,7 +130,7 @@
                                                     <div class="w-4">:</div>
                                                     <div class="flex-1">
 
-                                                        @if ($r && $r->dokumen)
+                                                        @if ($isActive && $r && $r->dokumen)
                                                             <a href="{{ $r->dokumen->preview_url }}" target="_blank"
                                                                 class="text-blue-600 hover:underline">
                                                                 Lihat

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataDiri;
 use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -133,5 +134,37 @@ class Auth extends Controller
         return redirect()->route('login')->withHeaders([
             'Clear-Site-Data' => '"cache", "storage", "executionContexts"',
         ]);
+    }
+
+    public function checkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $exists = User::where('email', $request->email)->exists();
+
+        return response()->json([
+            'exists' => $exists,
+            'message' => $exists ? 'Email sudah terdaftar.' : 'Email tersedia.',
+        ]);
+    }
+
+    public function checkNik(Request $request)
+    {
+        $request->validate([
+            'nik' => ['required', 'digits:16']
+        ]);
+
+        $exists = DataDiri::where('no_ktp', $request->nik)->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
+    public function checkNpp(Request $request)
+    {
+        $request->validate(['npp' => 'required|string']);
+        $exists = User::where('npp', $request->npp)->exists();
+        return response()->json(['exists' => $exists]);
     }
 }

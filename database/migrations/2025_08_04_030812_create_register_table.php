@@ -40,6 +40,10 @@ return new class extends Migration
             $table->string('serdos')->nullable();
             $table->enum('role', ['dosen', 'karyawan'])->default('dosen');
             $table->enum('status', ['disetujui', 'pending', 'ditolak'])->default('pending');
+            $table->string('bpjs')->nullable();
+            $table->integer('anak');
+            $table->integer('istri');
+            $table->enum('golongan_darah', ['A', 'B', 'AB', 'O', '-'])->nullable();
 
 
             $table->timestamps();

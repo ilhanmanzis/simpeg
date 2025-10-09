@@ -29,7 +29,7 @@ class Golongan extends Controller
             'title' => 'Data Golongan Dosen',
             'dosen' => GolonganUsers::where('id_user', $id)->where('status', 'aktif')->with(['user.dataDiri', 'golongan', 'dokumen'])->orderBy('id_golongan_user', 'desc')->first(),
 
-            'riwayats' => GolonganUsers::where('id_user', $id)->where('status', 'nonaktif')->with(['user', 'golongan', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
+            'riwayats' => GolonganUsers::where('id_user', $id)->with(['user', 'golongan', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
         ];
 
         return view('dosen.jabatan.golongan.index', $data);

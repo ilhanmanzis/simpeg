@@ -35,4 +35,9 @@ class Sertifikats extends Model
     {
         return $this->hasMany(PengajuanSertifikats::class, 'id_sertifikat', 'id_sertifikat');
     }
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriSertifikats::class, 'id_kategori', 'id_kategori');
+    }
 }

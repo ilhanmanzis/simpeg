@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('pengajuan_sertifikat', function (Blueprint $table) {
             $table->increments('id_pengajuan');
-            $table->unsignedInteger('id_sertifikat');
+            $table->unsignedInteger('id_sertifikat')->nullable();
             $table->unsignedInteger('id_user');
             $table->string('dokumen')->nullable();
-            $table->string('kategori')->nullable();
+            $table->unsignedInteger('id_kategori')->nullable();
             $table->string('nama_sertifikat')->nullable();
             $table->string('penyelenggara')->nullable();
             $table->string('keterangan')->nullable();
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+            $table->foreign('id_kategori')->references('id_kategori')->on('kategori_sertifikat')->onDelete('cascade');
             $table->foreign('id_sertifikat')->references('id_sertifikat')->on('sertifikat')->onDelete('cascade');
         });
     }

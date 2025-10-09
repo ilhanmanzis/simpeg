@@ -37,6 +37,10 @@ return new class extends Migration
             $table->enum('tersertifikasi', ['sudah', 'tidak'])->default('tidak');
             $table->string('serdos')->nullable();
             $table->enum('pimpinan', ['aktif', 'nonaktif'])->default('nonaktif');
+            $table->string('bpjs')->nullable();
+            $table->integer('anak');
+            $table->integer('istri');
+            $table->enum('golongan_darah', ['A', 'B', 'AB', 'O', '-'])->nullable();
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');

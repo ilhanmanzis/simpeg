@@ -76,6 +76,11 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $karyawan->npp }}</div>
                                         </div>
+                                        <div class="flex">
+                                            <div class="w-48 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->bpjs ?? '-' }}</div>
+                                        </div>
 
 
                                     </div>

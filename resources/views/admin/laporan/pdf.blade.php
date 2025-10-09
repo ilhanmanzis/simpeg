@@ -4,7 +4,7 @@
     $isDosen = $pegawai === 'dosen';
     $isKaryawan = $pegawai === 'karyawan';
 
-    $filterPegawai = $isAll ? 'Karyawan & Dosen' : ucfirst($pegawai);
+    $filterPegawai = $isAll ? 'Tenaga Pendidik & Dosen' : ucfirst($pegawai);
     $filterSert = $isDosen ? (($tersertifikasi ?? 'all') === 'all' ? 'Semua' : ucfirst($tersertifikasi)) : null;
 
     $total = $rows->count();
@@ -231,7 +231,8 @@
 
         <!-- filter sebagai chips -->
         <div class="filters">
-            <span class="chip">Pegawai: <b>{{ $filterPegawai }}</b></span>
+            <span class="chip">Pegawai:
+                <b>{{ $filterPegawai == 'Karyawan' ? 'Tenaga Pendidik' : $filterPegawai }}</b></span>
             @if ($isDosen)
                 <span class="chip">Tersertifikasi: <b>{{ $filterSert }}</b></span>
             @endif

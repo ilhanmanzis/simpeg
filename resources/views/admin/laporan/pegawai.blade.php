@@ -302,7 +302,16 @@
             @endforeach
 
 
+
         </table>
+
+        @if ($role === 'dosen')
+            <br>
+            <br>
+            <br>
+        @endif
+
+
 
         <div class="section-title">Riwayat Pendidikan</div>
         <table class="edu-table">

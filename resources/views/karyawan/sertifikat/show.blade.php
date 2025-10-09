@@ -67,7 +67,7 @@
                                 <div class="w-48 font-semibold">Kategori</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    {{ $sertifikat->kategori }}
+                                    {{ $sertifikat->kategori->name }}
                                 </div>
                             </div>
                             <div class="flex">
@@ -88,7 +88,7 @@
                                 <div class="w-48 font-semibold">Tanggal Selesai</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    {{ $sertifikat->tanggal_selesai }}
+                                    {{ $sertifikat->tanggal_selesai ?? '-' }}
                                 </div>
                             </div>
 

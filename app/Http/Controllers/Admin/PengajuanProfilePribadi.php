@@ -131,6 +131,10 @@ class PengajuanProfilePribadi extends Controller
             'kecamatan'        => $perubahan->kecamatan,
             'kabupaten'        => $perubahan->kabupaten,
             'provinsi'         => $perubahan->provinsi,
+            'bpjs'         => $perubahan->bpjs,
+            'istri'         => $perubahan->istri,
+            'anak'         => $perubahan->anak,
+            'golongan_darah'         => $perubahan->golongan_darah,
         ]);
 
         // Jika ada foto baru: hapus file lokal & file lama di Google Drive

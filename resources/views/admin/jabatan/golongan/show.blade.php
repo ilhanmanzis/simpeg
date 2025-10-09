@@ -132,7 +132,7 @@
                             </h2>
                         </div>
 
-                        <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+                        <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6" x-data="riwayatDelete()">
                             <!-- ====== Table Six Start -->
                             <div
                                 class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -271,27 +271,23 @@
                                                     <td class="px-5 py-4 sm:px-6">
                                                         <div class="flex items-center">
                                                             <div class="flex -space-x-2">
-                                                                <form
-                                                                    action="{{ route('admin.jabatan.golongan.mutasi.delete', ['id' => $riwayat['id_golongan_user']]) }}"
-                                                                    onsubmit="return confirm('Apakah anda yakin ingin menghapus data?')"
-                                                                    method="post">
-                                                                    @csrf
-                                                                    @method('delete')
+                                                                <button type="button"
+                                                                    @click="confirmDelete(
+    '{{ route('admin.jabatan.golongan.mutasi.delete', ['id' => $riwayat['id_golongan_user']]) }}',
+    '{{ strtolower($riwayat->status ?? '') }}',
+    '{{ $riwayat->golongan->nama_golongan }}'
+  )"
+                                                                    class="inline-flex items-center gap-2 rounded-lg bg-error-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-error-600">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="none" viewBox="0 0 24 24"
+                                                                        stroke-width="1.5" stroke="currentColor"
+                                                                        class="size-6">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21.75H8.084A2.25 2.25 0 0 1 5.84 19.673L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0A48.667 48.667 0 0 1 8.75 5m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0C9.66 1.92 8.75 2.905 8.75 4.084V5m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                                    </svg>
+                                                                </button>
 
-                                                                    <button type="submit"
-                                                                        class="inline-flex items-center gap-2 rounded-lg bg-error-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-error-600">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            fill="none" viewBox="0 0 24 24"
-                                                                            stroke-width="1.5" stroke="currentColor"
-                                                                            class="size-6">
-                                                                            <path stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                                        </svg>
-
-
-                                                                    </button>
-                                                                </form>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -310,7 +306,36 @@
                                 </div>
                             </div>
 
+
                             <!-- ====== Table Six End -->
+                            <!-- Modal konfirmasi hapus -->
+                            <div x-show="show" x-transition.opacity
+                                class="fixed inset-0 z-50 flex items-center justify-center">
+                                <!-- backdrop -->
+                                <div class="absolute inset-0 bg-black/50" @click="show=false"></div>
+
+                                <!-- dialog -->
+                                <div
+                                    class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                    <h3 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        Konfirmasi Penghapusan
+                                    </h3>
+                                    <p class="mb-4 text-sm text-gray-600 dark:text-gray-300" x-text="message"></p>
+
+                                    <div class="mt-6 flex items-center justify-end gap-3">
+                                        <button type="button"
+                                            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.06]"
+                                            @click="show=false">
+                                            Batal
+                                        </button>
+                                        <button type="button"
+                                            class="inline-flex items-center gap-2 rounded-lg bg-error-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs transition hover:bg-error-600"
+                                            @click="proceed()">
+                                            Ya, hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -338,7 +363,51 @@
                     console.error('Gagal menyalin: ', err);
                 });
             }
+
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('riwayatDelete', () => ({
+                    show: false,
+                    message: '',
+                    actionUrl: '',
+
+                    // status: 'aktif' | 'nonaktif'
+                    confirmDelete(url, status, golongan) {
+                        this.actionUrl = url;
+
+                        const isAktif = (status || '').trim() === 'aktif';
+                        this.message = isAktif ?
+                            `Anda akan menghapus riwayat golongan "${golongan}" yang masih AKTIF. Jika dilanjutkan, golongan saat ini akan menjadi KOSONG sampai Anda menetapkan yang baru. Lanjutkan?` :
+                            `Apakah Anda yakin ingin menghapus riwayat golongan "${golongan}"?`;
+
+                        this.show = true;
+                    },
+
+                    proceed() {
+                        // submit DELETE dengan form dinamis (CSRF + _method)
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = this.actionUrl;
+
+                        const csrf = document.createElement('input');
+                        csrf.type = 'hidden';
+                        csrf.name = '_token';
+                        csrf.value = '{{ csrf_token() }}';
+
+                        const method = document.createElement('input');
+                        method.type = 'hidden';
+                        method.name = '_method';
+                        method.value = 'DELETE';
+
+                        form.appendChild(csrf);
+                        form.appendChild(method);
+                        document.body.appendChild(form);
+
+                        form.submit();
+                    },
+                }));
+            });
         </script>
+
 
     </main>
 </x-layout>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\GolonganUser;
 use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
+use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\Laporan;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
@@ -55,6 +56,9 @@ use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanPr
 use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
 use App\Http\Controllers\Karyawan\Sertifikat as KaryawanSertifikat;
 use App\Http\Controllers\ManajemenUser;
+use App\Http\Controllers\Public\Dosen;
+use App\Http\Controllers\Public\Home;
+use App\Http\Controllers\Public\Tendik;
 use App\Http\Controllers\Register;
 use App\Http\Controllers\Setting;
 use App\Models\StrukturalUsers;
@@ -64,21 +68,21 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 
 
-Route::get('/', function () {
-    $user = FacadesAuth::user();
-    if (!$user) {
-        return redirect('login')->with('message', 'Silakan login terlebih dahulu');
-    }
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    } else if ($user->role === 'dosen') {
-        return redirect()->route('dosen.dashboard');
-    } else if ($user->role === 'karyawan') {
-        return redirect()->route('karyawan.dashboard');
-    } else {
-        return redirect('login')->with('message', 'Silakan login terlebih dahulu');
-    }
-});
+// Route::get('/', function () {
+//     $user = FacadesAuth::user();
+//     if (!$user) {
+//         return redirect('login')->with('message', 'Silakan login terlebih dahulu');
+//     }
+//     if ($user->role === 'admin') {
+//         return redirect()->route('admin.dashboard');
+//     } else if ($user->role === 'dosen') {
+//         return redirect()->route('dosen.dashboard');
+//     } else if ($user->role === 'karyawan') {
+//         return redirect()->route('karyawan.dashboard');
+//     } else {
+//         return redirect('login')->with('message', 'Silakan login terlebih dahulu');
+//     }
+// });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // OAuth flow
@@ -143,6 +147,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::put('/semester/{id}', [Semester::class, 'update'])->name('semester.update');
     Route::delete('/semester/{id}', [Semester::class, 'destroy'])->name('semester.delete');
 
+    // kategori sertifikat
+    Route::get('/kategori-sertifikat', [KategoriSertifikat::class, 'index'])->name('kategori-sertifikat');
+    Route::get('/kategori-sertifikat/create', [KategoriSertifikat::class, 'create'])->name('kategori-sertifikat.create');
+    Route::post('/kategori-sertifikat/store', [KategoriSertifikat::class, 'store'])->name('kategori-sertifikat.store');
+    Route::get('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'edit'])->name('kategori-sertifikat.edit');
+    Route::put('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'update'])->name('kategori-sertifikat.update');
+    Route::delete('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'destroy'])->name('kategori-sertifikat.delete');
+
     // dosen
     Route::get('/dosen', [PegawaiDosen::class, 'index'])->name('dosen');
     Route::get('/dosen/{id}/show', [PegawaiDosen::class, 'show'])->name('dosen.show');
@@ -165,23 +177,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::put('/dosen/{id}/serdos', [PegawaiDosen::class, 'serdosUpdate'])->name('dosen.serdos.update');
 
     // karyawan
-    Route::get('/karyawan', [PegawaiKaryawan::class, 'index'])->name('karyawan');
-    Route::get('/karyawan/{id}/show', [PegawaiKaryawan::class, 'show'])->name('karyawan.show');
-    Route::get('/karyawan/create', [PegawaiKaryawan::class, 'create'])->name('karyawan.create');
-    Route::post('/karyawan/store', [PegawaiKaryawan::class, 'store'])->name('karyawan.store');
-    Route::get('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiri'])->name('karyawan.datadiri');
-    Route::put('/karyawan/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiriUpdate'])->name('karyawan.datadiri.update');
-    Route::get('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikan'])->name('karyawan.pendidikan');
-    Route::put('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikanUpdate'])->name('karyawan.pendidikan.update');
-    Route::get('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'createPendidikan'])->name('karyawan.pendidikan.create');
-    Route::post('/karyawan/{id}/creatependidikan', [PegawaiKaryawan::class, 'storePendidikan'])->name('karyawan.pendidikan.store');
-    Route::delete('/karyawan/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'deletePendidikan'])->name('karyawan.pendidikan.delete');
-    Route::get('/karyawan/{id}/password', [PegawaiKaryawan::class, 'password'])->name('karyawan.password');
-    Route::put('/karyawan/{id}/password', [PegawaiKaryawan::class, 'passwordUpdate'])->name('karyawan.password.update');
-    Route::get('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'npp'])->name('karyawan.npp');
-    Route::put('/karyawan/{id}/npp', [PegawaiKaryawan::class, 'nppUpdate'])->name('karyawan.npp.update');
-    Route::put('/karyawan/{id}/status', [PegawaiKaryawan::class, 'status'])->name('karyawan.status');
-    Route::delete('/karyawan/{id}', [PegawaiKaryawan::class, 'destroy'])->name('karyawan.destroy');
+    Route::get('/tendik', [PegawaiKaryawan::class, 'index'])->name('karyawan');
+    Route::get('/tendik/{id}/show', [PegawaiKaryawan::class, 'show'])->name('karyawan.show');
+    Route::get('/tendik/create', [PegawaiKaryawan::class, 'create'])->name('karyawan.create');
+    Route::post('/tendik/store', [PegawaiKaryawan::class, 'store'])->name('karyawan.store');
+    Route::get('/tendik/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiri'])->name('karyawan.datadiri');
+    Route::put('/tendik/{id}/datadiri', [PegawaiKaryawan::class, 'dataDiriUpdate'])->name('karyawan.datadiri.update');
+    Route::get('/tendik/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikan'])->name('karyawan.pendidikan');
+    Route::put('/tendik/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'pendidikanUpdate'])->name('karyawan.pendidikan.update');
+    Route::get('/tendik/{id}/creatependidikan', [PegawaiKaryawan::class, 'createPendidikan'])->name('karyawan.pendidikan.create');
+    Route::post('/tendik/{id}/creatependidikan', [PegawaiKaryawan::class, 'storePendidikan'])->name('karyawan.pendidikan.store');
+    Route::delete('/tendik/{id}/pendidikan/{idPendidikan}', [PegawaiKaryawan::class, 'deletePendidikan'])->name('karyawan.pendidikan.delete');
+    Route::get('/tendik/{id}/password', [PegawaiKaryawan::class, 'password'])->name('karyawan.password');
+    Route::put('/tendik/{id}/password', [PegawaiKaryawan::class, 'passwordUpdate'])->name('karyawan.password.update');
+    Route::get('/tendik/{id}/npp', [PegawaiKaryawan::class, 'npp'])->name('karyawan.npp');
+    Route::put('/tendik/{id}/npp', [PegawaiKaryawan::class, 'nppUpdate'])->name('karyawan.npp.update');
+    Route::put('/tendik/{id}/status', [PegawaiKaryawan::class, 'status'])->name('karyawan.status');
+    Route::delete('/tendik/{id}', [PegawaiKaryawan::class, 'destroy'])->name('karyawan.destroy');
 
 
     // pengajuan perubahan profile pribadi
@@ -408,8 +420,8 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
 });
 
 
-// karyawan
-Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->as('karyawan.')->group(function () {
+// tendik
+Route::middleware(['auth', 'role:karyawan'])->prefix('tendik')->as('karyawan.')->group(function () {
     Route::get('/', [Dashboard::class, 'karyawan'])->name('dashboard');
 
     // profile pribadi
@@ -475,17 +487,35 @@ Route::post('/logout', [Auth::class, 'destroy'])->name('auth.logout');
 // register
 Route::get('/register', [Register::class, 'index'])->middleware('guest')->name('register');
 Route::get('/register/dosen', [Register::class, 'dosen'])->middleware('guest')->name('register.dosen');
-Route::get('/register/karyawan', [Register::class, 'karyawan'])->middleware('guest')->name('register.karyawan');
+Route::get('/register/tendik', [Register::class, 'karyawan'])->middleware('guest')->name('register.karyawan');
 Route::post('/register/dosen', [Register::class, 'storeDosen'])->middleware('guest')->name('register.dosen.store');
-Route::post('/register/karyawan', [Register::class, 'storeKaryawan'])->middleware('guest')->name('register.karyawan.store');
+Route::post('/register/tendik', [Register::class, 'storeKaryawan'])->middleware('guest')->name('register.karyawan.store');
 
-Route::get('/check-email', function (Illuminate\Http\Request $request) {
-    $email = $request->query('email');
-    $exists = \App\Models\User::where('email', $email)->exists();
+// cek email
+Route::post('/register/check-email', [Auth::class, 'checkEmail'])
+    ->name('register.email.check');
 
-    return response()->json(['unique' => !$exists]);
-});
+// cek nik
+Route::post('/register/check-nik', [Auth::class, 'checkNik'])
+    ->name('register.nik.check');
+
+// cek npp
+Route::post('/register/npp/check', [Auth::class, 'checkNpp'])
+    ->name('register.npp.check');
 
 
 // error google drive
 Route::get('/drive-fail', [DriveFail::class, 'driveFail'])->name('drive.fail');
+
+
+
+
+
+// public
+Route::get('/', [Home::class, 'index'])->name('public.home');
+Route::get('/data-dosen', [Dosen::class, 'index'])->name('public.dosen');
+Route::get('/data-dosen/{npp}', [Dosen::class, 'show'])->name('public.dosen.show');
+Route::get('/data-tendik', [Tendik::class, 'index'])->name('public.tendik');
+Route::get('/data-tendik/{npp}', [Tendik::class, 'show'])->name('public.tendik.show');
+
+Route::get('/foto/{id}', [FileController::class, 'showFotoPublic'])->name('public.foto');

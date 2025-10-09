@@ -169,7 +169,11 @@ class PengajuanAkun extends Controller
                 'provinsi'          => $register->provinsi,
                 'foto'              => $newId,
                 'tersertifikasi'    => $register->tersertifikasi,
-                'serdos'            => $newIdSerdos ?? null
+                'serdos'            => $newIdSerdos ?? null,
+                'bpjs'          => $register->bpjs,
+                'anak'          => $register->anak,
+                'istri'          => $register->istri,
+                'golongan_darah'          => $register->golongan_darah,
             ]);
 
             // dokumen pendidikan

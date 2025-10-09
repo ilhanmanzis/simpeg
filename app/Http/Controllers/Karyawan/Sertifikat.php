@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
+use App\Models\KategoriSertifikats;
 use App\Models\PengajuanSertifikats;
 use App\Models\Sertifikats;
 use App\Services\GoogleDriveService;
@@ -35,7 +36,7 @@ class Sertifikat extends Controller
                 ->paginate(10)
                 ->appends(request()->except('page', 'riwayat_page')),
             'riwayats' => PengajuanSertifikats::where('id_user', $id)
-                // where('status', '!=', 'disetujui')->
+                ->where('status', '!=', 'disetujui')
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10, ['*'], 'riwayat_page')
                 ->appends(request()->except('page'))
@@ -56,6 +57,7 @@ class Sertifikat extends Controller
             'page' => 'Sertifikat',
             'selected' => 'Sertifikat',
             'title' => 'Tambah Sertifikat',
+            'kategoris' => KategoriSertifikats::all()
 
 
         ];
@@ -70,7 +72,7 @@ class Sertifikat extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
+            'kategori' =>  'required|exists:kategori_sertifikat,id_kategori',
             'penyelenggara' => 'required|string|max:255',
             'tanggal_diperoleh' => 'required|date',
             'tanggal_selesai' => 'nullable|date',
@@ -87,7 +89,7 @@ class Sertifikat extends Controller
         PengajuanSertifikats::create([
             'id_user' => $user,
             'nama_sertifikat' => $request->name,
-            'kategori' => $request->kategori,
+            'id_kategori' => $request->kategori,
             'penyelenggara' => $request->penyelenggara,
             'tanggal_diperoleh' => $request->tanggal_diperoleh,
             'tanggal_selesai' => $request->tanggal_selesai ?? null,
@@ -105,7 +107,7 @@ class Sertifikat extends Controller
      */
     public function show(string $id)
     {
-        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user.dataDiri', 'dokumenSertifikat'])->firstOrFail();
+        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user.dataDiri', 'dokumenSertifikat', 'kategori'])->firstOrFail();
 
         if ($sertifikat->id_user !== Auth::user()->id_user) {
             abort(403); // Forbidden
@@ -116,13 +118,14 @@ class Sertifikat extends Controller
             'selected' => 'Sertifikat',
             'title' => 'Data Sertifikat',
             'sertifikat' => $sertifikat,
+            'kategoris' => KategoriSertifikats::all()
         ];
         return view('karyawan.sertifikat.show', $data);
     }
 
     public function riwayat(string $id)
     {
-        $pengajuan = PengajuanSertifikats::where('id_pengajuan', $id)->with(['user.dataDiri'])->firstOrFail();
+        $pengajuan = PengajuanSertifikats::where('id_pengajuan', $id)->with(['user.dataDiri', 'kategori'])->firstOrFail();
 
         if ($pengajuan->id_user !== Auth::user()->id_user) {
             abort(403); // Forbidden
@@ -143,7 +146,7 @@ class Sertifikat extends Controller
     public function edit(string $id)
     {
         $user = Auth::user()->id_user;
-        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['dokumenSertifikat', 'user.dataDiri'])->firstOrFail();
+        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['dokumenSertifikat', 'user.dataDiri', 'kategori'])->firstOrFail();
 
         if ($user !== $sertifikat->user->id_user) {
             return redirect()->route('karyawan.sertifikat');
@@ -154,6 +157,7 @@ class Sertifikat extends Controller
             'selected' => 'Sertifikat',
             'title' => 'Edit Sertifikat',
             'sertifikat' => $sertifikat,
+            'kategoris' => KategoriSertifikats::all()
 
         ];
         return view('karyawan.sertifikat.edit', $data);
@@ -166,7 +170,7 @@ class Sertifikat extends Controller
     {
         $request->validate([
             'name'       => 'required|string|max:255',
-            'kategori'   => 'nullable|string|max:255',
+            'kategori'   => 'required|exists:kategori_sertifikat,id_kategori',
             'penyelenggara'           => 'required|string|max:255',
             'tanggal_diperoleh'     => 'required|date',
             'tanggal_selesai'     => 'nullable|date',
@@ -193,7 +197,7 @@ class Sertifikat extends Controller
             'id_user'               => $user,
             'nama_sertifikat'       => $request->name,
             'id_sertifikat'         => $id,
-            'kategori'              => $request->kategori,
+            'id_kategori'           => $request->kategori,
             'penyelenggara'         => $request->penyelenggara,
             'tanggal_diperoleh'     => $request->tanggal_diperoleh ?? null,
             'tanggal_selesai'       => $request->tanggal_selesai ?? null,
@@ -222,7 +226,7 @@ class Sertifikat extends Controller
             'id_user' => $user,
             'id_sertifikat' => $id,
             'nama_sertifikat' => $sertifikat->nama_sertifikat,
-            'kategori' => null,
+            'id_kategori' => $sertifikat->id_sertifikat,
             'penyelenggara' => null,
             'tanggal_diperoleh' => null,
             'tanggal_selesai' => null,

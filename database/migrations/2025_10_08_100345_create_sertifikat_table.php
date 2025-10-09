@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('sertifikat', function (Blueprint $table) {
             $table->increments('id_sertifikat');
             $table->unsignedInteger('id_user');
+            $table->unsignedInteger('id_kategori');
             $table->string('dokumen');
-            $table->string('kategori');
             $table->string('nama_sertifikat');
             $table->string('penyelenggara');
             $table->date('tanggal_diperoleh');
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+            $table->foreign('id_kategori')->references('id_kategori')->on('kategori_sertifikat')->onDelete('cascade');
             $table->foreign('dokumen')->references('nomor_dokumen')->on('dokumen')->onDelete('cascade');
         });
     }

@@ -21,7 +21,11 @@
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
                 <form action="{{ route('admin.dosen.datadiri.update', ['id' => $dosen['id_user']]) }}" method="post"
-                    enctype="multipart/form-data" x-data="{ loading: false }" @submit="loading = true">
+                    enctype="multipart/form-data" x-data="{
+                        loading: false,
+                        gender: '{{ $dosen->dataDiri->jenis_kelamin }}' || '',
+                        istri: {{ $dosen->dataDiri->istri }},
+                    }" @submit="loading = true">
                     @method('put')
                     @csrf
                     <!-- Elements -->
@@ -278,6 +282,7 @@
                                     <div class="flex flex-col justify-start mt-1.5">
                                         <label class="inline-flex items-center">
                                             <input type="radio" name="jenis_kelamin" value="Laki-Laki"
+                                                x-model = "gender"
                                                 {{ $dosen->dataDiri->jenis_kelamin == 'Laki-Laki' ? 'checked' : '' }}
                                                 class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
                                                 required />
@@ -286,6 +291,7 @@
                                         </label>
                                         <label class="inline-flex items-center">
                                             <input type="radio" name="jenis_kelamin" value="Perempuan"
+                                                x-model = "gender"
                                                 {{ $dosen->dataDiri->jenis_kelamin == 'Perempuan' ? 'checked' : '' }}
                                                 class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
                                                 required />
@@ -365,16 +371,7 @@
 
                         <div class="w-full">
                             <div class="flex justify-between mb-2">
-                                {{-- <div class="lg:w-1/2 mr-3">
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        NPP<span class="text-error-500">*</span>
-                                    </label>
-                                    <input type="text" name="npp" x-model="formData.npp"
-                                        :value="formData.npp" :class="errors.npp ? 'field-error' : ''"
-                                        class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700"
-                                        required />
-                                        <div x-show="errors.npp" class="error-message" x-text="errors.npp"></div>
-                                    </div> --}}
+
                                 <div class="lg:w-1/2">
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                         NUPTK<span class="text-error-500">*</span>
@@ -466,6 +463,111 @@
 
                         </div>
 
+                        <div class="w-full">
+                            <div class="flex justify-start mb-2">
+                                <div class="w-5/12">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Nomor BPJS
+                                    </label>
+                                    <input type="text" name="bpjs" value="{{ $dosen->dataDiri->bpjs }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('bpjs') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}" />
+                                    @error('bpjs')
+                                        <p class="text-theme-xs text-error-500 my-1.5">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </div>
+                                <div class="w-3/12 mx-3">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Golongan Darah<span class="text-error-500">*</span>
+                                    </label>
+                                    <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent">
+                                        <select name="golongan_darah" required
+                                            class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10  h-11 w-full appearance-none rounded-lg border bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('golongan_darah') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                            :class="isOptionSelected && 'text-gray-800 dark:text-white/90'"
+                                            @change="isOptionSelected = true">
+
+                                            <option value="-"
+                                                {{ $dosen->dataDiri->golongan_darah == '-' ? 'selected' : '' }}
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tidak
+                                                Diketahui
+                                            </option>
+                                            <option value="A"
+                                                {{ $dosen->dataDiri->golongan_darah == 'A' ? 'selected' : '' }}
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">A
+                                            </option>
+                                            <option value="B"
+                                                {{ $dosen->dataDiri->golongan_darah == 'B' ? 'selected' : '' }}
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">B
+                                            </option>
+                                            <option value="AB"
+                                                {{ $dosen->dataDiri->golongan_darah == 'AB' ? 'selected' : '' }}
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">AB
+                                            </option>
+                                            <option value="O"
+                                                {{ $dosen->dataDiri->golongan_darah == 'O' ? 'selected' : '' }}
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">O
+                                            </option>
+
+
+                                        </select>
+                                        <span
+                                            class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                            <svg class="stroke-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke=""
+                                                    stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                            </svg>
+                                        </span>
+
+                                    </div>
+                                    @error('agama')
+                                        <p class="text-theme-xs text-error-500 my-1.5">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </div>
+                                <div class="w-2/12">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Anak<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" min="0" name="anak" required
+                                        value="{{ $dosen->dataDiri->anak }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('anak') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                        required />
+                                    @error('anak')
+                                        <p class="text-theme-xs text-error-500 my-1.5">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </div>
+                                <div class="w-2/12 ml-3" x-cloak x-show="gender === 'Laki-Laki'">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Istri<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" min="0" name="istri" x-model="istri"
+                                        :required="gender === 'Laki-Laki'" :disabled="gender !== 'Laki-Laki'"
+                                        value="{{ $dosen->dataDiri->istri }}"
+                                        class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('istri') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                        required />
+                                    @error('istri')
+                                        <p class="text-theme-xs text-error-500 my-1.5">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </div>
+
+
+
+                            </div>
+
+                        </div>
 
                     </div>
 

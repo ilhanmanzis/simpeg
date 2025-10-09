@@ -169,7 +169,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $pengajuan['role'] }}
+                                                                    {{ $pengajuan['role'] === 'karyawan' ? 'Tendik' : 'Dosen' }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -352,7 +352,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat['role'] }}
+                                                                    {{ $riwayat['role'] === 'karyawan' ? 'Tendik' : 'Dosen' }}
                                                                 </p>
                                                             </div>
                                                         </div>

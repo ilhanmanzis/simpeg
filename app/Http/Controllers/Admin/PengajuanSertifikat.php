@@ -66,7 +66,7 @@ class PengajuanSertifikat extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanSertifikats::where('id_pengajuan', $id)
-            ->with(['user.dataDiri', 'sertifikat'])
+            ->with(['user.dataDiri', 'sertifikat', 'kategori'])
             ->firstOrFail();
 
         $data = [
@@ -96,7 +96,7 @@ class PengajuanSertifikat extends Controller
         $perubahan->update([
             'id_sertifikat' => null,
             'nama_sertifikat' => $sertifikat->nama_sertifikat ?? $perubahan->nama_sertifikat,
-            'kategori' => $sertifikat->kategori ?? $perubahan->kategori,
+            'id_kategori' => $sertifikat->id_kategori ?? $perubahan->id_kategori,
             'penyelenggara' => $sertifikat->penyelenggara ?? $perubahan->penyelenggara,
             'tanggal_diperoleh' => $sertifikat->tanggal_diperoleh ?? $perubahan->tanggal_diperoleh,
             'tanggal_selesai' => $sertifikat->tanggal_selesai ?? $perubahan->tanggal_selesai,
@@ -133,7 +133,7 @@ class PengajuanSertifikat extends Controller
                     $perubahan->update([
                         'id_sertifikat' => null,
                         'nama_sertifikat' => $sertifikat->nama_sertifikat,
-                        'kategori' => $sertifikat->kategori,
+                        'id_kategori' => $sertifikat->id_kategori,
                         'penyelenggara' => $sertifikat->penyelenggara,
                         'tanggal_diperoleh' => $sertifikat->tanggal_diperoleh,
                         'tanggal_selesai' => $sertifikat->tanggal_selesai,
@@ -191,7 +191,7 @@ class PengajuanSertifikat extends Controller
                 Sertifikats::create([
                     'id_user'             => $user->id_user,
                     'nama_sertifikat'     => $perubahan->nama_sertifikat,
-                    'kategori'            => $perubahan->kategori,
+                    'id_kategori'         => $perubahan->id_kategori,
                     'penyelenggara'       => $perubahan->penyelenggara,
                     'tanggal_selesai'     => $perubahan->tanggal_selesai,
                     'tanggal_diperoleh'   => $perubahan->tanggal_diperoleh,
@@ -244,7 +244,7 @@ class PengajuanSertifikat extends Controller
             // Update field sertifikat dari pengajuan
             $sertifikat->update([
                 'nama_sertifikat'       => $perubahan->nama_sertifikat,
-                'kategori'              => $perubahan->kategori,
+                'id_kategori'           => $perubahan->id_kategori,
                 'penyelenggara'         => $perubahan->penyelenggara,
                 'tanggal_diperoleh'     => $perubahan->tanggal_diperoleh,
                 'tanggal_selesai'       => $perubahan->tanggal_selesai,

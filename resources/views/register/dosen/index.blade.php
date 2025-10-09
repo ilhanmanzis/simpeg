@@ -133,9 +133,21 @@
 
                                 <div class="w-2/10 flex justify-center ml-3 py-5 h-24">
                                     <button type="button" @click="validateAndNextStep(1)"
-                                        class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3">
-                                        Lanjut
+                                        :disabled="loadingStep === 1" :aria-busy="loadingStep === 1"
+                                        class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3 disabled:opacity-70 disabled:cursor-not-allowed">
+                                        <template x-if="loadingStep === 1">
+                                            <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                aria-hidden="true">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+                                            </svg>
+                                        </template>
+                                        <span x-text="loadingStep === 1 ? 'Memeriksa…' : 'Lanjut'"></span>
                                     </button>
+
                                 </div>
                             </div>
                         </div>
@@ -186,6 +198,78 @@
                                         class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700"
                                         required />
                                     <div x-show="errors.no_hp" class="error-message" x-text="errors.no_hp"></div>
+                                </div>
+                            </div>
+
+                            <!-- Row: Gender, Anak, (Istri), BPJS -->
+                            <div class="grid grid-cols-1 gap-3 mb-2 md:grid-cols-12">
+
+                                <!-- Jenis Kelamin -->
+                                <div class="md:col-span-3">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jenis Kelamin<span class="text-error-500">*</span>
+                                    </label>
+                                    <div class="flex flex-col gap-2 mt-1.5">
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" name="jenis_kelamin" value="Laki-Laki"
+                                                x-model="formData.jenis_kelamin"
+                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
+                                                required />
+                                            <span
+                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Laki-laki</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" name="jenis_kelamin" value="Perempuan"
+                                                x-model="formData.jenis_kelamin"
+                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
+                                                required />
+                                            <span
+                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Perempuan</span>
+                                        </label>
+                                    </div>
+                                    <div x-show="errors.jenis_kelamin" class="error-message"
+                                        x-text="errors.jenis_kelamin"></div>
+                                </div>
+
+                                <!-- Jumlah Anak -->
+                                <div class="md:col-span-2">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Anak<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" name="jumlah_anak" min="0" step="1"
+                                        x-model="formData.jumlah_anak"
+                                        :class="errors.jumlah_anak ? 'field-error' : ''"
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700"
+                                        required />
+                                    <div x-show="errors.jumlah_anak" class="error-message"
+                                        x-text="errors.jumlah_anak"></div>
+                                </div>
+
+                                <!-- Jumlah Istri (hanya muncul kalau laki-laki) -->
+                                <div class="md:col-span-2" x-cloak x-show="formData.jenis_kelamin === 'Laki-Laki'"
+                                    x-transition.opacity>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Jumlah Istri<span class="text-error-500">*</span>
+                                    </label>
+                                    <input type="number" name="jumlah_istri" min="0" step="1"
+                                        x-model="formData.jumlah_istri"
+                                        :disabled="formData.jenis_kelamin !== 'Laki-Laki'"
+                                        :class="errors.jumlah_istri ? 'field-error' : ''"
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700" />
+                                    <div x-show="errors.jumlah_istri" class="error-message"
+                                        x-text="errors.jumlah_istri"></div>
+                                </div>
+
+                                <!-- Nomor BPJS -->
+                                <div class="md:col-span-5">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Nomor BPJS
+                                    </label>
+                                    <input type="text" name="bpjs" inputmode="numeric" pattern="\d{13}"
+                                        x-model="formData.bpjs" :class="errors.bpjs ? 'field-error' : ''"
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700"
+                                        placeholder="13 digit" />
+                                    <div x-show="errors.bpjs" class="error-message" x-text="errors.bpjs"></div>
                                 </div>
                             </div>
 
@@ -308,31 +392,55 @@
                                         required />
                                     <div x-show="errors.rw" class="error-message" x-text="errors.rw"></div>
                                 </div>
-                                <div class="lg:w-3/12 md:w-3/12 sm:5/12 ml-3">
+                                <div class="lg:w-1/3 md:w-1/3 sm:w-1/4 ml-3">
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Jenis Kelamin<span class="text-error-500">*</span>
+                                        Golongan Darah<span class="text-error-500">*</span>
                                     </label>
-                                    <div class="flex flex-col justify-start mt-1.5">
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" name="jenis_kelamin" value="Laki-Laki"
-                                                x-model="formData.jenis_kelamin"
-                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
-                                                required />
-                                            <span
-                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Laki-laki</span>
-                                        </label>
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" name="jenis_kelamin" value="Perempuan"
-                                                x-model="formData.jenis_kelamin"
-                                                class="form-radio text-brand-500 focus:ring-brand-500 border-gray-300 dark:border-gray-700 dark:bg-dark-900"
-                                                required />
-                                            <span
-                                                class="ml-2 text-sm text-gray-700 dark:text-gray-300">Perempuan</span>
-                                        </label>
+                                    <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent">
+                                        <select name="golongan_darah" x-model="formData.golongan_darah"
+                                            :value="formData.golongan_darah"
+                                            :class="errors.golongan_darah ? 'field-error' : ''" required
+                                            class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10  h-11 w-full appearance-none rounded-lg border bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('golongan_darah') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                            :class="isOptionSelected && 'text-gray-800 dark:text-white/90'"
+                                            @change="isOptionSelected = true">
+
+
+                                            <option value="-" selected
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tidak
+                                                Diketahui
+                                            </option>
+                                            <option value="A" selected
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">A
+                                            </option>
+                                            <option value="B"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">B
+                                            </option>
+                                            <option value="AB"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">AB
+                                            </option>
+                                            <option value="O"
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">O
+                                            </option>
+
+
+
+                                        </select>
+                                        <span
+                                            class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                            <svg class="stroke-current" width="20" height="20"
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke=""
+                                                    stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                            </svg>
+                                        </span>
+
                                     </div>
-                                    <div x-show="errors.jenis_kelamin" class="error-message"
-                                        x-text="errors.jenis_kelamin"></div>
+                                    <div x-show="errors.agama" class="error-message" x-text="errors.agama"></div>
+
                                 </div>
+
                             </div>
 
                             <div class="flex justify-between mb-2">
@@ -383,9 +491,21 @@
                                 </div>
                                 <div class="w-2/10 flex justify-center ml-3 py-3 h-20">
                                     <button type="button" @click="validateAndNextStep(2)"
-                                        class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3">
-                                        Lanjut
+                                        :disabled="loadingStep === 2" :aria-busy="loadingStep === 2"
+                                        class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3 disabled:opacity-70 disabled:cursor-not-allowed">
+                                        <template x-if="loadingStep === 2">
+                                            <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                aria-hidden="true">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+                                            </svg>
+                                        </template>
+                                        <span x-text="loadingStep === 2 ? 'Memeriksa…' : 'Lanjut'"></span>
                                     </button>
+
                                 </div>
                             </div>
                         </div>
@@ -551,10 +671,22 @@
                             </div>
 
                             <div class="w-full flex justify-center py-3 h-20 mb-32">
-                                <button type="button" @click="validateAndNextStep(3)"
-                                    class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3">
-                                    Lanjut
+                                <button type="button" @click="validateAndNextStep(3)" :disabled="loadingStep === 3"
+                                    :aria-busy="loadingStep === 3"
+                                    class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mt-3 disabled:opacity-70 disabled:cursor-not-allowed">
+                                    <template x-if="loadingStep === 3">
+                                        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            aria-hidden="true">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+                                        </svg>
+                                    </template>
+                                    <span x-text="loadingStep === 3 ? 'Memeriksa…' : 'Lanjut'"></span>
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -761,6 +893,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('multiStepForm', () => ({
                 langkah: 1,
+                loadingStep: null,
                 errors: {},
                 formData: {
                     name: '',
@@ -772,11 +905,15 @@
                     no_hp: '',
                     tanggal_lahir: '',
                     tempat_lahir: '',
-                    agama: 'islam',
+                    agama: 'Islam',
                     desa: '',
                     rt: '',
                     rw: '0',
                     jenis_kelamin: '',
+                    golongan_darah: '-',
+                    jumlah_anak: 0, // NEW
+                    jumlah_istri: 0, // NEW (hanya dipakai kalau laki-laki)
+                    bpjs: '',
                     kecamatan: '',
                     kabupaten: '',
                     provinsi: '',
@@ -807,10 +944,125 @@
                             if (this.errors.serdos) delete this.errors.serdos;
                         }
                     });
+                    this.$watch('formData.jenis_kelamin', (val) => {
+                        if (val === 'Perempuan') {
+                            this.formData.jumlah_istri = 0;
+                            if (this.errors.jumlah_istri) delete this.errors.jumlah_istri;
+                        }
+                    });
                 },
                 clearErrors() {
                     this.errors = {};
                 },
+
+                async checkEmailExists() {
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content');
+                        const res = await fetch('{{ route('register.email.check') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            },
+                            body: JSON.stringify({
+                                email: this.formData.email
+                            })
+                        });
+
+                        if (!res.ok) {
+                            // misal validasi email invalid dari backend
+                            const err = await res.json().catch(() => ({}));
+                            // fallback message
+                            this.errors.email = err?.message || 'Gagal memeriksa email.';
+                            return true; // tahan lanjut jika gagal
+                        }
+
+                        const data = await res.json();
+                        if (data.exists) {
+                            this.errors.email = 'Email sudah digunakan. Silakan pakai email lain.';
+                            return true; // true = ada duplicate -> jangan lanjut
+                        }
+
+                        // bersihkan error kalau available
+                        if (this.errors.email) delete this.errors.email;
+                        return false; // false = tidak duplikat -> boleh lanjut
+                    } catch (e) {
+                        this.errors.email = 'Tidak dapat terhubung ke server untuk cek email.';
+                        return true;
+                    }
+                },
+                async checkNikExists() {
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content');
+                        const res = await fetch('{{ route('register.nik.check') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            },
+                            body: JSON.stringify({
+                                nik: this.formData.nik
+                            })
+                        });
+
+                        if (!res.ok) {
+                            const err = await res.json().catch(() => ({}));
+                            this.errors.nik = err?.message || 'Gagal memeriksa NIK.';
+                            return true; // tahan lanjut kalau gagal
+                        }
+
+                        const data = await res.json();
+                        if (data.exists) {
+                            this.errors.nik = 'NIK sudah digunakan. Silakan pakai NIK lain.';
+                            return true; // true = ada duplikat
+                        }
+
+                        if (this.errors.nik) delete this.errors.nik;
+                        return false; // tidak duplikat
+                    } catch (e) {
+                        this.errors.nik = 'Tidak dapat terhubung ke server untuk cek NIK.';
+                        return true;
+                    }
+                },
+                async checkNppExists() {
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content');
+                        const res = await fetch('{{ route('register.npp.check') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            },
+                            body: JSON.stringify({
+                                npp: this.formData.npp
+                            })
+                        });
+
+                        if (!res.ok) {
+                            const err = await res.json().catch(() => ({}));
+                            this.errors.npp = err?.message || 'Gagal memeriksa NPP.';
+                            return true;
+                        }
+
+                        const data = await res.json();
+                        if (data.exists) {
+                            this.errors.npp = 'NPP sudah digunakan. Silakan pakai NPP lain.';
+                            return true;
+                        }
+
+                        if (this.errors.npp) delete this.errors.npp;
+                        return false;
+                    } catch (e) {
+                        this.errors.npp = 'Tidak dapat terhubung ke server untuk cek NPP.';
+                        return true;
+                    }
+                },
+
+
+
 
                 validateStep1() {
                     this.clearErrors();
@@ -945,6 +1197,39 @@
                         this.errors.alamat = 'Alamat harus diisi';
                         isValid = false;
                     }
+                    // Jumlah anak (>=0)
+                    if (this.formData.jumlah_anak === '' || this.formData.jumlah_anak === null) {
+                        this.errors.jumlah_anak = 'Jumlah anak harus diisi';
+                        isValid = false;
+                    } else if (!Number.isInteger(+this.formData.jumlah_anak) || +this.formData
+                        .jumlah_anak < 0) {
+                        this.errors.jumlah_anak = 'Jumlah anak minimal 0';
+                        isValid = false;
+                    }
+
+                    // Jumlah istri: hanya jika laki-laki
+                    if (this.formData.jenis_kelamin === 'Laki-Laki') {
+                        if (this.formData.jumlah_istri === '' || this.formData.jumlah_istri === null) {
+                            this.errors.jumlah_istri = 'Jumlah istri harus diisi';
+                            isValid = false;
+                        } else if (!Number.isInteger(+this.formData.jumlah_istri) || +this.formData
+                            .jumlah_istri < 0) {
+                            this.errors.jumlah_istri = 'Jumlah istri minimal 0';
+                            isValid = false;
+                        }
+                    }
+                    // BPJS: opsional → hanya validasi kalau diisi
+                    if (this.formData.bpjs && this.formData.bpjs.trim() !== '') {
+                        if (!/^\d{13}$/.test(this.formData.bpjs)) {
+                            this.errors.bpjs = 'Nomor BPJS harus 13 digit angka';
+                            isValid = false;
+                        }
+                    }
+                    // Golongan Darah
+                    if (!this.formData.golongan_darah) {
+                        this.errors.golongan_darah = 'Golongan darah harus dipilih';
+                        isValid = false;
+                    }
 
                     return isValid;
                 },
@@ -1006,19 +1291,7 @@
                             isValid = false;
                         }
 
-                        // Validasi Program Studi
-                        //if (!pendidikan.program_studi || pendidikan.program_studi.trim() ===
-                        //   '') {
-                        // this.errors[`pendidikan_${index}_program_studi`] =
-                        //   'Program studi harus diisi';
-                        //isValid = false;
-                        //}
 
-                        // Validasi Gelar
-                        //if (!pendidikan.gelar || pendidikan.gelar.trim() === '') {
-                        //  this.errors[`pendidikan_${index}_gelar`] = 'Gelar harus diisi';
-                        // isValid = false;
-                        //}
 
                         // Validasi Institusi
                         if (!pendidikan.institusi || pendidikan.institusi.trim() === '') {
@@ -1040,19 +1313,94 @@
                     return isValid;
                 },
 
-                validateAndNextStep(currentStep) {
+                async validateAndNextStep(currentStep) {
                     let isValid = false;
+                    const start = () => {
+                        this.loadingStep = currentStep
+                    }
+                    const stop = () => {
+                        this.loadingStep = null
+                    }
 
                     switch (currentStep) {
                         case 1:
                             isValid = this.validateStep1();
+                            if (!isValid) break;
+
+                            start();
+                            try {
+                                const duplicated = await this.checkEmailExists();
+                                if (duplicated) {
+                                    this.$nextTick(() => {
+                                        const emailInput = document.querySelector(
+                                            'input[name="email"]');
+                                        if (emailInput) {
+                                            emailInput.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'center'
+                                            });
+                                            emailInput.focus();
+                                        }
+                                    });
+                                    return; // stop di step 1
+                                }
+                            } finally {
+                                stop();
+                            }
                             break;
+
                         case 2:
                             isValid = this.validateStep2();
+                            if (!isValid) break;
+
+                            start();
+                            try {
+                                const nikDuplicated = await this.checkNikExists();
+                                if (nikDuplicated) {
+                                    this.$nextTick(() => {
+                                        const nikInput = document.querySelector(
+                                            'input[name="nik"]');
+                                        if (nikInput) {
+                                            nikInput.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'center'
+                                            });
+                                            nikInput.focus();
+                                        }
+                                    });
+                                    return; // stop di step 2
+                                }
+                            } finally {
+                                stop();
+                            }
                             break;
+
                         case 3:
                             isValid = this.validateStep3();
+                            if (!isValid) break;
+
+                            start();
+                            try {
+                                const nppDuplicated = await this.checkNppExists();
+                                if (nppDuplicated) {
+                                    this.$nextTick(() => {
+                                        const el = document.querySelector(
+                                            'input[name="npp"]');
+                                        if (el) {
+                                            el.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'center'
+                                            });
+                                            el.focus();
+                                        }
+                                    });
+                                    return; // stop di step 3
+                                }
+                            } finally {
+                                stop();
+                            }
                             break;
+
                         case 4:
                             isValid = this.validateStep4();
                             break;
@@ -1074,6 +1422,9 @@
                         });
                     }
                 },
+
+
+
 
                 nextStep() {
                     if (this.langkah < 4) {
@@ -1194,73 +1545,7 @@
                     const form = document.getElementById('registrationForm');
                     form.submit();
                 }
-                // async submitForm() {
-                //     // Validasi langkah terakhir sebelum submit
-                //     if (!this.validateStep4()) {
-                //         return;
-                //     }
 
-                //     try {
-                //         const formData = new FormData();
-
-                //         // Add basic form data
-                //         Object.keys(this.formData).forEach(key => {
-                //             if (key !== 'pendidikanList' && key !== 'confirmPassword' &&
-                //                 this.formData[key] !== null) {
-                //                 if (key === 'foto') {
-                //                     if (this.formData[key]) {
-                //                         formData.append(key, this.formData[key]);
-                //                     }
-                //                 } else {
-                //                     formData.append(key, this.formData[key]);
-                //                 }
-                //             }
-                //         });
-
-                //         // Add password confirmation
-                //         formData.append('password_confirmation', this.formData.confirmPassword);
-
-                //         // Add pendidikan data
-                //         this.formData.pendidikanList.forEach((pendidikan, index) => {
-                //             Object.keys(pendidikan).forEach(key => {
-                //                 if (pendidikan[key] !== null && pendidikan[key] !==
-                //                     '') {
-                //                     formData.append(`pendidikan[${index}][${key}]`,
-                //                         pendidikan[key]);
-                //                 }
-                //             });
-                //         });
-
-                //         // // Simulasi submit form (ganti dengan endpoint yang sesuai)
-                //         // console.log('Form data:', formData);
-                //         // alert('Form berhasil disubmit! (Silakan cek console untuk melihat data)');
-
-                //         // Uncomment baris berikut untuk submit ke server
-
-                //         const response = await fetch('{{ route('register.dosen.store') }}', {
-                //             method: 'POST',
-                //             body: formData,
-                //             headers: {
-                //                 'X-CSRF-TOKEN': document.querySelector(
-                //                     'meta[name="csrf-token"]')?.getAttribute('content')
-                //             }
-                //         });
-
-                //         if (response.ok) {
-                //             const result = await response.json();
-                //             alert('Registrasi berhasil!');
-                //             window.location.href = result.redirect || '/login';
-                //         } else {
-                //             const errors = await response.json();
-                //             console.error('Registration failed:', errors);
-                //             alert('Registrasi gagal. Silakan periksa kembali data Anda.');
-                //         }
-
-                //     } catch (error) {
-                //         console.error('Error submitting form:', error);
-                //         alert('Terjadi kesalahan. Silakan coba lagi.');
-                //     }
-                // }
             }))
         });
     </script>

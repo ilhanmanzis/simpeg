@@ -101,22 +101,22 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NUPTK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIP</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nip }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nip ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIDK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidk }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nidk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIDN</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidn }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nidn ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Email</div>
@@ -157,12 +157,35 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Anak</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->anak }}</div>
+                                        </div>
+                                        @if ($dosen->dataDiri->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $dosen->dataDiri->istri }}</div>
+                                            </div>
+                                        @endif
 
 
                                     </div>
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->bpjs ?? '-' }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Golongan Darah</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->golongan_darah }}</div>
+                                        </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Tempat Lahir</div>
                                             <div class="w-4">:</div>

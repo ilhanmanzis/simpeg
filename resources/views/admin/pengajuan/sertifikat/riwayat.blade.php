@@ -37,7 +37,7 @@
                                 <div class="w-48 font-semibold">Kategori</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
-                                    {{ $pengajuan->kategori ?? '-' }}
+                                    {{ $pengajuan->kategori->name ?? '-' }}
                                 </div>
                             </div>
                             <div class="flex">

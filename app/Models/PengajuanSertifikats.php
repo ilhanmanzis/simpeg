@@ -21,4 +21,8 @@ class PengajuanSertifikats extends Model
     {
         return $this->belongsTo(Sertifikats::class, 'id_sertifikat', 'id_sertifikat');
     }
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriSertifikats::class, 'id_kategori', 'id_kategori');
+    }
 }

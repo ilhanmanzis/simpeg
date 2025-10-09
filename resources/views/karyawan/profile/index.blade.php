@@ -130,11 +130,50 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $karyawan->dataDiri->tanggal_lahir }}</div>
                                         </div>
+                                        @if ($karyawan->dataDiri->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->istri }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Anak</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->anak }}</div>
+                                            </div>
+                                        @else
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Anak</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->anak }}</div>
+                                            </div>
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Golongan Darah</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->golongan_darah ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
+
 
                                     </div>
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->bpjs ?? '-' }}</div>
+                                        </div>
+                                        @if ($karyawan->dataDiri->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Golongan Darah</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->golongan_darah ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Alamat</div>

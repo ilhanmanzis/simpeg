@@ -85,14 +85,7 @@
                                                     </div>
                                                 </th>
 
-                                                <th class="px-5 py-3 sm:px-6">
-                                                    <div class="flex items-center">
-                                                        <p
-                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                                            Role
-                                                        </p>
-                                                    </div>
-                                                </th>
+
 
                                                 <th class="px-5 py-3 sm:px-6">
                                                     <div class="flex items-center">
@@ -166,16 +159,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="px-5 py-4 sm:px-6">
-                                                        <div class="flex items-center">
-                                                            <div class="flex -space-x-2">
-                                                                <p
-                                                                    class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $pengajuan->user->role }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
+
 
                                                     <td class="px-5 py-4 sm:px-6">
                                                         <div class="flex items-center">
@@ -270,14 +254,6 @@
                                                     </div>
                                                 </th>
 
-                                                <th class="px-5 py-3 sm:px-6">
-                                                    <div class="flex items-center">
-                                                        <p
-                                                            class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                                            Role
-                                                        </p>
-                                                    </div>
-                                                </th>
 
                                                 <th class="px-5 py-3 sm:px-6">
                                                     <div class="flex items-center">
@@ -351,16 +327,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="px-5 py-4 sm:px-6">
-                                                        <div class="flex items-center">
-                                                            <div class="flex -space-x-2">
-                                                                <p
-                                                                    class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat->user->role }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
+
                                                     <td class="px-5 py-4 sm:px-6">
                                                         <div class="flex items-center">
                                                             <div class="flex -space-x-2">

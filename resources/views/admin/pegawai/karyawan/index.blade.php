@@ -56,7 +56,7 @@
                                                 </svg>
                                             </span>
                                             <input type="text" placeholder="cari nama atau npp..." id="search-input"
-                                                name="karyawan" value="{{ request('karyawan') }}"
+                                                name="tendik" value="{{ request('tendik') }}"
                                                 class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[400px] dark:border-gray-800 dark:bg-gray- dark:text-white/90 dark:placeholder:text-white/30" />
 
                                             <button id="search-button"
@@ -71,7 +71,7 @@
 
                                 <a href="{{ route('admin.karyawan.create') }}"
                                     class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mb-5">
-                                    Tambah Karyawan
+                                    Tambah Tendik
                                 </a>
                             </div>
 

@@ -90,6 +90,10 @@
                                 <x-drop-side-link href="{{ route('admin.semester') }}" page="Semester">
                                     Semester
                                 </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.kategori-sertifikat') }}"
+                                    page="Kategori Sertifikat">
+                                    Kategori Sertifikat
+                                </x-drop-side-link>
                             </ul>
                         </div>
                         <!-- Dropdown Menu End -->
@@ -134,8 +138,8 @@
                                 <x-drop-side-link href="{{ route('admin.dosen') }}" page="Dosen">
                                     Dosen
                                 </x-drop-side-link>
-                                <x-drop-side-link href="{{ route('admin.karyawan') }}" page="Karyawan">
-                                    Karyawan
+                                <x-drop-side-link href="{{ route('admin.karyawan') }}" page="Tenaga Pendidik">
+                                    Tenaga Pendidik
                                 </x-drop-side-link>
 
                             </ul>
@@ -357,7 +361,7 @@
         <!-- Sidebar Menu -->
 
 
-        
+
 
 
     </div>

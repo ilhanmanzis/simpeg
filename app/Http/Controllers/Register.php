@@ -80,7 +80,7 @@ class Register extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|min:6',
-            'nik' => 'required|max:20',
+            'nik' => 'required|max:20|unique:data_diri,no_ktp',
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
@@ -93,7 +93,7 @@ class Register extends Controller
             'kabupaten' => 'required|string|max:255',
             'provinsi' => 'required|string|max:255',
             'alamat' => 'required|string',
-            'npp' => 'required|max:30',
+            'npp' => 'required|max:30|unique:users,npp',
             'nuptk' => 'required|max:30',
             'nip' => 'nullable|max:30',
             'nidk' => 'nullable|max:30',
@@ -113,7 +113,12 @@ class Register extends Controller
             // Foto
             'foto' => 'required|image|max:2048',
             'serdos' => 'required|file|mimes:pdf|max:2048',
-            'tersertifikasi' => 'required'
+            'tersertifikasi' => 'required',
+
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'jumlah_anak'    => 'required|integer|min:0',
+            'jumlah_istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
         ]);
 
         // ===== Simpan foto profil =====
@@ -157,7 +162,11 @@ class Register extends Controller
             'tanggal_bergabung' => $request->tanggal_bergabung,
             'tersertifikasi' => $request->tersertifikasi,
             'foto' => $timestampedName,
-            'serdos' => $timestampedNameSerdos ?? null
+            'serdos' => $timestampedNameSerdos ?? null,
+            'golongan_darah'   => $request->golongan_darah ?? null,
+            'bpjs'             => $request->bpjs ?? null,
+            'anak'             => $request->jumlah_anak ?? 0,
+            'istri'            => $request->jenis_kelamin === 'Laki-Laki' ? ($request->jumlah_istri ?? 0) : 0,
         ]);
 
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====
@@ -199,7 +208,7 @@ class Register extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|min:6',
-            'nik' => 'required|max:20',
+            'nik' => 'required|max:20|unique:data_diri,no_ktp',
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
@@ -212,7 +221,13 @@ class Register extends Controller
             'kabupaten' => 'required|string|max:255',
             'provinsi' => 'required|string|max:255',
             'alamat' => 'required|string',
-            'npp' => 'required|max:30',
+
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'jumlah_anak'    => 'required|integer|min:0',
+            'jumlah_istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
+
+            'npp' => 'required|max:30|unique:users,npp',
 
 
             'tanggal_bergabung' => 'required|date',
@@ -261,7 +276,11 @@ class Register extends Controller
             'role' => 'karyawan',
             'status' => 'pending',
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'foto' => $timestampedName
+            'foto' => $timestampedName,
+            'golongan_darah'   => $request->golongan_darah ?? null,
+            'bpjs'             => $request->bpjs ?? null,
+            'anak'      => $request->jumlah_anak ?? 0,
+            'istri'     => $request->jenis_kelamin === 'Laki-Laki' ? ($request->jumlah_istri ?? 0) : 0,
         ]);
 
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====

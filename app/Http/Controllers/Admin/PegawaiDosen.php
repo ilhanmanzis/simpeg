@@ -90,6 +90,11 @@ class PegawaiDosen extends Controller
             'pendidikan.*.transkip_nilai'            => 'nullable|file|mimes:pdf|max:2048',
             'foto'                                   => 'required|image|max:2048',
             'serdos'                                 => 'nullable|file|mimes:pdf|max:2048',
+
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'anak'    => 'required|integer|min:0',
+            'istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
         ], [
             'password.required'      => 'Password harus di isi',
             'password.min'           => 'Password minimal 6 karakter',
@@ -184,6 +189,10 @@ class PegawaiDosen extends Controller
             'foto'             => $newId,
             'tersertifikasi'   => $request->tersertifikasi,
             'serdos'             => $newIdSerdos ?? null,
+            'bpjs'         => $request->bpjs ?? null,
+            'istri'         => $request->istri ?? 0,
+            'anak'         => $request->anak ?? 0,
+            'golongan_darah'         => $request->golongan_darah,
         ]);
 
         $newIdIjazah = null;
@@ -526,6 +535,10 @@ class PegawaiDosen extends Controller
             'nidn'             => 'nullable|max:30',
             'tanggal_bergabung' => 'required|date',
             'foto'             => 'nullable|image|max:2048',
+            'golongan_darah' => 'required|in:A,B,AB,O,-',
+            'bpjs'           => 'nullable',
+            'anak'    => 'required|integer|min:0',
+            'istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
         ]);
 
 
@@ -579,6 +592,10 @@ class PegawaiDosen extends Controller
             'nidk'              => $request->input('nidk'),
             'nidn'              => $request->input('nidn'),
             'tanggal_bergabung' => $request->input('tanggal_bergabung'),
+            'bpjs'              => $request->input('bpjs') ?? null,
+            'istri'             => $request->input('istri') ?? 0,
+            'anak'              => $request->input('anak') ?? 0,
+            'golongan_darah'              => $request->input('golongan_darah'),
         ]);
 
         // Hapus file lama di Drive kalau ada file baru & punya file_id lama

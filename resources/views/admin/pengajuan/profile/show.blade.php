@@ -109,23 +109,19 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIP</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nip }}</div>
+                                            <div class="flex-1">{{ $pengajuan->nip ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIDK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidk }}</div>
+                                            <div class="flex-1">{{ $pengajuan->nidk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIDN</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->nidn }}</div>
+                                            <div class="flex-1">{{ $pengajuan->nidn ?? '-' }}</div>
                                         </div>
-                                        {{-- <div class="flex">
-                                            <div class="w-32 font-semibold">Email</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $pengajuan->email }}</div>
-                                        </div> --}}
+
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nomor HP</div>
                                             <div class="w-4">:</div>
@@ -140,6 +136,23 @@
                                             <div class="w-32 font-semibold">Agama</div>
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->agama }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Anak</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->anak }}</div>
+                                        </div>
+                                        @if ($pengajuan->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->istri }}</div>
+                                            </div>
+                                        @endif
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Golongan Darah</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->golongan_darah }}</div>
                                         </div>
                                         @if ($pengajuan->status === 'ditolak')
                                             <div class="flex">
@@ -157,6 +170,11 @@
                                 </div>
                                 <div class="lg:w-1/2 md:w-1/2 sm:w-full">
                                     <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->bpjs ?? '-' }}</div>
+                                        </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Tempat Lahir</div>
                                             <div class="w-4">:</div>

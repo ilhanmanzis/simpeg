@@ -28,7 +28,7 @@ class Fungsional extends Controller
             'title' => 'Data Jabatan Fungsional Dosen',
             'dosen' => FungsionalUsers::where('id_user', $id)->where('status', 'aktif')->with(['user.dataDiri', 'fungsional', 'dokumen'])->orderBy('id_fungsional_user', 'desc')->first(),
 
-            'riwayats' => FungsionalUsers::where('id_user', $id)->where('status', 'nonaktif')->with(['user', 'fungsional', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
+            'riwayats' => FungsionalUsers::where('id_user', $id)->with(['user', 'fungsional', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
         ];
 
         return view('dosen.jabatan.fungsional.index', $data);
