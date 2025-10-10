@@ -58,7 +58,7 @@ class PengajuanSerdos extends Controller
         $id = Auth::user()->id_user;
         $request->validate([
             'tersertifikasi'         => 'required',
-            'serdos'                 => 'nullable|file|mimes:pdf|max:2048',
+            'serdos'                 => 'required_if:tersertifikasi,sudah|file|mimes:pdf|max:2048',
         ]);
 
         if ($request->tersertifikasi === 'sudah') {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Sertifikats;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -48,18 +49,28 @@ class Tendik extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
+        $judul = $request->get('judul');
+
+        $tendik = User::where('npp', $id)->where('role', 'karyawan')->with([
+            'dataDiri.dokumen',
+            'pendidikan' => function ($q) {
+                $q->orderBy('id_jenjang')
+                    ->with('jenjang');
+            },
+        ])->firstOrFail();
+        $sertifikats = Sertifikats::where('id_user', $tendik->id_user)
+            ->searchJudul($judul)
+            ->with(['kategori', 'dokumenSertifikat'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
         $data = [
             'page' => 'Tenaga Pendidik',
             'title' => 'Data Tenaga Pendidik',
-            'tendik'   => User::where('npp', $id)->where('role', 'karyawan')->with([
-                'dataDiri.dokumen',
-                'pendidikan' => function ($q) {
-                    $q->orderBy('id_jenjang')
-                        ->with('jenjang');
-                },
-            ])->first()
+            'tendik'   => $tendik,
+            'sertifikats' => $sertifikats,
         ];
 
 

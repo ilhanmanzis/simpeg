@@ -10,6 +10,10 @@ use App\Models\User;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+
+
 
 class StrukturalUser extends Controller
 {
@@ -22,11 +26,22 @@ class StrukturalUser extends Controller
 
     public function index()
     {
+        $today = Carbon::today()->toDateString();
+
         $items = JabatanStrukturals::with([
-            'activeCurrent.user.dataDiri',
-            'activeCurrent.dokumen',
-            'latestAny.user.dataDiri',
-            'latestAny.dokumen',
+            // Hanya ambil record aktif YANG MASIH BERLAKU
+            'activeCurrent' => function ($q) use ($today) {
+                $q->where('status', 'aktif')
+                    ->where(function ($w) use ($today) {
+                        $w->whereNull('tanggal_selesai')
+                            ->orWhereDate('tanggal_selesai', '>=', $today);
+                    })
+                    ->with(['user.dataDiri', 'dokumen']);
+            },
+            // latestAny biarkan apa adanya (tetap eager agar fallback cepat)
+            'latestAny' => function ($q) {
+                $q->with(['user.dataDiri', 'dokumen']);
+            },
         ])
             ->orderBy('id_struktural', 'asc')
             ->get()
@@ -42,7 +57,6 @@ class StrukturalUser extends Controller
                 ];
             });
 
-        // dd($items);
         $data = [
             'page'     => 'Jabatan Struktural',
             'selected' => 'Jabatan Struktural',
@@ -53,14 +67,21 @@ class StrukturalUser extends Controller
         return view('admin.jabatan.struktural.index', $data);
     }
 
+
     public function mutasi(string $id)
     {
+        $today = Carbon::today()->toDateString();
+
         $data = [
             'page'       => 'Jabatan Stuktural',
             'selected'   => 'Jabatan Stuktural',
             'title'      => 'Mutasi Jabatan Stuktural Dosen',
             'dosen'      => StrukturalUsers::where('id_struktural', $id)
                 ->where('status', 'aktif')
+                ->where(function ($w) use ($today) {
+                    $w->whereNull('tanggal_selesai')
+                        ->orWhereDate('tanggal_selesai', '>=', $today);
+                })
                 ->with(['user.dataDiri'])
                 ->orderBy('id_struktural_user', 'desc')
                 ->first(),
@@ -72,6 +93,7 @@ class StrukturalUser extends Controller
 
         return view('admin.jabatan.struktural.mutasi', $data);
     }
+
 
     public function mutasiStore(Request $request, string $id)
     {

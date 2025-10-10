@@ -112,8 +112,8 @@ class Register extends Controller
 
             // Foto
             'foto' => 'required|image|max:2048',
-            'serdos' => 'required|file|mimes:pdf|max:2048',
             'tersertifikasi' => 'required',
+            'serdos' => 'required_if:tersertifikasi,sudah|file|mimes:pdf|max:2048',
 
             'golongan_darah' => 'required|in:A,B,AB,O,-',
             'bpjs'           => 'nullable',

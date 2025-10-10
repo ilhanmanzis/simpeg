@@ -89,7 +89,7 @@ class PegawaiDosen extends Controller
             'pendidikan.*.ijazah'                    => 'required|file|mimes:pdf|max:2048',
             'pendidikan.*.transkip_nilai'            => 'nullable|file|mimes:pdf|max:2048',
             'foto'                                   => 'required|image|max:2048',
-            'serdos'                                 => 'nullable|file|mimes:pdf|max:2048',
+            'serdos'                                 => 'required_if:tersertifikasi,sudah|file|mimes:pdf|max:2048',
 
             'golongan_darah' => 'required|in:A,B,AB,O,-',
             'bpjs'           => 'nullable',
@@ -841,7 +841,7 @@ class PegawaiDosen extends Controller
     {
         $request->validate([
             'tersertifikasi'         => 'required',
-            'serdos'                 => 'nullable|file|mimes:pdf|max:2048',
+            'serdos'                 => 'required_if:tersertifikasi,sudah|file|mimes:pdf|max:2048',
         ]);
 
         $user   = User::where('id_user', $id)->with('dataDiri.serdosen')->first();

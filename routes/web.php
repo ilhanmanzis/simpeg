@@ -519,3 +519,4 @@ Route::get('/data-tendik', [Tendik::class, 'index'])->name('public.tendik');
 Route::get('/data-tendik/{npp}', [Tendik::class, 'show'])->name('public.tendik.show');
 
 Route::get('/foto/{id}', [FileController::class, 'showFotoPublic'])->name('public.foto');
+Route::get('/dokumen/{id}', [FileController::class, 'showDokumenPublic'])->name('public.dokumen');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Settings;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
@@ -32,6 +33,7 @@ class Laporan extends Controller
      */
     public function create(Request $request)
     {
+        $today = Carbon::today()->toDateString();
         $validated = $request->validate([
             'pegawai'        => 'required|in:all,dosen,karyawan',
             // required_if untuk dosen; nilai yang valid: all/ya/tidak
@@ -59,7 +61,7 @@ class Laporan extends Controller
             ->with([
                 'golongan' => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_golongan_user')->limit(1)->with('golongan'),
                 'fungsional' => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_fungsional_user')->limit(1)->with('fungsional'),
-                'struktural' => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_struktural_user')->limit(1)->with('struktural'),
+                'struktural' => fn($q) => $q->where('status', 'aktif')->whereDate('tanggal_selesai', '>=', $today)->orderByDesc('id_struktural_user')->limit(1)->with('struktural'),
             ])
             // pegawai=all -> hanya karyawan & dosen (exclude admin)
             ->when($pegawai === 'all', fn($q) => $q->whereIn('role', ['karyawan', 'dosen']))
@@ -201,6 +203,7 @@ class Laporan extends Controller
 
     public function individu($id_user)
     {
+        $today = Carbon::today()->toDateString();
         // dd($id_user);
         // Ambil user + relasi
         $user = User::where('id_user', $id_user)
@@ -209,7 +212,7 @@ class Laporan extends Controller
                 // aktif & terbaru
                 'golongan'   => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_golongan_user')->limit(1)->with('golongan'),
                 'fungsional' => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_fungsional_user')->limit(1)->with('fungsional'),
-                'struktural' => fn($q) => $q->where('status', 'aktif')->orderByDesc('id_struktural_user')->limit(1)->with('struktural'),
+                'struktural' => fn($q) => $q->where('status', 'aktif')->whereDate('tanggal_selesai', '>=', $today)->orderByDesc('id_struktural_user')->limit(1)->with('struktural'),
                 // semua pendidikan + jenjang
                 'pendidikan' => fn($q) => $q->with('jenjang')->orderBy('id_jenjang')->orderByDesc('id_pendidikan'),
             ])

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use App\Models\StrukturalUsers;
 use App\Services\GoogleDriveService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,12 +22,13 @@ class Struktural extends Controller
      */
     public function index()
     {
+        $today = Carbon::today()->toDateString();
         $id = Auth::user()->id_user;
         $data = [
             'page' => 'Jabatan Struktural',
             'selected' => 'Jabatan Struktural',
             'title' => 'Data Jabatan Struktural Dosen',
-            'dosen' => StrukturalUsers::where('id_user', $id)->where('status', 'aktif')->with(['user.dataDiri', 'struktural', 'dokumen'])->orderBy('id_struktural_user', 'desc')->first(),
+            'dosen' => StrukturalUsers::where('id_user', $id)->where('status', 'aktif')->whereDate('tanggal_selesai', '>=', $today)->with(['user.dataDiri', 'struktural', 'dokumen'])->orderBy('id_struktural_user', 'desc')->first(),
 
             'riwayats' => StrukturalUsers::where('id_user', $id)->with(['user', 'struktural', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
         ];

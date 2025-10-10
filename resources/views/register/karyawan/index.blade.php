@@ -25,7 +25,7 @@
                             </h1>
                             <div class="flex justify-between">
                                 <p class="text-md text-gray-500 dark:text-gray-400">
-                                    Langkah 1 : Buat informasi akun
+                                    Langkah 2 : Buat informasi akun
                                 </p>
                             </div>
                         </div>
@@ -162,7 +162,7 @@
                             </h1>
                             <div class="flex justify-between">
                                 <p class="text-md text-gray-500 dark:text-gray-400">
-                                    Langkah 2 : Melengkapi data diri sesuai KTP
+                                    Langkah 3 : Melengkapi data diri sesuai KTP
                                 </p>
                                 <a href="#" @click="prevStep()"
                                     class="hover:text-brand-500 dark:hover:text-brand-500 text-md text-gray-500 dark:text-gray-400">
@@ -519,7 +519,7 @@
                             </h1>
                             <div class="flex justify-between">
                                 <p class="text-md text-gray-500 dark:text-gray-400">
-                                    Langkah 3 : Informasi Kepegawaian
+                                    Langkah 4 : Informasi Kepegawaian
                                 </p>
                                 <a href="#" @click="prevStep()"
                                     class="hover:text-brand-500 dark:hover:text-brand-500 text-md text-gray-500 dark:text-gray-400">
@@ -607,7 +607,7 @@
                             </h1>
                             <div class="flex justify-between">
                                 <p class="text-md text-gray-500 dark:text-gray-400">
-                                    Langkah 4 : Informasi Pendidikan
+                                    Langkah 5 : Informasi Pendidikan
                                 </p>
                                 <a href="#" @click="prevStep()"
                                     class="hover:text-brand-500 dark:hover:text-brand-500 text-md text-gray-500 dark:text-gray-400">
