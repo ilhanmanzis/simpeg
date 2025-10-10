@@ -138,34 +138,38 @@ class Laporan extends Controller
         $setting = Settings::first();
 
         $original = public_path('storage/logo/' . ($setting->logo ?? ''));
+        $alt      = storage_path('app/public/logo/' . ($setting->logo ?? ''));
+
+        // pilih path yang benar-benar ada
+        $path = is_file($original) ? $original : (is_file($alt) ? $alt : null);
 
         $logoFileSrc   = null;
-        $logoPngData64 = null; // untuk WEBP → hasil konversi PNG (base64)
+        $logoDataUri   = null;
+        $logoPngData64 = null;
 
-        if (is_file($original)) {
-            $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-
-            if ($ext === 'webp') {
-                // Pastikan GD support webp
-                if (function_exists('imagecreatefromwebp')) {
-                    $im = @imagecreatefromwebp($original);
-                    if ($im) {
-                        // render ke PNG di buffer (TANPA menyentuh disk)
-                        ob_start();
-                        imagepng($im, null, 9);
-                        imagedestroy($im);
-                        $png = ob_get_clean();
-                        if ($png !== false && strlen($png) > 0) {
-                            $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
-                        }
+        if ($path) {
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if ($ext === 'webp' && function_exists('imagecreatefromwebp')) {
+                if ($im = @imagecreatefromwebp($path)) {
+                    ob_start();
+                    imagepng($im, null, 9);
+                    imagedestroy($im);
+                    $png = ob_get_clean();
+                    if ($png !== false && strlen($png) > 0) {
+                        $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
                     }
                 }
-                // Jika server GD tidak support WEBP, kita biarkan $logoPngData64 null (logo skip).
             } else {
-                // Sudah format didukung → pakai path file lokal
-                $logoFileSrc = $original;
+                $bytes = @file_get_contents($path);
+                if ($bytes !== false) {
+                    $mime = function_exists('mime_content_type') ? (mime_content_type($path) ?: 'image/png') : 'image/png';
+                    $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($bytes);
+                }
             }
+            // fallback terakhir (kalau perlu), tapi sering tak terpakai kalau sudah base64
+            $logoFileSrc = 'file://' . $path;
         }
+
 
         // Export PDF
         if ($request->filled('export') && $validated['export'] === 'pdf') {
@@ -173,19 +177,23 @@ class Laporan extends Controller
 
             $pdf = PDF::setOptions([
                 'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled'      => true, // penting utk img dari URL
-                'chroot' => public_path(),
+                'isRemoteEnabled'      => true,
+                'chroot'               => public_path(),
+                'tempDir'              => storage_path('app/dompdf_temp'),
+                'fontDir'              => storage_path('app/dompdf_font'),
             ])->loadView('admin.laporan.pdf', [
-                'title'          => $title,
-                'pegawai'        => $pegawai,
-                'tersertifikasi' => $tersertifikasi,
-                'data'           => $users, // kalau view butuh akses original user
-                'rows'           => $rows,  // view utama pakai ini (sudah diringkas)
-                'logoFileSrc'   => $logoFileSrc,
-                'logoPngData64' => $logoPngData64,
-                'setting'      => $setting,
+                'title'            => $title,
+                'pegawai'          => $pegawai,
+                'tersertifikasi'   => $tersertifikasi,
+                'data'             => $users,
+                'rows'             => $rows,
+                'logoFileSrc'      => $logoFileSrc,
+                'logoDataUri'      => $logoDataUri,   // <=== TAMBAHKAN INI
+                'logoPngData64'    => $logoPngData64,
+                'setting'          => $setting,
                 'status_keaktifan' => $status
             ])->setPaper('A4', 'portrait');
+
 
             return $pdf->download('laporan-pegawai.pdf');
         }
@@ -303,53 +311,61 @@ class Laporan extends Controller
         $setting = Settings::first();
 
         $original = public_path('storage/logo/' . ($setting->logo ?? ''));
+        $alt      = storage_path('app/public/logo/' . ($setting->logo ?? ''));
+
+        // pilih path yang benar-benar ada
+        $path = is_file($original) ? $original : (is_file($alt) ? $alt : null);
 
         $logoFileSrc   = null;
-        $logoPngData64 = null; // untuk WEBP → hasil konversi PNG (base64)
+        $logoDataUri   = null;
+        $logoPngData64 = null;
 
-        if (is_file($original)) {
-            $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-
-            if ($ext === 'webp') {
-                // Pastikan GD support webp
-                if (function_exists('imagecreatefromwebp')) {
-                    $im = @imagecreatefromwebp($original);
-                    if ($im) {
-                        // render ke PNG di buffer (TANPA menyentuh disk)
-                        ob_start();
-                        imagepng($im, null, 9);
-                        imagedestroy($im);
-                        $png = ob_get_clean();
-                        if ($png !== false && strlen($png) > 0) {
-                            $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
-                        }
+        if ($path) {
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if ($ext === 'webp' && function_exists('imagecreatefromwebp')) {
+                if ($im = @imagecreatefromwebp($path)) {
+                    ob_start();
+                    imagepng($im, null, 9);
+                    imagedestroy($im);
+                    $png = ob_get_clean();
+                    if ($png !== false && strlen($png) > 0) {
+                        $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
                     }
                 }
-                // Jika server GD tidak support WEBP, kita biarkan $logoPngData64 null (logo skip).
             } else {
-                // Sudah format didukung → pakai path file lokal
-                $logoFileSrc = $original;
+                $bytes = @file_get_contents($path);
+                if ($bytes !== false) {
+                    $mime = function_exists('mime_content_type') ? (mime_content_type($path) ?: 'image/png') : 'image/png';
+                    $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($bytes);
+                }
             }
+            // fallback terakhir (kalau perlu), tapi sering tak terpakai kalau sudah base64
+            $logoFileSrc = 'file://' . $path;
         }
+
 
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled'      => true, // penting utk img dari URL
-            'chroot' => public_path(),
+            'isRemoteEnabled'      => true,
+            'chroot'               => public_path(),
+            'tempDir'              => storage_path('app/dompdf_temp'),
+            'fontDir'              => storage_path('app/dompdf_font'),
         ])->loadView('admin.laporan.pegawai', [
-            'title'        => $title,
-            'user'         => $user,
-            'role'         => $role,
-            'biodata'      => $biodata,
-            'jabatanAktif' => $jabatanAktif,
-            'pendidikan'   => $user->pendidikan,
-            'now'          => now()->timezone('Asia/Jakarta'),
-            'fotoUrl'      => $fotoUrl,
-            'fotoDataUri'  => $fotoDataUri,
+            'title'         => $title,
+            'user'          => $user,
+            'role'          => $role,
+            'biodata'       => $biodata,
+            'jabatanAktif'  => $jabatanAktif,
+            'pendidikan'    => $user->pendidikan,
+            'now'           => now()->timezone('Asia/Jakarta'),
+            'fotoUrl'       => $fotoUrl,
+            'fotoDataUri'   => $fotoDataUri,
             'logoFileSrc'   => $logoFileSrc,
+            'logoDataUri'   => $logoDataUri,     // <=== TAMBAHKAN INI
             'logoPngData64' => $logoPngData64,
-            'setting'      => $setting,
+            'setting'       => $setting,
         ])->setPaper('A4', 'portrait');
+
 
         return $pdf->download("biodata-{$user->dataDiri->name}.pdf");
     }

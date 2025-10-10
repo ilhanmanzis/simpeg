@@ -213,12 +213,36 @@
         <table class="headbar">
             <tr>
                 <td class="logo" style="width:70px; padding-right:10px;">
-                    @if (!empty($logoPngData64))
-                        <img src="{{ $logoPngData64 }}" alt="Logo">
-                    @elseif (!empty($logoFileSrc) && file_exists($logoFileSrc))
-                        <img src="file://{{ $logoFileSrc }}" alt="Logo">
+                    @php
+                        // Bangun sumber logo dengan prioritas: WEBP→PNG base64 > dataURI base64 > file://path
+                        $src = null;
+
+                        if (!empty($logoPngData64)) {
+                            $src = $logoPngData64; // hasil konversi WEBP -> PNG (base64)
+                        } elseif (!empty($logoDataUri)) {
+                            $src = $logoDataUri; // PNG/JPG/SVG yang sudah dibase64
+                        } elseif (!empty($logoFileSrc)) {
+                            // Pastikan file_exists pakai path lokal murni (tanpa file://)
+                            $localPath = str_starts_with($logoFileSrc, 'file://')
+                                ? substr($logoFileSrc, 7)
+                                : $logoFileSrc;
+
+                            if (is_string($localPath) && @file_exists($localPath)) {
+                                // Prefix src dengan file:// untuk DomPDF
+                                $src = str_starts_with($logoFileSrc, 'file://')
+                                    ? $logoFileSrc
+                                    : 'file://' . $logoFileSrc;
+                            }
+                        }
+                    @endphp
+
+                    @if ($src)
+                        <img src="{{ $src }}" alt="Logo">
+                    @else
+                        <span style="font-size:10px;color:#9ca3af;">Logo</span>
                     @endif
                 </td>
+
                 <td class="brand">
                     <div class="brand-title">{{ $setting->instansi_nama ?? 'STMIK EL RAHMA YOGYAKARTA' }}</div>
                     <div class="brand-sub">{{ $setting->website ?? 'www.stmikelrahma.ac.id' }}</div>

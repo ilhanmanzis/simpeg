@@ -184,14 +184,14 @@
                     <table style="border-collapse:collapse;">
                         <tr>
                             <td class="logo-box" style="width:56px; padding-right:10px;">
-                                @if (!empty($logoPngData64))
-                                    {{-- Hasil konversi WEBP → PNG (base64) --}}
-                                    <img src="{{ $logoPngData64 }}" alt="Logo">
-                                @elseif (!empty($logoFileSrc) && file_exists($logoFileSrc))
-                                    {{-- PNG/JPG/GIF lokal --}}
-                                    <img src="file://{{ $logoFileSrc }}" alt="Logo">
+                                @php
+                                    $logoSrc = $logoPngData64 ?? ($logoDataUri ?? ($logoFileSrc ?? null));
+                                @endphp
+
+
+                                @if ($logoSrc)
+                                    <img src="{{ $logoSrc }}" alt="Logo">
                                 @else
-                                    {{-- fallback teks kecil kalau benar-benar tidak ada --}}
                                     <span style="font-size:10px;color:#9ca3af;">Logo</span>
                                 @endif
                             </td>
