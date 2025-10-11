@@ -167,5 +167,19 @@ class DatabaseSeeder extends Seeder
             'logo' => 'logo.webp',
             'register' => 'aktif'
         ]);
+
+
+        // kategori sertifikat
+        $categories = [
+            [
+                'name' => 'Sertifikat Kompetensi'
+            ],
+
+
+        ];
+
+        foreach ($categories as $category) {
+            KategoriSertifikats::factory()->create($category);
+        }
     }
 }
