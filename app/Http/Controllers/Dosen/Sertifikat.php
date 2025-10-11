@@ -111,7 +111,7 @@ class Sertifikat extends Controller
     {
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user.dataDiri', 'dokumenSertifikat', 'kategori'])->firstOrFail();
 
-        if ($sertifikat->id_user !== Auth::user()->id_user) {
+        if ($sertifikat->id_user != Auth::user()->id_user) {
             abort(403); // Forbidden
         }
 
@@ -129,7 +129,7 @@ class Sertifikat extends Controller
     {
         $pengajuan = PengajuanSertifikats::where('id_pengajuan', $id)->with(['user.dataDiri', 'kategori'])->firstOrFail();
 
-        if ($pengajuan->id_user !== Auth::user()->id_user) {
+        if ($pengajuan->id_user != Auth::user()->id_user) {
             abort(403); // Forbidden
         }
 
@@ -150,7 +150,7 @@ class Sertifikat extends Controller
         $user = Auth::user()->id_user;
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['dokumenSertifikat', 'user.dataDiri', 'kategori'])->firstOrFail();
 
-        if ($user !== $sertifikat->user->id_user) {
+        if ($user != $sertifikat->user->id_user) {
             return redirect()->route('dosen.sertifikat');
         }
 
@@ -182,7 +182,7 @@ class Sertifikat extends Controller
         $user = Auth::user()->id_user;
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->first();
 
-        if ($user !== $sertifikat->user->id_user) {
+        if ($user != $sertifikat->user->id_user) {
             return redirect()->route('dosen.sertifikat')->with('success', 'pengajuan ditolak');
         }
 
@@ -220,7 +220,7 @@ class Sertifikat extends Controller
         $user = Auth::user()->id_user;
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->first();
 
-        if ($user !== $sertifikat->user->id_user) {
+        if ($user != $sertifikat->user->id_user) {
             return redirect()->route('dosen.sertifikat')->with('success', 'pengajuan ditolak');
         }
 

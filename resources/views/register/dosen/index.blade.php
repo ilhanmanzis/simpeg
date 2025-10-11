@@ -700,7 +700,7 @@
                             </h1>
                             <div class="flex justify-between">
                                 <p class="text-md text-gray-500 dark:text-gray-400">
-                                    Langkah 4 : Informasi Pendidikan
+                                    Langkah 5 : Informasi Pendidikan
                                 </p>
                                 <a href="#" @click="prevStep()"
                                     class="hover:text-brand-500 dark:hover:text-brand-500 text-md text-gray-500 dark:text-gray-400">
