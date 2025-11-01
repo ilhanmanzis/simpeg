@@ -225,7 +225,9 @@ class StrukturalUser extends Controller
             }
         }
 
-
+        $struktural->user->dataDiri->update([
+            'pimpinan' => 'nonaktif'
+        ]);
         $struktural->delete();
 
         return redirect()

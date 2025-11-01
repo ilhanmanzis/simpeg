@@ -1,5 +1,14 @@
 <div class="flex items-center justify-center gap-2 pt-5 pb-5 mb-10 lg:mb-0 sidebar-header">
-    <a href="/" class="flex justify-center w-full">
+    @php
+        // Arahkan dashboard sesuai role (opsional).
+        $dashboardUrl = match (auth()->user()->role ?? null) {
+            'admin' => route('admin.dashboard'),
+            'dosen' => route('dosen.dashboard'),
+            'karyawan' => route('karyawan.dashboard'),
+            default => route('dashboard'), // fallback
+        };
+    @endphp
+    <a href="{{ $dashboardUrl }}" class="flex justify-center w-full">
         <!-- Logo penuh: selalu tampil di mobile; di desktop hanya saat tidak collapsed -->
         <span class="logo block lg:block" :class="sidebarToggle ? 'lg:hidden' : 'lg:block'">
             <!-- Light -->

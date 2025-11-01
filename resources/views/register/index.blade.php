@@ -93,7 +93,7 @@
                     @include('partials.common-grid-shape')
                     <div class="flex flex-col items-center max-w-xs">
                         <div class="block mb-4">
-                            <img src="{{ asset('storage/logo/logo.webp') }}" alt="Logo" />
+                            <img src="{{ asset('storage/logo/' . $setting['logo']) }}" alt="Logo" />
                         </div>
 
                     </div>
