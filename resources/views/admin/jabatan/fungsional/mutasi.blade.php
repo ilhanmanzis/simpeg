@@ -52,7 +52,13 @@
         }" x-init="$nextTick(() => { if (!hasGolongan) showRequireGolonganModal = true })">
 
             <!-- Breadcrumb -->
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5"></div>
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+                <x-breadcrumb :items="[
+                    'Jabatan Fungsional' => route('admin.jabatan.fungsional'),
+                    $user->dataDiri->name => route('admin.jabatan.fungsional.show', $user->id_user),
+                    'Mutasi Jabatan Fungsional' => '#',
+                ]" />
+            </div>
 
             <div class="mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between items-start">

@@ -6,7 +6,11 @@
 
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+                <x-breadcrumb :items="[
+                    'Tendik' => route('admin.karyawan'),
+                    'Tambah Data' => '#',
+                ]" />
             </div>
 
         </div>

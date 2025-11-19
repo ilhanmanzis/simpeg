@@ -10,7 +10,11 @@
                 <div class="flex items-center justify-between gap-5">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Pengajuan Akun</h2>
                 </div>
-                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'Pengajuan Akun' => route('admin.pengajuan.akun'),
+                        'Lihat' => '#',
+                    ]" />
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">

@@ -485,9 +485,9 @@ Route::post('/login', [Auth::class, 'store'])->name('auth.login');
 Route::post('/logout', [Auth::class, 'destroy'])->name('auth.logout');
 
 // register
-Route::get('/register', [Register::class, 'index'])->middleware('guest')->name('register');
-Route::get('/register/dosen', [Register::class, 'dosen'])->middleware('guest')->name('register.dosen');
-Route::get('/register/tendik', [Register::class, 'karyawan'])->middleware('guest')->name('register.karyawan');
+Route::get('/registrasi', [Register::class, 'index'])->middleware('guest')->name('register');
+Route::get('/registrasi/dosen', [Register::class, 'dosen'])->middleware('guest')->name('register.dosen');
+Route::get('/registrasi/tendik', [Register::class, 'karyawan'])->middleware('guest')->name('register.karyawan');
 Route::post('/register/dosen', [Register::class, 'storeDosen'])->middleware('guest')->name('register.dosen.store');
 Route::post('/register/tendik', [Register::class, 'storeKaryawan'])->middleware('guest')->name('register.karyawan.store');
 

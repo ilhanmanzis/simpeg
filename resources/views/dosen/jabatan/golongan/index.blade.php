@@ -5,9 +5,12 @@
 
     <main>
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-            <!-- Breadcrumb Start -->
-
-            <!-- Breadcrumb End -->
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <x-breadcrumb :items="[
+                    'Golongan' => route('dosen.jabatan.golongan'),
+                    'Data Golongan' => '#',
+                ]" />
+            </div>
 
             <div class="space-y-5 sm:space-y-6">
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

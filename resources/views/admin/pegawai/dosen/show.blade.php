@@ -7,9 +7,12 @@
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
-                <div class="flex items-center justify-between gap-5">
-                </div>
-                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'Dosen' => route('admin.dosen'),
+                        'Lihat' => '#',
+                    ]" />
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">
@@ -33,6 +36,7 @@
                     @endif
 
                 </div>
+
 
             </div>
             <!-- Breadcrumb End -->
@@ -107,16 +111,84 @@
                                                     Ubah Status
                                                 </button>
                                             </form>
-                                            <form method="POST"
-                                                action="{{ route('admin.dosen.destroy', ['id' => $dosen->id_user]) }}"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data dosen ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
+                                            <div x-data="{ openDelete: false, deleting: false }" class="w-full">
+
+                                                <!-- BUTTON DELETE (di dalam dropdown) -->
+                                                <button @click="openDelete = true" type="button"
                                                     class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
                                                     Delete
                                                 </button>
-                                            </form>
+
+                                                <!-- MODAL KONFIRMASI DELETE -->
+                                                <div x-show="openDelete" x-cloak
+                                                    class="fixed inset-0 z-50 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                                    <div @click.away="openDelete = false"
+                                                        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                                        <h2
+                                                            class="text-lg font-bold mb-4 text-gray-800 dark:text-white/90">
+                                                            Apakah Anda yakin ingin menghapus data?
+                                                        </h2>
+
+                                                        <div class="flex justify-end gap-2">
+                                                            <button @click="openDelete = false"
+                                                                class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                                                Batal
+                                                            </button>
+
+                                                            <button
+                                                                @click="openDelete = false; deleting = true; $nextTick(() => { $refs.formDelete.submit(); });"
+                                                                class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                                                                Hapus
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- FORM DELETE -->
+                                                <form x-ref="formDelete" method="POST"
+                                                    action="{{ route('admin.dosen.destroy', ['id' => $dosen->id_user]) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+
+                                                <!-- OVERLAY LOADING -->
+                                                <div x-show="deleting" x-cloak
+                                                    class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
+                                                    <div
+                                                        class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                        <div class="flex items-start gap-3">
+                                                            <!-- LOADING ICON -->
+                                                            <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
+                                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12"
+                                                                    r="10" stroke="currentColor" stroke-width="4">
+                                                                </circle>
+                                                                <path class="opacity-75" fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                                            </svg>
+
+                                                            <div>
+                                                                <h3
+                                                                    class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                                    Menghapus data…
+                                                                </h3>
+                                                                <p
+                                                                    class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                                    Sedang menghapus data. Jangan menutup atau memuat
+                                                                    ulang halaman
+                                                                    hingga selesai.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

@@ -6,7 +6,11 @@
 
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+                <x-breadcrumb :items="[
+                    'BKD Penunjang' => route('dosen.penunjang'),
+                    'Lihat' => '#',
+                ]" />
             </div>
 
         </div>
@@ -56,8 +60,7 @@
                                             class="text-blue-600 hover:underline">
                                             Lihat
                                         </a> |
-                                        <button
-                                            onclick="copyUrl('{{ $penunjang->dokumenPenunjang->view_url }}', this)"
+                                        <button onclick="copyUrl('{{ $penunjang->dokumenPenunjang->view_url }}', this)"
                                             class="text-blue-600 hover:underline">
                                             Salin URL
                                         </button>

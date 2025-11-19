@@ -6,7 +6,12 @@
 
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+                <x-breadcrumb :items="[
+                    'Sertifikat' => route('admin.sertifikat'),
+                    $sertifikat->user->dataDiri->name => route('admin.sertifikat.all', $sertifikat->user->id_user),
+                    'Lihat' => '#',
+                ]" />
             </div>
 
         </div>
@@ -39,32 +44,58 @@
                                 Edit
                             </a>
                             <!-- FORM DELETE + KONFIRMASI + MODAL LOADING -->
-                            <div x-data="{ deleting: false }" class="w-full">
-                                <form method="POST"
-                                    action="{{ route('admin.sertifikat.delete', ['id' => $sertifikat->id_sertifikat]) }}"
-                                    onsubmit="if(!confirm('Apakah Anda yakin ingin menghapus data ini?')) return false; this.querySelector('button[type=submit]').disabled = true;"
-                                    @submit="deleting = true">
+                            <div x-data="{ openConfirm: false, deleting: false }" class="w-full">
+
+                                <!-- BUTTON DELETE -->
+                                <button @click="openConfirm = true" type="button"
+                                    class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
+                                    Delete
+                                </button>
+
+                                <!-- MODAL KONFIRMASI -->
+                                <div x-show="openConfirm" x-cloak
+                                    class="fixed inset-0 z-50 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                    <div @click.away="openConfirm = false"
+                                        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                        <h2 class="text-lg font-bold mb-4 text-gray-800 dark:text-white/90">
+                                            Apakah Anda yakin ingin menghapus data ini?
+                                        </h2>
+
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="openConfirm = false"
+                                                class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                                Batal
+                                            </button>
+
+                                            <button
+                                                @click="
+                        openConfirm = false;
+                        deleting = true;
+                        $nextTick(() => { $refs.deleteForm.submit(); });
+                    "
+                                                class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- FORM DELETE -->
+                                <form x-ref="deleteForm" method="POST"
+                                    action="{{ route('admin.sertifikat.delete', ['id' => $sertifikat->id_sertifikat]) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit"
-                                        class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                                        :disabled="deleting">
-                                        <svg x-show="deleting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-error-500"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                                        </svg>
-                                        <span x-text="deleting ? 'Menghapus…' : 'Delete'"></span>
-                                    </button>
                                 </form>
 
-                                <!-- Overlay modal saat proses hapus -->
+                                <!-- OVERLAY LOADING -->
                                 <div x-show="deleting" x-cloak
                                     class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
                                     <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
                                         <div class="flex items-start gap-3">
+
                                             <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -72,18 +103,22 @@
                                                 <path class="opacity-75" fill="currentColor"
                                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                             </svg>
+
                                             <div>
-                                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Mohon
-                                                    tunggu…</h3>
+                                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                    Mohon tunggu…
+                                                </h3>
                                                 <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
-                                                    Sedang menghapus data. Jangan menutup atau memuat ulang halaman
-                                                    hingga selesai.
+                                                    Sedang menghapus data. Jangan menutup halaman hingga proses selesai.
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
+
                             </div>
+
 
                         </div>
                     </div>

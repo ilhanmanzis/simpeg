@@ -27,6 +27,10 @@
                                 <p class="text-md text-gray-500 dark:text-gray-400">
                                     Langkah 2 : Buat informasi akun
                                 </p>
+                                <a href="{{ route('register') }}"
+                                    class="hover:text-brand-500 dark:hover:text-brand-500 text-md text-gray-500 dark:text-gray-400">
+                                    &lt;Kembali
+                                </a>
                             </div>
                         </div>
 

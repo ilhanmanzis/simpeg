@@ -9,7 +9,11 @@
             <div x-data="{ pageName: `{{ $title }}` }">
                 <div class="flex items-center justify-between gap-5">
                 </div>
-                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        ' Profile pribadi' => route('karyawan.profilepribadi'),
+                        'Data Profile Pribadi' => '#',
+                    ]" />
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">

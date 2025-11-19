@@ -3,7 +3,10 @@
     <x-slot name="page">{{ $page }}</x-slot>
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="p-8">
-
+        <x-breadcrumb :items="[
+            'Sertifikat' => route('karyawan.sertifikat'),
+            'Tambah Sertifikat' => '#',
+        ]" />
 
         <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 

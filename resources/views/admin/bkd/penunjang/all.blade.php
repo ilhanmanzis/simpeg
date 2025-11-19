@@ -7,9 +7,11 @@
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
-                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-
-
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'BKD Penunjang' => route('admin.bkd.penunjang'),
+                        $user->dataDiri->name => '#',
+                    ]" />
                 </div>
 
             </div>

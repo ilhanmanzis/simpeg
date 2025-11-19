@@ -4,6 +4,12 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="p-8">
 
+        <div class="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3">
+            <x-breadcrumb :items="[
+                'Sertifikat' => route('admin.kategori-sertifikat'),
+                'Tambah Sertifikat' => '#',
+            ]" />
+        </div>
 
         <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
@@ -14,7 +20,8 @@
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
-                <form action="{{ route('admin.kategori-sertifikat.store') }}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('admin.kategori-sertifikat.store') }}" method="post"
+                    enctype="multipart/form-data">
                     @csrf
                     <!-- Elements -->
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">

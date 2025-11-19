@@ -73,9 +73,9 @@ class StrukturalUser extends Controller
         $today = Carbon::today()->toDateString();
 
         $data = [
-            'page'       => 'Jabatan Stuktural',
-            'selected'   => 'Jabatan Stuktural',
-            'title'      => 'Mutasi Jabatan Stuktural Dosen',
+            'page'       => 'Jabatan Struktural',
+            'selected'   => 'Jabatan Struktural',
+            'title'      => 'Mutasi Jabatan Struktural Dosen',
             'dosen'      => StrukturalUsers::where('id_struktural', $id)
                 ->where('status', 'aktif')
                 ->where(function ($w) use ($today) {
@@ -198,8 +198,8 @@ class StrukturalUser extends Controller
             ->withQueryString();
 
         $data = [
-            'page'       => 'Jabatan Stuktural',
-            'selected'   => 'Jabatan Stuktural',
+            'page'       => 'Jabatan Struktural',
+            'selected'   => 'Jabatan Struktural',
             'title'      => 'Riwayat Jabatan Struktural' . $struktural->nama_jabatan,
             'riwayats'   => $riwayats,
             'struktural' => $struktural,

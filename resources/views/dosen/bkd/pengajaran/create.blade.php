@@ -6,7 +6,11 @@
 
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+                <x-breadcrumb :items="[
+                    'BKD Pengajaran' => route('dosen.pengajaran'),
+                    'Tambah BKD Pengajaran' => '#',
+                ]" />
             </div>
 
         </div>
@@ -90,7 +94,7 @@
                             matkulList: [{
                                 nama_matkul: '',
                                 sks: '',
-                                
+                    
                                 nilai: null
                             }]
                         },
@@ -99,7 +103,7 @@
                             this.formData.matkulList.push({
                                 nama_matkul: '',
                                 sks: '',
-                                
+                    
                                 nilai: null
                             });
                         },
@@ -151,7 +155,7 @@
 
 
 
-                                
+
                                 <div class="w-full mb-2">
                                     <label class="my-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                         BAP dan Nilai<span class="text-error-500">*</span>

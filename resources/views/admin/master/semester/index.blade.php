@@ -8,6 +8,10 @@
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
                 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'Semester' => route('admin.semester'),
+                        'Data Semester' => '#',
+                    ]" />
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">

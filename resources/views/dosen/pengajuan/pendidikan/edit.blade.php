@@ -7,7 +7,10 @@
         <!-- Breadcrumb Start -->
         <div x-data="{ pageName: `{{ $title }}` }">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3 mx-5">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
+                <x-breadcrumb :items="[
+                    'Pengajuan Pendidikan' => route('dosen.pengajuan.pendidikan'),
+                    'Edit Pendidikan' => '#',
+                ]" />
             </div>
 
         </div>

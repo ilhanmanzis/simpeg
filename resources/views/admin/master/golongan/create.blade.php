@@ -4,6 +4,12 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="p-8">
 
+        <div class="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3">
+            <x-breadcrumb :items="[
+                'Golongan' => route('admin.golongan'),
+                'Tambah Golongan' => '#',
+            ]" />
+        </div>
 
         <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 

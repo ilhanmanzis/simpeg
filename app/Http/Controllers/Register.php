@@ -23,7 +23,7 @@ class Register extends Controller
         $data = [
             'page' => 'Register',
             'selected' => 'Register',
-            'title' => 'Register',
+            'title' => 'Registrasi',
             'setting' => $setting
         ];
         return view('register.index', $data);
@@ -37,7 +37,7 @@ class Register extends Controller
         $data = [
             'page' => 'Register Dosen',
             'selected' => 'Register Dosen',
-            'title' => 'Register Dosen',
+            'title' => 'Registrasi Dosen',
             'jenjangs' => Jenjangs::all(),
             'setting' => $setting
         ];
@@ -52,7 +52,7 @@ class Register extends Controller
         $data = [
             'page' => 'Register Karyawan',
             'selected' => 'Register Karyawan',
-            'title' => 'Register Karyawan',
+            'title' => 'Registrasi Tendik',
             'jenjangs' => Jenjangs::all(),
             'setting' => $setting
         ];

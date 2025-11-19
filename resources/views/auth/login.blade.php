@@ -12,7 +12,7 @@
                     @include('partials.common-grid-shape')
 
                     <div class="flex flex-col items-center max-w-xs">
-                        <a href="#" class="block mb-4">
+                        <a href="{{ route('public.home') }}" class="block mb-4">
                             <img src="{{ asset('storage/logo/' . $setting->logo) }}" alt="Logo" />
                         </a>
 

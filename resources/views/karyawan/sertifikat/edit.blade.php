@@ -4,6 +4,13 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="p-8">
 
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
+            <x-breadcrumb :items="[
+                'Sertifikat' => route('karyawan.sertifikat'),
+                $sertifikat->nama_sertifikat => route('karyawan.sertifikat.show', $sertifikat->id_sertifikat),
+                'Edit Sertifikat' => '#',
+            ]" />
+        </div>
         <div class=" mx-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
 

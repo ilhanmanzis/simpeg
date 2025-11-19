@@ -7,7 +7,11 @@
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
-                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'BKD Penelitian' => route('dosen.penelitian'),
+                        'Data BKD Penelitian' => '#',
+                    ]" />
                     @if (session('success'))
                         <div
                             class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">
