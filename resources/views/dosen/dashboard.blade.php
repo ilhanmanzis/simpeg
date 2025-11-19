@@ -45,7 +45,7 @@
                         {{-- profile pribadi --}}
                         <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 w-1/2 mr-3">
                             <div
-                                class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
+                                class="flex justify-center border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
 
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Ringkasan Profile Pribadi</h2>
@@ -135,7 +135,7 @@
                         {{-- pendidikan --}}
                         <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 w-1/2 self-start">
                             <div
-                                class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
+                                class="flex justify-center border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
 
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
                                     Pendidikan</h2>
