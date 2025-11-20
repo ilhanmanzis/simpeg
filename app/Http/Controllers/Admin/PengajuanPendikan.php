@@ -109,18 +109,21 @@ class PengajuanPendikan extends Controller
             if ($perubahan->jenis === 'delete') {
                 $pendidikan = $perubahan->pendidikan;
                 if ($pendidikan) {
-                    if ($pendidikan->dokumenIjazah?->path_file) {
+                    if ($pendidikan->dokumenIjazah?->file_id) {
                         try {
-                            Storage::disk('google')->delete($pendidikan->dokumenIjazah->path_file);
+                            $this->googleDriveService->deleteById($pendidikan->dokumenIjazah->file_id);
                         } catch (\Throwable $e) {
                         }
                     }
-                    if ($pendidikan->dokumenTranskipNilai?->path_file) {
+
+                    if ($pendidikan->dokumenTranskipNilai?->file_id) {
                         try {
-                            Storage::disk('google')->delete($pendidikan->dokumenTranskipNilai->path_file);
+                            $this->googleDriveService->deleteById($pendidikan->dokumenTranskipNilai->file_id);
                         } catch (\Throwable $e) {
                         }
                     }
+
+
 
                     // (Tetap ikuti logika kamu yang lama)
                     $perubahan->create([
@@ -241,30 +244,39 @@ class PengajuanPendikan extends Controller
                 return back()->with('error', 'Data pendidikan asal tidak ditemukan.');
             }
 
+
             $oldJenjangName = $pendidikan->jenjang->nama_jenjang ?? '';
             $newJenjang     = $perubahan->id_jenjang ? Jenjangs::findOrFail($perubahan->id_jenjang) : $pendidikan->jenjang;
             $newJenjangName = $newJenjang->nama_jenjang ?? $oldJenjangName;
 
             $newFolder = "{$user->npp}/pendidikan/{$newJenjangName}";
             try {
-                Storage::disk('google')->makeDirectory($newFolder);
+                $this->googleDriveService->createFolder($newFolder);
             } catch (\Throwable $e) {
             }
 
-            $moveOnDrive = function (?string $oldPath, string $targetFolder) {
-                if (!$oldPath) return null;
-                $filename = basename($oldPath);
-                $newPath  = rtrim($targetFolder, '/') . '/' . $filename;
-                if ($oldPath === $newPath) return $newPath;
+            $oldIjazahId   = $pendidikan->dokumenIjazah->file_id ?? null;
+            $oldTranskipId = $pendidikan->dokumenTranskipNilai->file_id ?? null;
 
-                $binary = Storage::disk('google')->get($oldPath);
-                Storage::disk('google')->put($newPath, $binary);
+            $folderSegments = [$user->npp, 'pendidikan', $newJenjangName];
+
+
+            $moveOnDrive = function ($fileId, $oldPath, $targetFolderSegments) {
+                if (!$fileId || !$oldPath) return null;
+
+                $filename = basename($oldPath);
+                $newPath  = implode('/', $targetFolderSegments) . '/' . $filename;
+
+                // Pindahkan by fileId
                 try {
-                    Storage::disk('google')->delete($oldPath);
+                    $this->googleDriveService->moveFileTo($fileId, $targetFolderSegments, $filename);
                 } catch (\Throwable $e) {
+                    return null; // gagal move
                 }
+
                 return $newPath;
             };
+
 
             $folderChanged      = $oldJenjangName !== $newJenjangName;
             $fileLamaIjazahPath = $pendidikan->dokumenIjazah?->path_file;
@@ -277,17 +289,20 @@ class PengajuanPendikan extends Controller
             };
 
             if ($folderChanged) {
-                if (empty($perubahan->ijazah) && $fileLamaIjazahPath && $pendidikan->dokumenIjazah) {
-                    if ($new = $moveOnDrive($fileLamaIjazahPath, $newFolder)) {
+
+                if (empty($perubahan->ijazah) && $fileLamaIjazahPath && $oldIjazahId) {
+                    if ($new = $moveOnDrive($oldIjazahId, $fileLamaIjazahPath, $folderSegments)) {
                         $pendidikan->dokumenIjazah()->update(['path_file' => $new]);
                     }
                 }
-                if (empty($perubahan->transkip_nilai) && $fileLamaTrnPath && $pendidikan->dokumenTranskipNilai) {
-                    if ($new = $moveOnDrive($fileLamaTrnPath, $newFolder)) {
+
+                if (empty($perubahan->transkip_nilai) && $fileLamaTrnPath && $oldTranskipId) {
+                    if ($new = $moveOnDrive($oldTranskipId, $fileLamaTrnPath, $folderSegments)) {
                         $pendidikan->dokumenTranskipNilai()->update(['path_file' => $new]);
                     }
                 }
             }
+
 
             // Replace ijazah
             if (!empty($perubahan->ijazah)) {
@@ -308,9 +323,9 @@ class PengajuanPendikan extends Controller
                                 'preview_url'    => $result['preview_url'] ?? null,
                                 'tanggal_upload' => now(),
                             ]);
-                            if ($old && $old !== $destPath) {
+                            if ($oldIjazahId) {
                                 try {
-                                    Storage::disk('google')->delete($old);
+                                    $this->googleDriveService->deleteById($oldIjazahId);
                                 } catch (\Throwable $e) {
                                 }
                             }
@@ -353,9 +368,9 @@ class PengajuanPendikan extends Controller
                                 'preview_url'    => $result['preview_url'] ?? null,
                                 'tanggal_upload' => now(),
                             ]);
-                            if ($old && $old !== $destPath) {
+                            if ($oldTranskipId) {
                                 try {
-                                    Storage::disk('google')->delete($old);
+                                    $this->googleDriveService->deleteById($oldTranskipId);
                                 } catch (\Throwable $e) {
                                 }
                             }

@@ -245,7 +245,7 @@ class PengajuanAkun extends Controller
             if (file_exists($localPath)) {
                 @unlink($localPath);
             }
-            if (file_exists($register->role === 'dosen' && $serdosLocalPath)) {
+            if (file_exists($register->role === 'dosen') && $register->tersertifikasi === 'sudah') {
                 @unlink($serdosLocalPath);
             }
             foreach (($register->registerPendidikan ?? []) as $pendidikan) {

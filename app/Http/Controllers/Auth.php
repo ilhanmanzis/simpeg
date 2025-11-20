@@ -21,7 +21,7 @@ class Auth extends Controller
      */
     public function index()
     {
-        $settings = Cache::remember('app_settings', 300, fn() => Settings::first());
+        $settings = Settings::first();
 
         return view('auth.login', [
             'page'     => 'Login',
