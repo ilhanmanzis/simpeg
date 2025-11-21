@@ -64,7 +64,7 @@
                                 </td>
                                 <td class="px-4 py-2 align-top">
                                     <a href="{{ isset($tendik->npp) ? route('public.tendik.show', $tendik->npp) : '#' }}"
-                                        class="text-yellow-600 hover:text-yellow-700 font-semibold">
+                                        class="inline-flex items-center rounded-xl bg-yellow-500 px-4 py-2 text-white font-semibold hover:bg-yellow-600">
                                         Lihat
                                     </a>
                                 </td>

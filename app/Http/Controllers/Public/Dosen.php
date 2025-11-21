@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Penelitians;
+use App\Models\Pengabdians;
+use App\Models\Pengajarans;
+use App\Models\Penunjangs;
 use App\Models\Sertifikats;
 use App\Models\User;
 use Carbon\Carbon;
@@ -55,7 +59,10 @@ class Dosen extends Controller
     {
         $today = Carbon::today()->toDateString();
 
-        $judul = $request->get('judul');
+        $judulSertifikat = $request->get('judulSertifikat');
+        $judulPenelitian = $request->get('judulPenelitian');
+        $judulPengabdian = $request->get('judulPengabdian');
+        $judulPenunjang = $request->get('judulPenunjang');
 
         $dosen = User::where('npp', $id)->where('role', 'dosen')->with([
             'dataDiri.dokumen',
@@ -77,16 +84,41 @@ class Dosen extends Controller
             },
         ])->firstOrFail();
         $sertifikats = Sertifikats::where('id_user', $dosen->id_user)
-            ->searchJudul($judul)
+            ->searchJudul($judulSertifikat)
             ->with(['kategori', 'dokumenSertifikat'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10)
+            ->paginate(10, ["*"], 'sertifikatPage')
             ->withQueryString();
+        $penelitians = Penelitians::where('id_user', $dosen->id_user)
+            ->searchJudul($judulPenelitian)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ["*"], 'penelitianPage')
+            ->withQueryString();
+        $pengabdians = Pengabdians::where('id_user', $dosen->id_user)
+            ->searchJudul($judulPengabdian)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ["*"], 'pengabdianPage')
+            ->withQueryString();
+        $penunjangs = Penunjangs::where('id_user', $dosen->id_user)
+            ->searchJudul($judulPenunjang)
+            ->with('dokumenPenunjang')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'penunjangPage')
+            ->withQueryString();
+        $pengajarans = Pengajarans::where('id_user', $dosen->id_user)->with(['semester', 'detail'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'pengajaranPage')
+            ->withQueryString();
+
         $data = [
             'page' => 'Dosen',
             'title' => 'Data Dosen',
             'dosen'   => $dosen,
-            'sertifikats' => $sertifikats
+            'sertifikats' => $sertifikats,
+            'penelitians' => $penelitians,
+            'pengabdians' => $pengabdians,
+            'penunjangs' => $penunjangs,
+            'pengajarans' => $pengajarans,
         ];
 
         // dd($sertifikats);

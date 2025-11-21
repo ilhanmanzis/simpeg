@@ -17,8 +17,8 @@
             <div class="hidden md:block ml-auto">
                 <div class="ml-10 flex items-baseline space-x-4">
                     <x-nav-link-public href="{{ route('public.home') }}" :active="request()->is('/')">Home</x-nav-link-public>
-                    <x-nav-link-public href="{{ route('public.dosen') }}" :active="request()->is('dosen')">Dosen</x-nav-link-public>
-                    <x-nav-link-public href="{{ route('public.tendik') }}" :active="request()->is('tendik')">Tenaga
+                    <x-nav-link-public href="{{ route('public.dosen') }}" :active="request()->is('data-dosen')">Dosen</x-nav-link-public>
+                    <x-nav-link-public href="{{ route('public.tendik') }}" :active="request()->is('data-tendik')">Tenaga
                         Pendidik</x-nav-link-public>
                     {{-- Tombol Login / Dashboard --}}
                     @guest
