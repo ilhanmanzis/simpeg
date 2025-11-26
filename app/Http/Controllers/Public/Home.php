@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Setting;
 use App\Models\JabatanStrukturals;
+use App\Models\Penelitians;
+use App\Models\Pengabdians;
 use App\Models\Settings;
 use App\Models\User;
 use Carbon\Carbon;
@@ -156,14 +158,50 @@ class Home extends Controller
             'fungsional'  => $fungsional, // label => total
         ];
 
+
+        /* =========================
+        * 6) Carousel Penelitian + Pengabdian
+        * ========================= */
+
+        $penelitian = Penelitians::with(['user.dataDiri'])
+            ->select(
+                'id_penelitian as id',
+                'judul',
+                'id_user',
+                'created_at',
+                DB::raw('"penelitian" as tipe')
+            )
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $pengabdian = Pengabdians::with(['user.dataDiri'])
+            ->select(
+                'id_pengabdian as id',
+                'judul',
+                'lokasi',
+                'id_user',
+                'created_at',
+                DB::raw('"pengabdian" as tipe')
+            )
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // gabungkan 2 tabel → ambil 5 data terbaru
+        $carouselItems = $penelitian
+            ->concat($pengabdian)
+            ->sortByDesc('created_at')
+            ->take(5)
+            ->values();
+
         $data = [
             'page' => 'Home',
             'title' => 'Selamat datang di Webiste Sistem Kepegawaian STMIK EL RAHMA Yogyakarta',
             'setting'  => Settings::first(),
             'strukturals' => $strukturals,
-            'stats' => $stats
-
-
+            'stats' => $stats,
+            'carouselItems' => $carouselItems
         ];
 
         return view('public/home', $data);

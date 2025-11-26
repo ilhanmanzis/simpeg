@@ -411,7 +411,117 @@
         </script>
     </section>
 
+    {{-- carousel --}}
+    <div x-data="carousel({
+        interval: 5000,
+        total: {{ count($carouselItems) }}
+    })" x-init="start()" class="relative w-full max-w-7xl mx-auto mt-10 select-none">
 
+        <!-- WRAPPER -->
+        <div class="overflow-hidden relative">
+            <div class="flex transition-transform duration-700 ease-out"
+                :style="`transform: translateX(-${current * 100}%);`">
+
+                @foreach ($carouselItems as $item)
+                    <div class="min-w-full flex justify-center py-8 px-6">
+
+                        <div class="flex flex-col md:flex-row items-center gap-6 
+                        bg-white rounded-2xl shadow-xl p-6 w-full max-w-4xl
+                        transition-all duration-500"
+                            :class="currentIndex == {{ $loop->index }} ?
+                                'opacity-100 scale-100' :
+                                'opacity-50 scale-90'">
+
+                            <!-- FOTO -->
+                            <img src="{{ route('public.foto', $item->user->dataDiri->dokumen->file_id) }}"
+                                class="w-44 h-44 object-cover rounded-xl shadow-lg">
+
+                            <!-- TEKS -->
+                            <div>
+                                <a href="{{ route('public.dosen.show', $item->user->npp) }}"
+                                    class="text-2xl font-bold text-gray-800 hover:text-yellow-600">
+                                    {{ $item->user->dataDiri->name }}
+                                </a>
+
+                                <p class="mt-3 text-gray-600 text-lg">
+                                    Telah melakukan
+                                    <span class="text-blue-600 font-semibold">
+                                        {{ $item->tipe }}
+                                    </span>
+                                    dengan judul:
+                                </p>
+
+                                <p class="mt-2 text-xl font-bold text-gray-900">
+                                    {{ $item->judul }}
+                                </p>
+                                @if ($item->tipe === 'pengabdian')
+                                    <p class="mt-2 text-md text-gray-900">
+                                        Lokasi : {{ $item->lokasi }}
+                                    </p>
+                                @endif
+                            </div>
+
+                        </div>
+
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+
+        <!-- TOMBOL KIRI -->
+        <button @click="prev"
+            class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white 
+               backdrop-blur-md shadow-md p-3 rounded-full">
+            <svg width="22" height="22" fill="none" stroke="black" stroke-width="2">
+                <path d="M15 5l-7 7 7 7" />
+            </svg>
+        </button>
+
+        <!-- TOMBOL KANAN -->
+        <button @click="next"
+            class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white
+               backdrop-blur-md shadow-md p-3 rounded-full">
+            <svg width="22" height="22" fill="none" stroke="black" stroke-width="2">
+                <path d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+    </div>
+
+
+    <!-- === SCRIPT ALPINE.JS CAROUSEL === -->
+    <script>
+        function carousel({
+            interval,
+            total
+        }) {
+            return {
+                current: 0,
+                currentIndex: 0,
+                total: total,
+
+                start() {
+                    setInterval(() => {
+                        this.next();
+                    }, interval);
+                },
+
+                next() {
+                    this.current = (this.current + 1) % this.total;
+                    this.currentIndex = this.current;
+                },
+
+                prev() {
+                    this.current = (this.current - 1 + this.total) % this.total;
+                    this.currentIndex = this.current;
+                }
+            }
+        }
+    </script>
+
+
+    {{-- tentang sistem --}}
     <section class="bg-gray-50">
         {{-- Tentang Sistem --}}
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
@@ -497,6 +607,9 @@
             </div>
         </div>
     </section>
+
+
+
 
 
 </x-layout-public>
