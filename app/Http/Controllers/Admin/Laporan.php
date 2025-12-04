@@ -36,8 +36,8 @@ class Laporan extends Controller
         $today = Carbon::today()->toDateString();
         $validated = $request->validate([
             'pegawai'        => 'required|in:all,dosen,karyawan',
-            // required_if untuk dosen; nilai yang valid: all/ya/tidak
-            'tersertifikasi' => 'nullable|required_if:pegawai,dosen|in:all,ya,tidak',
+            // required_if untuk dosen; nilai yang valid: all/sudah/tidak
+            'tersertifikasi' => 'nullable|required_if:pegawai,dosen|in:all,sudah,tidak',
             'status' => 'nullable|required|in:all,aktif,nonaktif',
             'export'         => 'nullable|in:pdf',
         ], [

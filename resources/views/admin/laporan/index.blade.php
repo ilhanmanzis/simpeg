@@ -67,7 +67,7 @@
                                             <option value="all"
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Semua
                                             </option>
-                                            <option value="ya"
+                                            <option value="sudah"
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Sudah</option>
                                             <option value="tidak"
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tidak</option>
