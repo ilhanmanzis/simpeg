@@ -77,7 +77,7 @@ class PengajuanFungsional extends Controller
         if ($request->hasFile('sk')) {
             // ===== Simpan sk profil =====
             $originalName = $request->file('sk')->getClientOriginalName();
-            $timestampedName = time() . '_' . $originalName;
+            $timestampedName = 'fungsional_' . time() . '_' . $originalName;
             // Simpan ke storage/app/sk
             $request->file('sk')->storeAs('sk', $timestampedName);
         }

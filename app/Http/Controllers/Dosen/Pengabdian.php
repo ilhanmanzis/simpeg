@@ -76,28 +76,28 @@ class Pengabdian extends Controller
 
         // permohonan
         $permohonanFile = $request->file("permohonan");
-        $permohonanName = time() . '_' . $permohonanFile->getClientOriginalName();
+        $permohonanName = 'pengabdian_permohonan' . time() . '_' . $permohonanFile->getClientOriginalName();
         // Simpan ke storage/app/bkd
         $permohonanFile->storeAs('bkd', $permohonanName);
 
         // tugas
         $tugasFile = $request->file("tugas");
-        $tugasName = time() . '_' . $tugasFile->getClientOriginalName();
+        $tugasName = 'pengabdian_tugas' . time() . '_' . $tugasFile->getClientOriginalName();
         $tugasFile->storeAs('bkd', $tugasName);
 
         // modul
         $modulFile = $request->file("modul");
-        $modulName = time() . '_' . $modulFile->getClientOriginalName();
+        $modulName = 'pengabdian_modul' . time() . '_' . $modulFile->getClientOriginalName();
         $modulFile->storeAs('bkd', $modulName);
 
         // foto
         $fotoFile = $request->file("foto");
-        $fotoName = time() . '_' . $fotoFile->getClientOriginalName();
+        $fotoName = 'pengabdian_foto' . time() . '_' . $fotoFile->getClientOriginalName();
         $fotoFile->storeAs('bkd', $fotoName);
 
         // terima kasih
         $terimaKasihFile = $request->file("terima_kasih");
-        $terimaKasihName = time() . '_' . $terimaKasihFile->getClientOriginalName();
+        $terimaKasihName = 'pengabdian_terima kasih' . time() . '_' . $terimaKasihFile->getClientOriginalName();
         $terimaKasihFile->storeAs('bkd', $terimaKasihName);
 
         PengajuanPengabdians::create([

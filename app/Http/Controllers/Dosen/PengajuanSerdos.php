@@ -65,7 +65,7 @@ class PengajuanSerdos extends Controller
             if ($request->hasFile('serdos')) {
                 // ===== Simpan serdos =====
                 $originalName = $request->file('serdos')->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
+                $timestampedName = 'serdos_' . time() . '_' . $originalName;
                 // Simpan ke storage/app/sertifikat
                 $request->file('serdos')->storeAs('sertifikat', $timestampedName);
             }

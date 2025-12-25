@@ -122,6 +122,7 @@ class PengajuanAkun extends Controller
                 'tanggal_upload' => now()
             ]);
 
+
             //sertifikat dosen
             if ($register->tersertifikasi === 'sudah' && $register->serdos) {
                 $lastNumber++;
@@ -245,9 +246,16 @@ class PengajuanAkun extends Controller
             if (file_exists($localPath)) {
                 @unlink($localPath);
             }
-            if (file_exists($register->role === 'dosen') && $register->tersertifikasi === 'sudah') {
-                @unlink($serdosLocalPath);
+            if (
+                $register->role === 'dosen' &&
+                $register->tersertifikasi === 'sudah'
+            ) {
+                $serdosLocalPath = storage_path("app/private/register/{$register->serdos}");
+                if (file_exists($serdosLocalPath)) {
+                    @unlink($serdosLocalPath);
+                }
             }
+
             foreach (($register->registerPendidikan ?? []) as $pendidikan) {
                 $ijazahPathLocal = storage_path("app/private/pendidikan/ijazah/{$pendidikan->ijazah}");
                 if (file_exists($ijazahPathLocal)) @unlink($ijazahPathLocal);

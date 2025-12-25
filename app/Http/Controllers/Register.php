@@ -129,7 +129,7 @@ class Register extends Controller
 
         if ($request->hasFile('serdos') && $request->tersertifikasi === 'sudah') {
             $originalNameSerdos = $request->file('serdos')->getClientOriginalName();
-            $timestampedNameSerdos = time() . '_' . $originalNameSerdos;
+            $timestampedNameSerdos = 'serdos_' . time() . '_' . $originalNameSerdos;
             // Simpan ke storage/app/register
             $request->file('serdos')->storeAs('register', $timestampedNameSerdos);
         }
@@ -172,14 +172,14 @@ class Register extends Controller
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====
         foreach ($request->pendidikan as $index => $pendidikan) {
             $ijazahFile = $request->file("pendidikan.$index.ijazah");
-            $ijazahName = time() . '_' . $ijazahFile->getClientOriginalName();
+            $ijazahName = time() . '_' . $index . '_' . $ijazahFile->getClientOriginalName();
             // Simpan ke storage/app/pendidikan/ijazah
             $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName);
 
             $transkipNilaiName = null;
             if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
                 $transkipFile = $request->file("pendidikan.$index.transkip_nilai");
-                $transkipNilaiName = time() . '_' . $transkipFile->getClientOriginalName();
+                $transkipNilaiName = time() . '_' . $index . '_' . $transkipFile->getClientOriginalName();
                 // Simpan ke storage/app/pendidikan/ijazah
                 $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
             }
@@ -286,14 +286,14 @@ class Register extends Controller
         // ===== Simpan data pendidikan + upload ijazah dan transkip =====
         foreach ($request->pendidikan as $index => $pendidikan) {
             $ijazahFile = $request->file("pendidikan.$index.ijazah");
-            $ijazahName = time() . '_' . $ijazahFile->getClientOriginalName();
+            $ijazahName = time() . '_' . $index . '_' . $ijazahFile->getClientOriginalName();
             // Simpan ke storage/app/pendidikan/ijazah
             $ijazahFile->storeAs('pendidikan/ijazah', $ijazahName);
 
             $transkipNilaiName = null;
             if ($request->hasFile("pendidikan.$index.transkip_nilai")) {
                 $transkipFile = $request->file("pendidikan.$index.transkip_nilai");
-                $transkipNilaiName = time() . '_' . $transkipFile->getClientOriginalName();
+                $transkipNilaiName = time() . '_' . $index . '_' . $transkipFile->getClientOriginalName();
                 // Simpan ke storage/app/pendidikan/ijazah
                 $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
             }

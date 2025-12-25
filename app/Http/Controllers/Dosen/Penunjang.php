@@ -75,7 +75,7 @@ class Penunjang extends Controller
 
 
         $dokumenFile = $request->file("dokumen");
-        $dokumenName = time() . '_' . $dokumenFile->getClientOriginalName();
+        $dokumenName = 'penunjang_' . time() . '_' . $dokumenFile->getClientOriginalName();
         $dokumenFile->storeAs('bkd', $dokumenName);
 
         PengajuanPenunjangs::create([

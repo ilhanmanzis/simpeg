@@ -82,7 +82,7 @@ class Pengajaran extends Controller
 
         // sk
         $skFile = $request->file("sk");
-        $skName = time() . '_' . $skFile->getClientOriginalName();
+        $skName = 'pengajaran_sk' . time() . '_' . $skFile->getClientOriginalName();
         // Simpan ke storage/app/bkd
         $skFile->storeAs('bkd', $skName);
 
@@ -98,7 +98,7 @@ class Pengajaran extends Controller
 
             // nilai
             $nilaiFile =  $request->file("matkul.$index.nilai");
-            $nilaiName = time() . '_' . $nilaiFile->getClientOriginalName();
+            $nilaiName = 'pengajaran' . time() . '_' . $index . '_' . $nilaiFile->getClientOriginalName();
             // Simpan ke storage/app/bkd
             $nilaiFile->storeAs('bkd', $nilaiName);
 
