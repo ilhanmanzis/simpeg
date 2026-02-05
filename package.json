@@ -1,0 +1,32 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "autoprefixer": "^10.4.21",
+        "axios": "^1.8.2",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^2.0.0",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^4.1.11",
+        "vite": "^7.0.4"
+    },
+    "dependencies": {
+        "@alpinejs/persist": "^3.14.9",
+        "@fullcalendar/core": "^6.1.18",
+        "@fullcalendar/daygrid": "^6.1.18",
+        "@fullcalendar/interaction": "^6.1.18",
+        "@fullcalendar/list": "^6.1.18",
+        "@fullcalendar/timegrid": "^6.1.18",
+        "alpinejs": "^3.14.9",
+        "apexcharts": "^5.3.2",
+        "dropzone": "^6.0.0-beta.2",
+        "flatpickr": "^4.6.13",
+        "jsvectormap": "^1.7.0"
+    }
+}

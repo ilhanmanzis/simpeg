@@ -1,0 +1,371 @@
+<x-layout>
+    <x-slot name="selected">{{ $selected }}</x-slot>
+    <x-slot name="page">{{ $page }}</x-slot>
+    <x-slot:title>{{ $title }}</x-slot:title>
+
+    <main>
+        <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+            <!-- Breadcrumb Start -->
+            <div x-data="{ pageName: `{{ $title }}` }">
+
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <x-breadcrumb :items="[
+                        'Pengajuan Profile Pribadi' => route('admin.pengajuan.profile'),
+                        'Lihat' => '#',
+                    ]" />
+                    @if (session('success'))
+                        <div
+                            class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">
+                            <div class="flex items-start gap-3">
+                                <div class="-mt-0.5 text-success-500">
+                                    <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M3.70186 12.0001C3.70186 7.41711 7.41711 3.70186 12.0001 3.70186C16.5831 3.70186 20.2984 7.41711 20.2984 12.0001C20.2984 16.5831 16.5831 20.2984 12.0001 20.2984C7.41711 20.2984 3.70186 16.5831 3.70186 12.0001ZM12.0001 1.90186C6.423 1.90186 1.90186 6.423 1.90186 12.0001C1.90186 17.5772 6.423 22.0984 12.0001 22.0984C17.5772 22.0984 22.0984 17.5772 22.0984 12.0001C22.0984 6.423 17.5772 1.90186 12.0001 1.90186ZM15.6197 10.7395C15.9712 10.388 15.9712 9.81819 15.6197 9.46672C15.2683 9.11525 14.6984 9.11525 14.347 9.46672L11.1894 12.6243L9.6533 11.0883C9.30183 10.7368 8.73198 10.7368 8.38051 11.0883C8.02904 11.4397 8.02904 12.0096 8.38051 12.3611L10.553 14.5335C10.7217 14.7023 10.9507 14.7971 11.1894 14.7971C11.428 14.7971 11.657 14.7023 11.8257 14.5335L15.6197 10.7395Z"
+                                            fill="" />
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
+                                        {{ session('success') }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+
+            </div>
+            <!-- Breadcrumb End -->
+
+            <div class="space-y-5 sm:space-y-6">
+                <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="px-5 py-4 sm:px-6 sm:py-5">
+
+
+                        {{-- profile pribadi --}}
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 ">
+                            <div
+                                class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
+
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
+                                    Pengajuan Perubahan Profile Pribadi {{ $pengajuan->user->dataDiri->name }}</h2>
+
+
+                            </div>
+
+
+                            <div class="flex justify-center mt-10 mb-5">
+
+
+                                <div
+                                    class="{{ $pengajuan->status === 'ditolak' ? '' : 'w-64 aspect-[3/4] overflow-hidden' }}">
+
+
+                                    @if ($pengajuan->status == 'disetujui')
+                                        <img src="{{ route('file.foto.drive', $pengajuan->user->dataDiri->foto) }}"
+                                            alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
+                                    @elseif ($pengajuan->status == 'ditolak')
+                                        <p class="text-error-500 border-b border-error-500 text-center">
+                                            Foto telah dihapus dari sistem
+                                        </p>
+                                    @elseif ($pengajuan->foto === null)
+                                        <p class="text-error-500 border-b border-error-500 text-center">
+                                            Foto tidak diubah
+                                        </p>
+                                    @else
+                                        <img src="{{ route('file.foto.perubahan', $pengajuan->foto) }}"
+                                            alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
+                                    @endif
+
+
+                                </div>
+
+                            </div>
+
+                            <div
+                                class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
+
+
+
+                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+
+                                    <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nama</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->name }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NIK</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->no_ktp }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NUPTK</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->nuptk }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NIP</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->nip ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NIDK</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->nidk ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NIDN</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->nidn ?? '-' }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor HP</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->no_hp }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jenis Kelamin</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->jenis_kelamin }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Agama</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->agama }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Anak</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->anak }}</div>
+                                        </div>
+                                        @if ($pengajuan->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $pengajuan->istri }}</div>
+                                            </div>
+                                        @endif
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Golongan Darah</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->golongan_darah }}</div>
+                                        </div>
+                                        @if ($pengajuan->status === 'ditolak')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Keterangan</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">
+                                                    <span
+                                                        class="text-error-500">{{ $pengajuan->keterangan ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        @endif
+
+
+                                    </div>
+                                </div>
+                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+                                    <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->bpjs ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tempat Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->tempat_lahir }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->tanggal_lahir }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Alamat</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->alamat }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">RT</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->rt }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">RW</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->rw }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Desa/Kelurahan</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->desa }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Kecamatan</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->kecamatan }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Kabupaten/Kota</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->kabupaten }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Provinsi</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->provinsi }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Bergabung</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $pengajuan->tanggal_bergabung }}</div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        @if ($pengajuan->status == 'pending')
+                            <!-- Tombol Tolak dan Modal Tolak -->
+
+                            <div class="flex justify-between w-full">
+                                <div x-data="{ openTolak: false }" class="w-1/4">
+                                    <div class="flex justify-end ">
+                                        <button
+                                            class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-error-500 shadow-theme-xs hover:bg-error-600 mt-5"
+                                            @click="openTolak = true" type="button">
+                                            Tolak
+                                        </button>
+                                    </div>
+
+                                    <!-- Modal Tolak -->
+                                    <div x-show="openTolak"
+                                        class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-black bg-opacity-40"
+                                        style="display: none;">
+                                        <div @click.away="openTolak = false"
+                                            class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+                                            <h2 class="text-lg font-bold mb-4 text-gray-800 dark:text-white/90">Apakah
+                                                anda
+                                                yakin
+                                                ingin menolak?</h2>
+                                            <form method="POST"
+                                                action="{{ route('admin.pengajuan.profile.tolak', ['id' => $pengajuan->id_perubahan]) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="mb-4">
+                                                    <label for="keterangan"
+                                                        class="block text-sm font-medium text-gray-700 mb-1 dark:text-white/90">Keterangan
+                                                        Penolakan</label>
+                                                    <textarea id="keterangan" name="keterangan" rows="3" required
+                                                        class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 border-gray-300 focus:border-brand-300 dark:border-gray-700"></textarea>
+                                                </div>
+                                                <div class="flex justify-end gap-2">
+                                                    <button type="button" @click="openTolak = false"
+                                                        class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">Batal</button>
+                                                    <button type="submit"
+                                                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Tolak</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- SETUJU PROFILE + LOADING MODAL -->
+                                <div x-data="{ loadingProfile: false }" class="w-1/4">
+                                    <form
+                                        action="{{ route('admin.pengajuan.profile.setuju', ['id' => $pengajuan['id_perubahan']]) }}"
+                                        method="post" @submit="loadingProfile = true">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                            class="flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 mt-5 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            :disabled="loadingProfile">
+                                            <svg x-show="loadingProfile"
+                                                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                            </svg>
+                                            <span x-text="loadingProfile ? 'Memproses…' : 'Setuju'"></span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Overlay modal -->
+                                    <div x-show="loadingProfile" x-cloak
+                                        class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40"
+                                        aria-live="polite">
+                                        <div role="dialog" aria-modal="true"
+                                            class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                            <div class="flex items-start gap-3">
+                                                <svg class="h-6 w-6 animate-spin mt-0.5"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                                </svg>
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                        Mohon tunggu…</h3>
+                                                    <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                        Sedang mengunggah berkas ke Google Drive. Jangan menutup atau
+                                                        memuat ulang halaman.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        @endif
+
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <script>
+            function copyUrl(url, el) {
+                navigator.clipboard.writeText(url).then(() => {
+                    // Simpan teks asli tombol
+                    let originalText = el.textContent;
+
+                    // Ganti teks tombol jadi Tersalin!
+                    el.textContent = 'Tersalin!';
+                    el.style.color = 'gray';
+
+                    // Kembalikan teks tombol setelah 1.5 detik
+                    setTimeout(() => {
+                        el.textContent = originalText;
+                        el.style.color = '';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Gagal menyalin: ', err);
+                });
+            }
+        </script>
+
+    </main>
+</x-layout>

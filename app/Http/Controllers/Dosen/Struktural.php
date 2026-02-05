@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Http\Controllers\Dosen;
+
+use App\Http\Controllers\Controller;
+use App\Models\StrukturalUsers;
+use App\Services\GoogleDriveService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class Struktural extends Controller
+{
+    protected $googleDriveService;
+
+    public function __construct(GoogleDriveService $googleDriveService)
+    {
+        $this->googleDriveService = $googleDriveService;
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $today = Carbon::today()->toDateString();
+        $id = Auth::user()->id_user;
+        $data = [
+            'page' => 'Jabatan Struktural',
+            'selected' => 'Jabatan Struktural',
+            'title' => 'Data Jabatan Struktural Dosen',
+            'dosen' => StrukturalUsers::where('id_user', $id)->where('status', 'aktif')->whereDate('tanggal_selesai', '>=', $today)->with(['user.dataDiri', 'struktural', 'dokumen'])->orderBy('id_struktural_user', 'desc')->first(),
+
+            'riwayats' => StrukturalUsers::where('id_user', $id)->with(['user', 'struktural', 'dokumen'])->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
+        ];
+
+        return view('dosen.jabatan.struktural.index', $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}
