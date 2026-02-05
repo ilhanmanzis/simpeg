@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\SettingLokasiPresensi;
 
 class Setting extends Controller
 {
@@ -17,43 +18,13 @@ class Setting extends Controller
             'page' => 'Setting',
             'selected' => 'Setting',
             'title' => 'Setting',
-            'setting' => Settings::first()
+            'setting' => Settings::first(),
+            'lokasi' => SettingLokasiPresensi::first()
         ];
 
         return view('admin.setting.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -89,11 +60,29 @@ class Setting extends Controller
         return redirect()->route('admin.setting')->with('success', 'Setting berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+
+    public function updateLokasiPresensi(Request $request)
     {
-        //
+        $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'radius_meter' => 'required|integer|min:1',
+        ]);
+
+        // karena hanya 1 record
+        $lokasi = SettingLokasiPresensi::first();
+
+        if (!$lokasi) {
+            $lokasi = new SettingLokasiPresensi();
+        }
+
+        $lokasi->latitude = $request->latitude;
+        $lokasi->longitude = $request->longitude;
+        $lokasi->radius_meter = $request->radius_meter;
+        $lokasi->save();
+
+        return redirect()
+            ->route('admin.setting')
+            ->with('success', 'Setting lokasi presensi berhasil diperbarui.');
     }
 }

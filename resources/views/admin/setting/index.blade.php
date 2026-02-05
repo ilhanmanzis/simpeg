@@ -186,9 +186,175 @@
             </div>
         </div>
 
+        <!-- Kartu Setting Lokasi Presensi -->
+        <div class="my-5 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+
+            <div class="px-5 py-4 sm:px-6 sm:py-5">
+                <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
+                    Setting Lokasi Presensi
+                </h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 text-justify">
+                    Fitur pengaturan lokasi presensi digunakan untuk menentukan titik pusat lokasi dan radius presensi
+                    yang menjadi acuan sistem dalam pencatatan kehadiran dosen dan tenaga kependidikan. Lokasi presensi
+                    dapat ditentukan dengan memasukkan nilai latitude dan longitude secara manual atau dengan memilih
+                    lokasi langsung melalui peta interaktif, sedangkan radius presensi ditentukan dalam satuan meter dan
+                    divisualisasikan dalam bentuk lingkaran pada peta untuk memudahkan pemahaman batas area presensi.
+                    Apabila data pengaturan lokasi presensi belum tersedia di dalam basis data, sistem akan menampilkan
+                    lokasi default sebagai titik awal tampilan peta, dan administrator diwajibkan untuk menentukan serta
+                    menyimpan pengaturan lokasi presensi agar data tersebut dapat digunakan sebagai parameter utama
+                    dalam proses presensi.
+                </p>
+            </div>
+
+            <div class="border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800" x-data="{ lat: '{{ optional($lokasi)->latitude }}', lng: '{{ optional($lokasi)->longitude }}' }">
+
+                <form action="{{ route('admin.setting.lokasi.update') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                        <!-- Latitude -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Latitude
+                            </label>
+                            <input type="text" name="latitude" x-model="lat" required
+                                class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:border-gray-700 border-gray-300">
+                        </div>
+
+                        <!-- Longitude -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Longitude
+                            </label>
+                            <input type="text" name="longitude" x-model="lng" required
+                                class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:border-gray-700 border-gray-300">
+                        </div>
+
+                        <!-- Radius -->
+                        <div class="sm:col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Radius Presensi (meter)
+                            </label>
+                            <input type="number" name="radius_meter" value="{{ optional($lokasi)->radius_meter }}"
+                                min="1" required
+                                class="dark:bg-dark-900 shadow-theme-xs focus:ring-brand-500/10 h-11 w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:border-gray-700 border-gray-300">
+                        </div>
+
+                        <!-- Map -->
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Pilih Lokasi dari Peta
+                            </label>
+                            <div id="map"
+                                class="h-96 w-full rounded-lg border border-gray-300 dark:border-gray-700">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                Klik pada peta untuk menentukan latitude dan longitude secara otomatis.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <button type="submit"
+                        class="mt-6 inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
+                        Simpan Lokasi Presensi
+                    </button>
+                </form>
+            </div>
+        </div>
+
 
 
 
 
     </div>
+    @push('scripts')
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                const defaultLat = -7.797068; // Yogyakarta
+                const defaultLng = 110.370529;
+                const defaultRadius = 100; // meter
+
+                let lat = {{ optional($lokasi)->latitude ?? 'null' }};
+                let lng = {{ optional($lokasi)->longitude ?? 'null' }};
+                let radius = {{ optional($lokasi)->radius_meter ?? 'null' }};
+
+                if (lat === null || lng === null) {
+                    lat = defaultLat;
+                    lng = defaultLng;
+                }
+
+                if (radius === null) {
+                    radius = defaultRadius;
+                }
+
+                // INIT MAP
+                const map = L.map('map').setView([lat, lng], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // MARKER
+                const marker = L.marker([lat, lng], {
+                    draggable: true
+                }).addTo(map);
+
+                // CIRCLE (RADIUS)
+                const circle = L.circle([lat, lng], {
+                    radius: radius,
+                    color: '#2563eb',
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.25
+                }).addTo(map);
+
+                const inputLat = document.querySelector('input[name="latitude"]');
+                const inputLng = document.querySelector('input[name="longitude"]');
+                const inputRadius = document.querySelector('input[name="radius_meter"]');
+
+                function updateInputs(latlng) {
+                    inputLat.value = latlng.lat.toFixed(7);
+                    inputLng.value = latlng.lng.toFixed(7);
+                }
+
+                // INIT VALUE
+                updateInputs(marker.getLatLng());
+                inputRadius.value = radius;
+
+                // MARKER DRAG
+                marker.on('dragend', function(e) {
+                    const pos = e.target.getLatLng();
+                    updateInputs(pos);
+                    circle.setLatLng(pos);
+                });
+
+                // MAP CLICK
+                map.on('click', function(e) {
+                    marker.setLatLng(e.latlng);
+                    updateInputs(e.latlng);
+                    circle.setLatLng(e.latlng);
+                });
+
+                // RADIUS INPUT CHANGE (REALTIME)
+                inputRadius.addEventListener('input', function() {
+                    const newRadius = parseFloat(this.value);
+                    if (!isNaN(newRadius) && newRadius > 0) {
+                        circle.setRadius(newRadius);
+                    }
+                });
+
+                // FIX MAP PUTIH
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 300);
+            });
+        </script>
+    @endpush
+
 </x-layout>

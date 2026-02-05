@@ -315,8 +315,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/sertifikat-edit/{id}', [AdminSertifikat::class, 'edit'])->name('sertifikat.edit');
     Route::put('/sertifikat/{id}', [AdminSertifikat::class, 'update'])->name('sertifikat.update');
 
+    // setting
     Route::get('/setting', [Setting::class, 'index'])->name('setting');
     Route::put('/setting', [Setting::class, 'update'])->name('setting.update');
+    Route::put('/setting/lokasi-presensi', [Setting::class, 'updateLokasiPresensi'])->name('setting.lokasi.update');
 
     // serdos
     Route::get('/pengajuan-serdos', [AdminPengajuanSerdos::class, 'index'])->name('pengajuan.serdos');
