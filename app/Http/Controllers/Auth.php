@@ -68,9 +68,13 @@ class Auth extends Controller
             || FacadesAuth::attempt(['npp'   => $login, 'password' => $password]);
 
         if (! $ok) {
-            RateLimiter::hit($throttleKey, 60); // reset 1 menit
-            return back()->with('message', 'Email/NPP dan password salah');
+            RateLimiter::hit($throttleKey, 60);
+
+            return back()
+                ->with('message', 'Email/NPP dan password salah')
+                ->withInput($request->only('email'));
         }
+
 
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
