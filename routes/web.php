@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Dosen\Fungsional;
+use App\Http\Controllers\Dosen\Presensi as PresensiDosen;
 use App\Http\Controllers\Dosen\Golongan as DosenGolongan;
 use App\Http\Controllers\Dosen\Laporan as DosenLaporan;
 use App\Http\Controllers\Dosen\Pendidikan;
@@ -419,6 +420,20 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     Route::get('/serdos/create', [PengajuanSerdos::class, 'create'])->name('pengajuan.serdos.create');
     Route::post('/serdos/store', [PengajuanSerdos::class, 'store'])->name('pengajuan.serdos.store');
     Route::get('/serdos/{id}', [PengajuanSerdos::class, 'show'])->name('pengajuan.serdos.show');
+
+    // presensi masuk
+    Route::get('/presensi', [PresensiDosen::class, 'index'])->name('presensi');
+    Route::post('/presensi/masuk', [PresensiDosen::class, 'storeMasuk'])
+        ->name('presensi.masuk');
+
+    // presensi pulang
+    Route::get('/presensi/pulang', [PresensiDosen::class, 'pulang'])->name('presensi.pulang');
+    Route::post('/presensi/pulang', [PresensiDosen::class, 'storePulang'])
+        ->name('presensi.pulang');
+
+    // cek presensi
+    Route::get('/presensi/cek', [PresensiDosen::class, 'cek'])->name('presensi.cek');
+    Route::get('/presensi/riwayat', [PresensiDosen::class, 'riwayat'])->name('presensi.riwayat');
 });
 
 

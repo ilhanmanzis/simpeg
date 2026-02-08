@@ -32,11 +32,15 @@ return new class extends Migration
             $table->text('alamat_pulang')->nullable();
             $table->integer('jarak_pulang')->nullable();
 
-            $table->enum('status_lokasi', ['didalam_radius', 'diluar_radius'])
+            $table->enum('status_lokasi_datang', ['didalam_radius', 'diluar_radius'])
+                ->default('didalam_radius');
+            $table->enum('status_lokasi_pulang', ['didalam_radius', 'diluar_radius'])
                 ->default('didalam_radius');
 
             $table->enum('status_jam_kerja', ['hijau', 'kuning', 'merah'])
                 ->default('hijau');
+            $table->enum('status_kehadiran', ['hadir', 'izin', 'sakit', 'alpha'])
+                ->default('hadir');
 
             $table->timestamps();
 
