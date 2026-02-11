@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dosen;
+namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
@@ -71,13 +71,6 @@ class Presensi extends Controller
         // lokasi kampus
         $lokasiKampus = SettingLokasiPresensi::first();
 
-        // cek struktural dosen
-        $dosenStrukturalAktif = StrukturalUsers::where('id_user', Auth::id())
-            ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
-            ->exists();
-
-
         // =============================
         // DATA UNTUK VIEW
         // =============================
@@ -90,10 +83,9 @@ class Presensi extends Controller
             'tanggalHariIni' => $today->translatedFormat('l, d F Y'),
             'jamSekarang' => Carbon::now()->format('H:i:s'),
             'lokasiKampus' => $lokasiKampus,
-            'isStruktural' => $dosenStrukturalAktif,
         ];
 
-        return view('dosen.presensi.index', $data);
+        return view('karyawan.presensi.index', $data);
     }
 
     public function storeMasuk(Request $request)
@@ -145,9 +137,8 @@ class Presensi extends Controller
                 : 'diluar_radius',
         ]);
 
-        return redirect()->route('dosen.presensi')->with('success', 'Presensi masuk berhasil dicatat.');
+        return redirect()->route('karyawan.presensi')->with('success', 'Presensi masuk berhasil dicatat.');
     }
-
 
 
     public function pulang()
@@ -166,33 +157,21 @@ class Presensi extends Controller
         // =============================
         if (!$presensiHariIni) {
             return redirect()
-                ->route('dosen.presensi')
+                ->route('karyawan.presensi')
                 ->with('error', 'Anda belum melakukan presensi masuk.');
         }
 
         if ($presensiHariIni->jam_pulang) {
             return redirect()
-                ->route('dosen.presensi')
+                ->route('karyawan.presensi')
                 ->with('error', 'Presensi pulang sudah dilakukan.');
         }
 
         if ($presensiHariIni->status_kehadiran == 'izin' || $presensiHariIni->status_kehadiran == 'sakit' || $presensiHariIni->status_kehadiran == 'alpha') {
             return redirect()
-                ->route('dosen.presensi')
+                ->route('karyawan.presensi')
                 ->with('error', 'tidak dapat melakukan presensi.');
         }
-
-
-
-        // =============================
-        // CEK DOSEN STRUKTURAL AKTIF
-        // =============================
-        $todayDate = Carbon::today()->toDateString();
-
-        $dosenStrukturalAktif = StrukturalUsers::where('id_user', Auth::id())
-            ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $todayDate)
-            ->exists();
 
 
         // lokasi kampus
@@ -207,11 +186,10 @@ class Presensi extends Controller
             'selected'         => 'Presensi',
             'presensiHariIni'  => $presensiHariIni,
             'jamSekarang'      => Carbon::now()->format('H:i:s'),
-            'isStruktural'     => $dosenStrukturalAktif,
             'lokasiKampus'     => $lokasiKampus,
         ];
 
-        return view('dosen.presensi.pulang', $data);
+        return view('karyawan.presensi.pulang', $data);
     }
 
 
@@ -222,31 +200,7 @@ class Presensi extends Controller
             // lokasi
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',
-
-            // aktivitas
-            'sks_siang' => 'nullable|integer|min:0',
-            'sks_malam' => 'nullable|integer|min:0',
-            'sks_praktikum_siang' => 'nullable|integer|min:0',
-            'sks_praktikum_malam' => 'nullable|integer|min:0',
-
-            'mata_kuliah' => 'nullable|string',
             'kegiatan'    => 'nullable|string',
-
-            'seminar_jumlah' => 'nullable|integer',
-            'seminar_keterangan' => 'nullable|string',
-
-            'pembimbing_jumlah' => 'nullable|integer',
-            'pembimbing_keterangan' => 'nullable|string',
-
-            'penguji_jumlah' => 'nullable|integer',
-            'penguji_keterangan' => 'nullable|string',
-
-            'kkl_jumlah' => 'nullable|integer',
-            'kkl_keterangan' => 'nullable|string',
-
-            'tugas_luar_jumlah' => 'nullable|integer',
-            'tugas_luar_keterangan' => 'nullable|string',
-
             // foto bukti
             'foto'   => 'nullable|array|max:3',
             'foto.*' => 'image|max:2048',
@@ -268,7 +222,7 @@ class Presensi extends Controller
         }
         if ($presensi->status_kehadiran == 'izin' || $presensi->status_kehadiran == 'sakit' || $presensi->status_kehadiran == 'alpha') {
             return redirect()
-                ->route('dosen.presensi')
+                ->route('karyawan.presensi')
                 ->with('error', 'tidak dapat melakukan presensi.');
         }
 
@@ -291,15 +245,9 @@ class Presensi extends Controller
 
 
 
-        // =============================
-        // CEK STRUKTURAL AKTIF
-        // =============================
-        $isStruktural = StrukturalUsers::where('id_user', $user->id_user)
-            ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
-            ->exists();
 
-        $jamWajib = $isStruktural ? 7 : 6;
+
+        $jamWajib = 8;
 
 
         // =============================
@@ -355,27 +303,7 @@ class Presensi extends Controller
             // =============================
             PresensiAktivitas::create([
                 'id_presensi' => $presensi->id_presensi,
-                'sks_siang'   => $request->sks_siang,
-                'sks_malam'   => $request->sks_malam,
-                'sks_praktikum_siang' => $request->sks_praktikum_siang,
-                'sks_praktikum_malam' => $request->sks_praktikum_malam,
-                'mata_kuliah' => $request->mata_kuliah,
                 'kegiatan'    => $request->kegiatan,
-
-                'seminar_jumlah' => $request->seminar_jumlah,
-                'seminar_keterangan' => $request->seminar_keterangan,
-
-                'pembimbing_jumlah' => $request->pembimbing_jumlah,
-                'pembimbing_keterangan' => $request->pembimbing_keterangan,
-
-                'penguji_jumlah' => $request->penguji_jumlah,
-                'penguji_keterangan' => $request->penguji_keterangan,
-
-                'kkl_jumlah' => $request->kkl_jumlah,
-                'kkl_keterangan' => $request->kkl_keterangan,
-
-                'tugas_luar_jumlah' => $request->tugas_luar_jumlah,
-                'tugas_luar_keterangan' => $request->tugas_luar_keterangan,
             ]);
 
             // =============================
@@ -415,9 +343,10 @@ class Presensi extends Controller
             }
         });
 
-        return redirect()->route('dosen.presensi')
+        return redirect()->route('karyawan.presensi')
             ->with('success', 'Presensi pulang & aktivitas berhasil disimpan.');
     }
+
     public function cekPresensi(Request $request)
     {
         $userId = Auth::id();
@@ -426,7 +355,6 @@ class Presensi extends Controller
         if (is_null($periode)) {
             $periode = now()->format('Y-m');
         }
-
 
         $tanggal = Carbon::createFromFormat('Y-m', $periode);
 
@@ -496,7 +424,7 @@ class Presensi extends Controller
             ->where('status_kehadiran', 'izin')
             ->count();
 
-        return view('dosen.presensi.cek', [
+        return view('karyawan.presensi.cek', [
             'page'      => 'Presensi',
             'selected'  => 'Presensi',
             'title'     => 'Cek Presensi',
@@ -521,19 +449,15 @@ class Presensi extends Controller
             ->firstOrFail();
 
         $lokasiKampus = SettingLokasiPresensi::first();
-        $isStruktural = StrukturalUsers::where('id_user', $userId)
-            ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
-            ->exists();
+
 
         // dd($presensi);
-        return view('dosen.presensi.detail', [
+        return view('karyawan.presensi.detail', [
             'page'      => 'Presensi',
             'selected'  => 'Presensi',
             'title'     => 'Detail Presensi',
             'presensi'  => $presensi,
             'lokasiKampus' => $lokasiKampus,
-            'isStruktural' => $isStruktural,
         ]);
     }
 }

@@ -54,6 +54,7 @@ use App\Http\Controllers\GoogleOauthController;
 use App\Http\Controllers\Karyawan\Pendidikan as KaryawanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanPendidikan;
 use App\Http\Controllers\Karyawan\PengajuanProfilePribadi as KaryawanPengajuanProfilePribadi;
+use App\Http\Controllers\Karyawan\Presensi as PresensiKaryawan;
 use App\Http\Controllers\Karyawan\ProfilePribadi as KaryawanProfilePribadi;
 use App\Http\Controllers\Karyawan\Sertifikat as KaryawanSertifikat;
 use App\Http\Controllers\ManajemenUser;
@@ -432,8 +433,8 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
         ->name('presensi.pulang');
 
     // cek presensi
-    Route::get('/presensi/cek', [PresensiDosen::class, 'cek'])->name('presensi.cek');
-    Route::get('/presensi/riwayat', [PresensiDosen::class, 'riwayat'])->name('presensi.riwayat');
+    Route::get('/presensi/cek', [PresensiDosen::class, 'cekPresensi'])->name('presensi.cek');
+    Route::get('/presensi/cek/{id}', [PresensiDosen::class, 'detailPresensi'])->name('presensi.detail');
 });
 
 
@@ -469,6 +470,20 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('tendik')->as('karyawan.')-
     Route::delete('/sertifikat/{id}', [KaryawanSertifikat::class, 'destroy'])->name('sertifikat.delete');
     Route::get('/sertifikat/{id}', [KaryawanSertifikat::class, 'show'])->name('sertifikat.show');
     Route::get('/sertifikat-riwayat/{id}', [KaryawanSertifikat::class, 'riwayat'])->name('sertifikat.riwayat');
+
+    // presensi masuk
+    Route::get('/presensi', [PresensiKaryawan::class, 'index'])->name('presensi');
+    Route::post('/presensi/masuk', [PresensiKaryawan::class, 'storeMasuk'])
+        ->name('presensi.masuk');
+
+    // presensi pulang
+    Route::get('/presensi/pulang', [PresensiKaryawan::class, 'pulang'])->name('presensi.pulang');
+    Route::post('/presensi/pulang', [PresensiKaryawan::class, 'storePulang'])
+        ->name('presensi.pulang');
+
+    // cek presensi
+    Route::get('/presensi/cek', [PresensiKaryawan::class, 'cekPresensi'])->name('presensi.cek');
+    Route::get('/presensi/cek/{id}', [PresensiKaryawan::class, 'detailPresensi'])->name('presensi.detail');
 });
 
 

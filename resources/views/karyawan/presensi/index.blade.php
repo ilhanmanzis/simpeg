@@ -9,7 +9,7 @@
             <!-- ================= BREADCRUMB ================= -->
             <div class="flex justify-between mb-2">
                 <x-breadcrumb :items="[
-                    'Presensi' => route('dosen.presensi'),
+                    'Presensi' => route('karyawan.presensi'),
                     'Daftar Presensi' => '#',
                 ]" />
                 @if (session('success'))
@@ -295,7 +295,7 @@
                                         </button>
 
 
-                                        <form method="POST" action="{{ route('dosen.presensi.masuk') }}">
+                                        <form method="POST" action="{{ route('karyawan.presensi.masuk') }}">
                                             @csrf
                                             <input type="hidden" name="latitude" :value="lat">
                                             <input type="hidden" name="longitude" :value="lng">
@@ -315,7 +315,7 @@
                             </span>
                         @elseif ($presensiHariIni && !$presensiHariIni->jam_pulang)
                             <!-- PRESENSI PULANG -->
-                            <a href="{{ route('dosen.presensi.pulang') }}"
+                            <a href="{{ route('karyawan.presensi.pulang') }}"
                                 class="inline-flex items-center gap-2 rounded-lg bg-warning-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-warning-600">
                                 Presensi Pulang
                             </a>
@@ -326,7 +326,7 @@
                                 Presensi Selesai
                             </span>
                         @endif
-                        <a href="{{ route('dosen.presensi.cek') }}"
+                        <a href="{{ route('karyawan.presensi.cek') }}"
                             class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600">
                             Cek Presensi
                         </a>
@@ -655,7 +655,7 @@
             return {
                 progress: null,
                 status: 'merah',
-                wajibJam: @js($isStruktural ? 7 : 6),
+                wajibJam: 8,
 
                 durasiText: '',
                 serverOffset: 0,

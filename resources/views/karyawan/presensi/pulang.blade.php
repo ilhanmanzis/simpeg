@@ -9,7 +9,7 @@
         <!-- ================= BREADCRUMB ================= -->
         <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
             <x-breadcrumb :items="[
-                'Presensi' => route('dosen.presensi'),
+                'Presensi' => route('karyawan.presensi'),
                 'Presensi Pulang' => '#',
             ]" />
             @if (session('error'))
@@ -149,7 +149,7 @@
 
 
 
-                    <form method="POST" action="{{ route('dosen.presensi.pulang') }}" enctype="multipart/form-data"
+                    <form method="POST" action="{{ route('karyawan.presensi.pulang') }}" enctype="multipart/form-data"
                         x-data="{ showLoading: false }" @submit="showLoading = true">
 
 
@@ -162,68 +162,12 @@
 
 
 
-                        <!-- ================= SKS ================= -->
-                        <div class="my-3">
-                            <h4 class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                Beban Mengajar (SKS)
-                            </h4>
-
-                            <!-- BARIS 1 -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        SKS Siang
-                                    </label>
-                                    <input type="number" name="sks_siang"
-                                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm
-                                           dark:border-gray-700 dark:text-gray-100" />
-                                </div>
-
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        SKS Malam
-                                    </label>
-                                    <input type="number" name="sks_malam"
-                                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm
-                                           dark:border-gray-700 dark:text-gray-100" />
-                                </div>
-                            </div>
-
-                            <!-- BARIS 2 -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        SKS Praktikum Siang
-                                    </label>
-                                    <input type="number" name="sks_praktikum_siang"
-                                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm
-                                           dark:border-gray-700 dark:text-gray-100" />
-                                </div>
-
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        SKS Praktikum Malam
-                                    </label>
-                                    <input type="number" name="sks_praktikum_malam"
-                                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm
-                                           dark:border-gray-700 dark:text-gray-100" />
-                                </div>
-                            </div>
-                        </div>
 
 
 
-                        <!-- ================= MATA KULIAH ================= -->
+                        <!-- ================= Kegiatan ================= -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-4 text-sm ">
-                            <div class="">
-                                <h4 class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                    Mata Kuliah
-                                </h4>
-                                <textarea name="mata_kuliah" rows="3" placeholder="Mata Kuliah"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-2
-                        dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
 
-                            </div>
                             <div class="">
                                 <h4 class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
                                     Kegiatan
@@ -234,93 +178,7 @@
                             </div>
                         </div>
 
-                        <!-- ================= KEGIATAN ================= -->
                         <div>
-
-
-
-                            <div class="space-y-4 text-sm">
-
-
-
-                                <div class="pt-2 space-y-3">
-
-                                    <p class="text-xs font-semibold text-gray-600 dark:text-gray-100">
-                                        Kegiatan Lain
-                                    </p>
-
-                                    <!-- Seminar -->
-                                    <div class="flex items-start gap-3">
-                                        <label class="w-32 pt-2 text-gray-600 dark:text-gray-200">Seminar</label>
-
-                                        <input type="number" name="seminar_jumlah" placeholder="Jumlah"
-                                            class="w-20 rounded-md border border-gray-300 px-2 h-14 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-
-                                        <textarea name="seminar_keterangan" rows="2" placeholder="Keterangan"
-                                            class="flex-1 resize-none rounded-md border border-gray-300 px-3 py-1.5 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
-                                    </div>
-
-                                    <!-- Pembimbing -->
-                                    <div class="flex items-start gap-3">
-                                        <label class="w-32 pt-2 text-gray-600 dark:text-gray-200">Pembimbing</label>
-
-                                        <input type="number" name="pembimbing_jumlah" placeholder="Jumlah"
-                                            class="w-20 rounded-md border border-gray-300 px-2 h-14 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-
-                                        <textarea name="pembimbing_keterangan" rows="2" placeholder="Keterangan"
-                                            class="flex-1 resize-none rounded-md border border-gray-300 px-3 py-1.5 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
-                                    </div>
-
-                                    <!-- Penguji -->
-                                    <div class="flex items-start gap-3">
-                                        <label class="w-32 pt-2 text-gray-600 dark:text-gray-200">Penguji</label>
-
-                                        <input type="number" name="penguji_jumlah" placeholder="Jumlah"
-                                            class="w-20 rounded-md border border-gray-300 px-2 h-14 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-
-                                        <textarea name="penguji_keterangan" rows="2" placeholder="Keterangan"
-                                            class="flex-1 resize-none rounded-md border border-gray-300 px-3 py-1.5 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
-                                    </div>
-
-                                    <!-- KKL -->
-                                    <div class="flex items-start gap-3">
-                                        <label class="w-32 pt-2 text-gray-600 dark:text-gray-200">KKL</label>
-
-                                        <input type="number" name="kkl_jumlah" placeholder="Jumlah"
-                                            class="w-20 rounded-md border border-gray-300 px-2 h-14 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-
-                                        <textarea name="kkl_keterangan" rows="2" placeholder="Keterangan"
-                                            class="flex-1 resize-none rounded-md border border-gray-300 px-3 py-1.5 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
-                                    </div>
-
-                                    <!-- Tugas Luar -->
-                                    <div class="flex items-start gap-3">
-                                        <label class="w-32 pt-2 text-gray-600 dark:text-gray-200">Tugas Luar</label>
-
-                                        <input type="number" name="tugas_luar_jumlah" placeholder="Jumlah"
-                                            class="w-20 rounded-md border border-gray-300 px-2 h-14 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-
-                                        <textarea name="tugas_luar_keterangan" rows="2" placeholder="Keterangan"
-                                            class="flex-1 resize-none rounded-md border border-gray-300 px-3 py-1.5 bg-white text-gray-800
-                                                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-
-
                             <!-- ================= FOTO ================= -->
                             <div x-data="fotoUpload()" class="space-y-2 my-5">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -520,8 +378,7 @@
                     durasi: '00:00:00',
                     status: 'merah',
 
-                    isStruktural: @js($isStruktural),
-                    wajibJam: 6,
+                    wajibJam: 8,
                     serverOffset: 0,
 
                     // MAP
@@ -619,7 +476,7 @@
 
                     // ================= JAM =================
                     startClock() {
-                        this.wajibJam = this.isStruktural ? 7 : 6
+                        this.wajibJam = 8
 
                         const serverNow = new Date(
                             '{{ now()->format('Y-m-d H:i:s') }}'.replace(' ', 'T')
