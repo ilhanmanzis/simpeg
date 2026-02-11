@@ -11,6 +11,7 @@ use App\Models\SettingLokasiPresensi;
 use App\Models\StrukturalUsers;
 use App\Models\User;
 use App\Services\LocationService;
+use App\Services\PresensiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -22,10 +23,14 @@ use function PHPUnit\Framework\isNull;
 class Presensi extends Controller
 {
     protected LocationService $locationService;
+    protected PresensiService $presensiService;
 
-    public function __construct(LocationService $locationService)
-    {
+    public function __construct(
+        LocationService $locationService,
+        PresensiService $presensiService
+    ) {
         $this->locationService = $locationService;
+        $this->presensiService = $presensiService;
     }
     /**
      * Display a listing of the resource.
@@ -245,30 +250,29 @@ class Presensi extends Controller
 
 
 
-
-
-        $jamWajib = 8;
-
-
         // =============================
         // HITUNG DURASI
         // =============================
         $jamDatang = Carbon::parse($presensi->jam_datang);
         $jamPulang = Carbon::now();
 
-        $durasiMenit = $jamDatang->diffInMinutes($jamPulang);
-        $durasiJam   = intdiv($durasiMenit, 60);
+        $durasiData = $this->presensiService->hitungDurasi(
+            $jamDatang,
+            $jamPulang
+        );
 
-        // =============================
-        // STATUS JAM KERJA
-        // =============================
-        if ($durasiJam >= $jamWajib) {
-            $statusJamKerja = 'hijau';
-        } elseif ($durasiJam >= 4) {
-            $statusJamKerja = 'kuning';
-        } else {
-            $statusJamKerja = 'merah';
-        }
+        $jamWajib = $this->presensiService->getJamWajib(
+            $user,
+            $today
+        );
+
+        $statusJamKerja = $this->presensiService->getStatusJamKerja(
+            $durasiData['durasi_jam'],
+            $jamWajib
+        );
+
+        $durasiMenit = $durasiData['durasi_menit'];
+
 
         DB::transaction(function () use (
             $request,

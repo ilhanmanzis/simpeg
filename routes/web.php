@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\PengajuanProfilePribadi as AdminPengajuanProfileP
 use App\Http\Controllers\Admin\PengajuanSerdos as AdminPengajuanSerdos;
 use App\Http\Controllers\Admin\PengajuanSertifikat as AdminPengajuanSertifikat;
 use App\Http\Controllers\Admin\Penunjang as AdminPenunjang;
+use App\Http\Controllers\Admin\Presensi;
 use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Admin\Sertifikat as AdminSertifikat;
 use App\Http\Controllers\Admin\StrukturalUser;
@@ -327,6 +328,35 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/pengajuan-serdos/{id}', [AdminPengajuanSerdos::class, 'show'])->name('pengajuan.serdos.show');
     Route::put('/pengajuan-serdos/setuju/{id}', [AdminPengajuanSerdos::class, 'setuju'])->name('pengajuan.serdos.setuju');
     Route::put('/pengajuan-serdos/tolak/{id}', [AdminPengajuanSerdos::class, 'tolak'])->name('pengajuan.serdos.tolak');
+
+    Route::get('/presensi/input', [Presensi::class, 'menu'])
+        ->name('presensi.input');
+
+    Route::get('/presensi/input/masuk', [Presensi::class, 'createMasuk'])
+        ->name('presensi.input.masuk');
+
+    Route::get('/presensi/input/pulang', [Presensi::class, 'pulang'])
+        ->name('presensi.input.pulang');
+    Route::get('/presensi/input/pulang/{id}', [Presensi::class, 'prosesPulang'])
+        ->name('presensi.input.pulang.proses');
+
+    Route::get('/presensi/input/izin', [Presensi::class, 'createIzin'])
+        ->name('presensi.input.izin');
+
+    Route::get('/presensi/input/sakit', [Presensi::class, 'createSakit'])
+        ->name('presensi.input.sakit');
+
+    Route::post('/presensi/input/masuk/store', [Presensi::class, 'storeMasuk'])
+        ->name('presensi.input.masuk.store');
+
+    Route::post('/presensi/input/pulang/store', [Presensi::class, 'storePulang'])
+        ->name('presensi.input.pulang.store');
+
+    Route::post('/presensi/input/sakit/store', [Presensi::class, 'storeSakit'])
+        ->name('presensi.input.sakit.store');
+
+    Route::post('/presensi/input/izin/store', [Presensi::class, 'storeIzin'])
+        ->name('presensi.input.izin.store');
 });
 
 

@@ -11,6 +11,7 @@ use App\Models\SettingLokasiPresensi;
 use App\Models\StrukturalUsers;
 use App\Models\User;
 use App\Services\LocationService;
+use App\Services\PresensiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -22,11 +23,17 @@ use function PHPUnit\Framework\isNull;
 class Presensi extends Controller
 {
     protected LocationService $locationService;
+    protected PresensiService $presensiService;
 
-    public function __construct(LocationService $locationService)
-    {
+    public function __construct(
+        LocationService $locationService,
+        PresensiService $presensiService
+    ) {
         $this->locationService = $locationService;
+        $this->presensiService = $presensiService;
     }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -291,36 +298,25 @@ class Presensi extends Controller
 
 
 
-        // =============================
-        // CEK STRUKTURAL AKTIF
-        // =============================
-        $isStruktural = StrukturalUsers::where('id_user', $user->id_user)
-            ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
-            ->exists();
-
-        $jamWajib = $isStruktural ? 7 : 6;
-
 
         // =============================
         // HITUNG DURASI
         // =============================
         $jamDatang = Carbon::parse($presensi->jam_datang);
         $jamPulang = Carbon::now();
+        $durasiData = $this->presensiService->hitungDurasi(
+            $jamDatang,
+            $jamPulang
+        );
 
-        $durasiMenit = $jamDatang->diffInMinutes($jamPulang);
-        $durasiJam   = intdiv($durasiMenit, 60);
+        $jamWajib = $this->presensiService->getJamWajib($user, $today);
 
-        // =============================
-        // STATUS JAM KERJA
-        // =============================
-        if ($durasiJam >= $jamWajib) {
-            $statusJamKerja = 'hijau';
-        } elseif ($durasiJam >= 4) {
-            $statusJamKerja = 'kuning';
-        } else {
-            $statusJamKerja = 'merah';
-        }
+        $statusJamKerja = $this->presensiService->getStatusJamKerja(
+            $durasiData['durasi_jam'],
+            $jamWajib
+        );
+        $durasiMenit = $durasiData['durasi_menit'];
+
 
         DB::transaction(function () use (
             $request,

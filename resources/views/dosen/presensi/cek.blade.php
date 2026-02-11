@@ -143,16 +143,16 @@
                                         {{ $item->durasi ?? '00:00:00' }}
                                     </td>
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
-                                        {{ $item->sks_siang ?? '0' }}
+                                        {{ $item->aktivitas->sks_siang ?? '0' }}
                                     </td>
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
-                                        {{ $item->sks_malam ?? '0' }}
+                                        {{ $item->aktivitas->sks_malam ?? '0' }}
                                     </td>
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
-                                        {{ $item->sks_praktikum_siang ?? '0' }}
+                                        {{ $item->aktivitas->sks_praktikum_siang ?? '0' }}
                                     </td>
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
-                                        {{ $item->sks_praktikum_malam ?? '0' }}
+                                        {{ $item->aktivitas->sks_praktikum_malam ?? '0' }}
                                     </td>
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
                                         <span
@@ -166,11 +166,15 @@
                                     </td>
 
                                     <td class="px-2 py-3">
-                                        <a href="{{ route('dosen.presensi.detail', $item->id_presensi) }}"
-                                            class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
-                                            Lihat
+                                        @if ($item->status_kehadiran != 'hadir')
+                                            <span class="text-gray-900 dark:text-gray-200">-</span>
+                                        @else
+                                            <a href="{{ route('dosen.presensi.detail', $item->id_presensi) }}"
+                                                class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
+                                                Lihat
 
-                                        </a>
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

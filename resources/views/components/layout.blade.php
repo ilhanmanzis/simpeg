@@ -27,6 +27,32 @@
         [x-cloak] {
             display: none !important;
         }
+
+        /* Sembunyikan scrollbar default */
+        .sidebar-scroll {
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 0px;
+            transition: width 0.3s;
+        }
+
+        /* Muncul saat hover */
+        .sidebar-scroll:hover {
+            scrollbar-width: thin;
+            /* Firefox */
+        }
+
+        .sidebar-scroll:hover::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 116, 139, 0.5);
+            border-radius: 10px;
+        }
     </style>
 </head>
 

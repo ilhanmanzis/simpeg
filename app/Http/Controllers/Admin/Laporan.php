@@ -21,9 +21,9 @@ class Laporan extends Controller
     public function index()
     {
         $data = [
-            'page' => 'Laporan',
+            'page' => 'Laporan Kepegawaian',
             'selected' => 'Laporan',
-            'title' => 'Laporan',
+            'title' => 'Laporan Status Kepegawaian',
         ];
         return view('admin.laporan.index', $data);
     }

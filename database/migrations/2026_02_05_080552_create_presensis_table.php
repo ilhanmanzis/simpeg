@@ -31,6 +31,7 @@ return new class extends Migration
             $table->decimal('long_pulang', 10, 7)->nullable();
             $table->text('alamat_pulang')->nullable();
             $table->integer('jarak_pulang')->nullable();
+            $table->text('keterangan')->nullable();
 
             $table->enum('status_lokasi_datang', ['didalam_radius', 'diluar_radius'])
                 ->default('didalam_radius');

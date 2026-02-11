@@ -5,7 +5,7 @@
     <x-logo></x-logo>
     <!-- SIDEBAR HEADER -->
 
-    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <div class="flex flex-col overflow-y-auto duration-300 ease-linear sidebar-scroll">
         <!-- Sidebar Menu -->
         <nav x-data="{ selected: $persist('{{ $selected }}') }">
             <!-- Menu Group -->

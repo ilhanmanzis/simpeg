@@ -148,11 +148,15 @@
                                     </td>
 
                                     <td class="px-2 py-3">
-                                        <a href="{{ route('karyawan.presensi.detail', $item->id_presensi) }}"
-                                            class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
-                                            Lihat
+                                        @if ($item->status_kehadiran != 'hadir')
+                                            <span class="text-gray-900 dark:text-gray-200">-</span>
+                                        @else
+                                            <a href="{{ route('karyawan.presensi.detail', $item->id_presensi) }}"
+                                                class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
+                                                Lihat
 
-                                        </a>
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

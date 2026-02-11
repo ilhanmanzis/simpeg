@@ -493,14 +493,16 @@
                                                     {{ $item->user->dataDiri->name ?? '-' }}
                                                 </span>
 
-                                                <span
-                                                    class="h-2.5 w-2.5 rounded-full
-                                                    @if ($item->status_jam_kerja == 'hijau') bg-success-500
-                                                    @elseif ($item->status_jam_kerja == 'kuning') bg-warning-500
-                                                    @elseif ($item->status_jam_kerja == 'merah') 
-                                                    bg-error-500
-                                                    @else @endif">
-                                                </span>
+                                                @if ($item->jam_pulang)
+                                                    <span
+                                                        class="h-2.5 w-2.5 rounded-full
+                                                            @if ($item->status_jam_kerja == 'hijau') bg-success-500
+                                                            @elseif ($item->status_jam_kerja == 'kuning') bg-warning-500
+                                                            @elseif ($item->status_jam_kerja == 'merah') 
+                                                            bg-error-500
+                                                            @else @endif">
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
 

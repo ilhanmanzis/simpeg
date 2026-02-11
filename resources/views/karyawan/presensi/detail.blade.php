@@ -192,7 +192,7 @@
                                      <div>Jarak</div>
                                      <div>:</div>
                                      <div class="font-mono">
-                                         {{ $presensi->jarak_datang ? $presensi->jarak_datang . ' m' : '-' }}
+                                         {{ $presensi->jam_datang ? ($presensi->jarak_datang ? $presensi->jarak_datang . ' m' : '0 m') : '-' }}
                                      </div>
                                  </div>
                                  <div class="grid grid-cols-[90px_10px_1fr]">
@@ -236,7 +236,7 @@
                                      <div>Jarak</div>
                                      <div>:</div>
                                      <div class="font-mono">
-                                         {{ $presensi->jarak_pulang ? $presensi->jarak_pulang . ' m' : '-' }}
+                                         {{ $presensi->jam_pulang ? ($presensi->jarak_pulang ? $presensi->jarak_pulang . ' m' : '0 m') : '-' }}
                                      </div>
                                  </div>
                                  <div class="grid grid-cols-[90px_10px_1fr]">
