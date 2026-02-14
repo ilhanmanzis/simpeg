@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +33,10 @@ class AppServiceProvider extends ServiceProvider
             // fallback: kosongkan, biar driver/adaptor (kalau mendukung) pakai refresh_token untuk ambil token baru
             Config::set('filesystems.disks.google.accessToken', null);
         }
+        View::composer('*', function ($view) {
+            if (Auth::check()) {
+                $view->with('notifications', Auth::user()->unreadNotifications);
+            }
+        });
     }
 }

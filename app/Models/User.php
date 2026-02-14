@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -49,6 +50,61 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Pastikan Laravel pakai id_user sebagai identifier
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'id_user';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDosen(): bool
+    {
+        return $this->role === 'dosen';
+    }
+
+    public function isKaryawan(): bool
+    {
+        return $this->role === 'karyawan';
+    }
+
+    // notifikasi
+    public function notifications()
+    {
+        return $this->morphMany(
+            DatabaseNotification::class,
+            'notifiable'
+        )->orderBy('created_at', 'desc');
+    }
+    public function notificationRoute(string $baseRoute): string
+    {
+        return match ($this->role) {
+            'admin'    => "$baseRoute",
+            'dosen'    => "$baseRoute",
+            'karyawan' => "$baseRoute",
+            default    => $baseRoute,
+        };
+    }
+
+    public function unreadNotificationCount(): int
+    {
+        return $this->unreadNotifications()->count();
+    }
+
+    public function latestNotifications(int $limit = 5)
+    {
+        return $this->notifications()->latest()->limit($limit)->get();
+    }
+
+
+
+
+
     public function dataDiri()
     {
         return $this->hasOne(DataDiri::class, 'id_user');
@@ -69,7 +125,6 @@ class User extends Authenticatable
         return $this->hasMany(PengajuanPerubahanPendidikans::class, 'id_user', 'id_user');
     }
 
-    // app/Models/User.php
     public function scopeSearchDosen($query, $keyword)
     {
         return $query->where('role', 'dosen') // filter role = dosen
@@ -91,7 +146,6 @@ class User extends Authenticatable
             });
     }
 
-    // di model User
     public function scopeSearchPegawai($query, $keyword)
     {
         return $query->where(function ($q) use ($keyword) {

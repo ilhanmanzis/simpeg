@@ -44,7 +44,6 @@ use App\Http\Controllers\Dosen\PengajuanGolongan;
 use App\Http\Controllers\Dosen\PengajuanPendikan;
 use App\Http\Controllers\Dosen\PengajuanProfilePribadi;
 use App\Http\Controllers\Dosen\PengajuanSerdos;
-use App\Http\Controllers\Dosen\PengajuanSertifikat;
 use App\Http\Controllers\Dosen\Penunjang;
 use App\Http\Controllers\Dosen\ProfilePribadi;
 use App\Http\Controllers\Dosen\Sertifikat;
@@ -64,7 +63,6 @@ use App\Http\Controllers\Public\Home;
 use App\Http\Controllers\Public\Tendik;
 use App\Http\Controllers\Register;
 use App\Http\Controllers\Setting;
-use App\Models\StrukturalUsers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
@@ -570,7 +568,28 @@ Route::post('/register/npp/check', [Auth::class, 'checkNpp'])
 Route::get('/drive-fail', [DriveFail::class, 'driveFail'])->name('drive.fail');
 
 
+// notifikasi
+Route::post('/notifications/{id}/read', function ($id) {
+    /** @var User $user */
+    $user = FacadesAuth::user();
 
+    $notification = $user->notifications()->findOrFail($id);
+
+    // tandai dibaca
+    $notification->update([
+        'read_at' => now()
+    ]);
+
+    // ambil data notifikasi
+    $baseRoute = $notification->data['route'];
+    $params    = $notification->data['params'] ?? [];
+
+    // route sesuai role
+    $routeName = $user->notificationRoute($baseRoute);
+
+    // redirect ke halaman tujuan
+    return redirect()->route($routeName, $params);
+})->middleware('auth')->name('notifications.read');
 
 
 // public
