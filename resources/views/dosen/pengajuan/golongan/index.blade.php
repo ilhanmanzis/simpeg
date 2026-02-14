@@ -33,6 +33,26 @@
                             </div>
                         </div>
                     @endif
+                    @if (session('error'))
+                        <div
+                            class="rounded-xl border border-error-500 bg-error-50 p-4 dark:border-error-500/30 dark:bg-error-500/15 mb-5">
+                            <div class="flex items-start gap-3">
+                                <div class="-mt-0.5 text-error-500">
+                                    <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M12 1.9C6.423 1.9 1.902 6.423 1.902 12s4.521 10.098 10.098 10.098S22.098 17.577 22.098 12 17.577 1.9 12 1.9Zm0 18.398a8.3 8.3 0 1 1 0-16.6 8.3 8.3 0 0 1 0 16.6ZM11.1 7.2c0-.497.403-.9.9-.9s.9.403.9.9v5.4a.9.9 0 1 1-1.8 0V7.2Zm.9 9.6a1.05 1.05 0 1 1 0-2.1 1.05 1.05 0 0 1 0 2.1Z" />
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
+                                        {{ session('error') }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                 </div>
 

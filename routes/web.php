@@ -63,6 +63,7 @@ use App\Http\Controllers\Public\Home;
 use App\Http\Controllers\Public\Tendik;
 use App\Http\Controllers\Register;
 use App\Http\Controllers\Setting;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
