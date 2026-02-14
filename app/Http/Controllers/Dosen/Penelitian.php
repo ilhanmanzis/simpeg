@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
-use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,14 +68,25 @@ class Penelitian extends Controller
             'url' => 'required|string|max:255',
         ]);
 
-        $idUser = Auth::user()->id_user;
+        $user = Auth::user();
+        $idUser = $user->id_user;
 
-        PengajuanPenelitians::create([
+        $pengajuan = PengajuanPenelitians::create([
             'id_user' => $idUser,
             'judul' => $request->input('judul'),
             'url' => $request->input('url'),
             'status' => 'pending'
         ]);
+        NotificationService::notifyAdmin(
+            'Pengajuan BKD Penelitian Baru',
+            'Ada pengajuan BKD penelitian dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.penelitian.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'penelitian'
+            ]
+        );
 
         return redirect()->route('dosen.penelitian')->with('success', 'BKD Penelitian berhasil Diajukan.');
     }
@@ -92,8 +103,8 @@ class Penelitian extends Controller
         if (!$penelitian) {
             abort(404);
         }
-        if ($idUser !== $penelitian->user->id_user) {
-            return redirect()->route('dosen.penelitian')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $penelitian->user->id_user) {
+            return redirect()->route('dosen.penelitian')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Penelitian',
@@ -111,8 +122,8 @@ class Penelitian extends Controller
         if (!$pengajuan) {
             abort(404);
         }
-        if ($idUser !== $pengajuan->user->id_user) {
-            return redirect()->route('dosen.penelitian')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('dosen.penelitian')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Penelitian',

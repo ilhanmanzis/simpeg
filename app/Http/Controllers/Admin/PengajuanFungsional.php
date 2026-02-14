@@ -7,8 +7,8 @@ use App\Models\Dokumens;
 use App\Models\FungsionalUsers;
 use App\Models\PengajuanFungsionals;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PengajuanFungsional extends Controller
 {
@@ -69,6 +69,7 @@ class PengajuanFungsional extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanFungsionals::findOrFail($id);
+        $user = $perubahan->user;
 
         // hapus file SK di storage lokal (pakai lokasi yang konsisten dengan proses upload)
         $localPath = storage_path("app/private/sk/{$perubahan->sk}");
@@ -80,6 +81,18 @@ class PengajuanFungsional extends Controller
         $perubahan->keterangan = $request->input('keterangan');
         $perubahan->save();
 
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Kenaikan Jabatan Fungsional Ditolak',
+            'Pengajuan kenaikan jabatan fungsional ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.pengajuan.fungsional.show',
+            [
+                'id'    => $perubahan->id_pengajuan_fungsional,
+                'jenis' => 'fungsional'
+            ]
+        );
+
         return redirect()->route('admin.pengajuan.fungsional')
             ->with('success', 'Pengajuan kenaikan jabatan fungsional ditolak.');
     }
@@ -89,6 +102,7 @@ class PengajuanFungsional extends Controller
         $perubahan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)
             ->with(['fungsional', 'user.dataDiri'])
             ->firstOrFail();
+        $user = $perubahan->user;
 
         // histori fungsional aktif sebelumnya (pakai id_user dari pengajuan)
         $fungsionalSebelumnya = FungsionalUsers::where('id_user', $perubahan->user->id_user)
@@ -158,6 +172,16 @@ class PengajuanFungsional extends Controller
         if (is_file($localPath)) {
             @unlink($localPath);
         }
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Kenaikan Jabatan Fungsional Disetujui',
+            'Pengajuan kenaikan jabatan fungsional Anda telah disetujui oleh admin.',
+            'dosen.pengajuan.fungsional.show',
+            [
+                'id'    => $perubahan->id_pengajuan_fungsional,
+                'jenis' => 'fungsional'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.fungsional')
             ->with('success', 'Pengajuan kenaikan jabatan fungsional berhasil disetujui');

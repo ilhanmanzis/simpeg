@@ -7,6 +7,7 @@ use App\Models\KategoriSertifikats;
 use App\Models\PengajuanSertifikats;
 use App\Models\Sertifikats;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -81,15 +82,15 @@ class Sertifikat extends Controller
             'dokumen' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        $user = Auth::user()->id_user;
+        $user = Auth::user();
 
         $dokumenFile = $request->file("dokumen");
         $dokumenName = time() . '_' . $dokumenFile->getClientOriginalName();
         // Simpan ke storage/app/sertifikat
         $dokumenFile->storeAs('sertifikat', $dokumenName);
 
-        PengajuanSertifikats::create([
-            'id_user' => $user,
+        $pengajuan = PengajuanSertifikats::create([
+            'id_user' => $user->id_user,
             'nama_sertifikat' => $request->name,
             'id_kategori' => $request->kategori,
             'penyelenggara' => $request->penyelenggara,
@@ -100,6 +101,17 @@ class Sertifikat extends Controller
             'jenis' => 'tambah',
             'status' => 'pending',
         ]);
+
+        NotificationService::notifyAdmin(
+            'Pengajuan Tambah Sertifikat Baru',
+            'Ada pengajuan tambah sertifikat dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.sertifikat.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'sertifikat'
+            ]
+        );
 
         return redirect()->route('dosen.sertifikat')->with('success', 'Tambah sertifikat berhasil diajukan.');
     }
@@ -112,8 +124,10 @@ class Sertifikat extends Controller
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user.dataDiri', 'dokumenSertifikat', 'kategori'])->firstOrFail();
 
         if ($sertifikat->id_user != Auth::user()->id_user) {
-            abort(403); // Forbidden
+            return redirect()->route('dosen.sertifikat')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
+
+
 
         $data = [
             'page' => 'Sertifikat',
@@ -130,7 +144,7 @@ class Sertifikat extends Controller
         $pengajuan = PengajuanSertifikats::where('id_pengajuan', $id)->with(['user.dataDiri', 'kategori'])->firstOrFail();
 
         if ($pengajuan->id_user != Auth::user()->id_user) {
-            abort(403); // Forbidden
+            return redirect()->route('dosen.sertifikat')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
 
         $data = [
@@ -151,7 +165,7 @@ class Sertifikat extends Controller
         $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['dokumenSertifikat', 'user.dataDiri', 'kategori'])->firstOrFail();
 
         if ($user != $sertifikat->user->id_user) {
-            return redirect()->route('dosen.sertifikat');
+            return redirect()->route('dosen.sertifikat')->with('error', 'Anda tidak memiliki akses untuk mengedit sertifikat milik orang lain.');
         }
 
         $data = [
@@ -179,11 +193,11 @@ class Sertifikat extends Controller
             'dokumen'          => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
-        $user = Auth::user()->id_user;
-        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->first();
+        $user = Auth::user();
+        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->firstOrFail();
 
-        if ($user != $sertifikat->user->id_user) {
-            return redirect()->route('dosen.sertifikat')->with('success', 'pengajuan ditolak');
+        if ($user->id_user != $sertifikat->user->id_user) {
+            return redirect()->route('dosen.sertifikat')->with('error', 'Anda tidak memiliki akses untuk mengedit sertifikat milik orang lain.');
         }
 
         $dokumenName = null;
@@ -195,8 +209,8 @@ class Sertifikat extends Controller
         }
 
 
-        PengajuanSertifikats::create([
-            'id_user'               => $user,
+        $pengajuan = PengajuanSertifikats::create([
+            'id_user'               => $user->id_user,
             'nama_sertifikat'       => $request->name,
             'id_sertifikat'         => $id,
             'id_kategori'              => $request->kategori,
@@ -209,6 +223,17 @@ class Sertifikat extends Controller
             'status'                => 'pending',
         ]);
 
+        NotificationService::notifyAdmin(
+            'Pengajuan Edit Sertifikat Baru',
+            'Ada pengajuan edit sertifikat dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.sertifikat.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'sertifikat'
+            ]
+        );
+
         return redirect()->route('dosen.sertifikat')->with('success', 'Edit sertifikat berhasil diajukan.');
     }
 
@@ -217,15 +242,15 @@ class Sertifikat extends Controller
      */
     public function destroy(string $id)
     {
-        $user = Auth::user()->id_user;
-        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->first();
+        $user = Auth::user();
+        $sertifikat = Sertifikats::where('id_sertifikat', $id)->with(['user'])->firstOrFail();
 
-        if ($user != $sertifikat->user->id_user) {
-            return redirect()->route('dosen.sertifikat')->with('success', 'pengajuan ditolak');
+        if ($user->id_user != $sertifikat->user->id_user) {
+            return redirect()->route('dosen.sertifikat')->with('error', 'Anda tidak memiliki akses untuk menghapus sertifikat milik orang lain.');
         }
 
-        PengajuanSertifikats::create([
-            'id_user' => $user,
+        $pengajuan = PengajuanSertifikats::create([
+            'id_user' => $user->id_user,
             'id_sertifikat' => $id,
             'nama_sertifikat' => $sertifikat->nama_sertifikat,
             'id_kategori' => $sertifikat->id_kategori,
@@ -237,6 +262,17 @@ class Sertifikat extends Controller
             'jenis' => 'hapus',
             'status' => 'pending',
         ]);
+
+        NotificationService::notifyAdmin(
+            'Pengajuan Hapus Sertifikat Baru',
+            'Ada pengajuan hapus sertifikat dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.sertifikat.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'sertifikat'
+            ]
+        );
         return redirect()->route('dosen.sertifikat')->with('success', 'Hapus sertifikat berhasil diajukan.');
     }
 }

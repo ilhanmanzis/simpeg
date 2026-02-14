@@ -7,6 +7,7 @@ use App\Models\Jenjangs;
 use App\Models\Pendidikans;
 use App\Models\PengajuanPerubahanPendidikans;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,7 +67,7 @@ class PengajuanPendikan extends Controller
             'transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        $user = Auth::user()->id_user;
+        $user = Auth::user();
 
         $ijazahFile = $request->file("ijazah");
         $ijazahName = time() . '_' . $ijazahFile->getClientOriginalName();
@@ -81,8 +82,8 @@ class PengajuanPendikan extends Controller
             $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
         }
 
-        PengajuanPerubahanPendidikans::create([
-            'id_user' => $user,
+        $pengajuan =  PengajuanPerubahanPendidikans::create([
+            'id_user' => $user->id_user,
             'id_jenjang' => $request->jenjang,
             'id_pendidikan' => null,
             'institusi' => $request->institusi,
@@ -95,6 +96,16 @@ class PengajuanPendikan extends Controller
             'jenis' => 'tambah',
             'status' => 'pending',
         ]);
+        NotificationService::notifyAdmin(
+            'Pengajuan Perubahan Data Pendidikan (Tambah) Baru',
+            'Ada pengajuan perubahan data pendidikan (Tambah) dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.pendidikan.show',
+            [
+                'id'    => $pengajuan->id_perubahan,
+                'jenis' => 'pendidikan'
+            ]
+        );
 
         return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Tambah pendidikan berhasil diajukan.');
     }
@@ -105,6 +116,14 @@ class PengajuanPendikan extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanPerubahanPendidikans::where('id_perubahan', $id)->with(['user.dataDiri', 'jenjang', 'pendidikan.dokumenIjazah', 'pendidikan.dokumenTranskipNilai', 'pendidikan.jenjang'])->first();
+        $idUser = Auth::user()->id_user;
+        if (!$pengajuan) {
+            abort(404);
+        }
+
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.pendidikan')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $data = [
             'page' => 'Pengajuan Pendidikan',
             'selected' => 'Pengajuan Pendidikan',
@@ -130,8 +149,8 @@ class PengajuanPendikan extends Controller
         $user = Auth::user()->id_user;
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['dokumenIjazah', 'dokumenTranskipNilai', 'user'])->first();
 
-        if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan');
+        if ($user != $pendidikan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.pendidikan')->with('error', 'Anda tidak memiliki akses untuk mengedit pendidikan milik orang lain.');
         }
 
         $data = [
@@ -160,11 +179,11 @@ class PengajuanPendikan extends Controller
             'transkip_nilai'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        $user = Auth::user()->id_user;
+        $user = Auth::user();
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['user'])->first();
 
-        if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
+        if ($user->id_user != $pendidikan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.pendidikan')->with('error', 'pengajuan ditolak');
         }
 
         $ijazahName = null;
@@ -182,8 +201,8 @@ class PengajuanPendikan extends Controller
             $transkipFile->storeAs('pendidikan/transkipNilai', $transkipNilaiName);
         }
 
-        PengajuanPerubahanPendidikans::create([
-            'id_user' => $user,
+        $pengajuan = PengajuanPerubahanPendidikans::create([
+            'id_user' => $user->id_user,
             'id_jenjang' => $request->jenjang,
             'id_pendidikan' => $id,
             'institusi' => $request->institusi,
@@ -196,6 +215,16 @@ class PengajuanPendikan extends Controller
             'jenis' => 'edit',
             'status' => 'pending',
         ]);
+        NotificationService::notifyAdmin(
+            'Pengajuan Perubahan Data Pendidikan (Edit) Baru',
+            'Ada pengajuan perubahan data pendidikan (Edit) dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.pendidikan.show',
+            [
+                'id'    => $pengajuan->id_perubahan,
+                'jenis' => 'pendidikan'
+            ]
+        );
 
         return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Edit pendidikan berhasil diajukan.');
     }
@@ -205,14 +234,14 @@ class PengajuanPendikan extends Controller
      */
     public function destroy(string $id)
     {
-        $user = Auth::user()->id_user;
+        $user = Auth::user();
         $pendidikan = Pendidikans::where('id_pendidikan', $id)->with(['user'])->first();
 
-        if ($user !== $pendidikan->user->id_user) {
-            return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'pengajuan ditolak');
+        if ($user->id_user != $pendidikan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.pendidikan')->with('error', 'Anda tidak memiliki akses untuk menghapus pendidikan milik orang lain.');
         }
 
-        PengajuanPerubahanPendidikans::create([
+        $pengajuan = PengajuanPerubahanPendidikans::create([
             'id_user' => $user,
             'id_jenjang' => null,
             'id_pendidikan' => $id,
@@ -225,6 +254,17 @@ class PengajuanPendikan extends Controller
             'jenis' => 'delete',
             'status' => 'pending',
         ]);
+
+        NotificationService::notifyAdmin(
+            'Pengajuan Perubahan Data Pendidikan (Hapus) Baru',
+            'Ada pengajuan perubahan data pendidikan (Hapus) dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.pendidikan.show',
+            [
+                'id'    => $pengajuan->id_perubahan,
+                'jenis' => 'pendidikan'
+            ]
+        );
         return redirect()->route('dosen.pengajuan.pendidikan')->with('success', 'Hapus pendidikan berhasil diajukan.');
     }
 }

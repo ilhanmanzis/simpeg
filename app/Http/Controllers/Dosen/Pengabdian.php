@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengabdians;
 use App\Models\PengajuanPengabdians;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,8 +72,8 @@ class Pengabdian extends Controller
             'modul' => 'required|file|mimes:pdf|max:2048',
             'foto' => 'required|file|mimes:pdf|max:2048',
         ]);
-
-        $idUser = Auth::user()->id_user;
+        $user = Auth::user();
+        $idUser = $user->id_user;
 
         // permohonan
         $permohonanFile = $request->file("permohonan");
@@ -100,7 +101,7 @@ class Pengabdian extends Controller
         $terimaKasihName = 'pengabdian_terima kasih' . time() . '_' . $terimaKasihFile->getClientOriginalName();
         $terimaKasihFile->storeAs('bkd', $terimaKasihName);
 
-        PengajuanPengabdians::create([
+        $pengajuan = PengajuanPengabdians::create([
             'id_user' => $idUser,
             'judul' => $request->input('judul'),
             'lokasi' => $request->input('lokasi'),
@@ -112,6 +113,17 @@ class Pengabdian extends Controller
             'status' => 'pending'
         ]);
 
+
+        NotificationService::notifyAdmin(
+            'Pengajuan BKD Pengabdian Baru',
+            'Ada pengajuan BKD pengabdian dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.pengabdian.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'pengabdian'
+            ]
+        );
         return redirect()->route('dosen.pengabdian')->with('success', 'BKD Pengabdian berhasil Diajukan.');
     }
 
@@ -126,8 +138,8 @@ class Pengabdian extends Controller
             abort(404);
         }
 
-        if ($idUser !== $pengabdian->user->id_user) {
-            return redirect()->route('dosen.pengabdian')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $pengabdian->user->id_user) {
+            return redirect()->route('dosen.pengabdian')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Pengabdian',
@@ -145,8 +157,8 @@ class Pengabdian extends Controller
         if (!$pengabdian) {
             abort(404);
         }
-        if ($idUser !== $pengabdian->user->id_user) {
-            return redirect()->route('dosen.pengabdian')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $pengabdian->user->id_user) {
+            return redirect()->route('dosen.pengabdian')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Pengabdian',

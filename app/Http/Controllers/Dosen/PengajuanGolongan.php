@@ -8,6 +8,7 @@ use App\Models\GolonganUsers;
 use App\Models\PengajuanGolongans;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,7 +66,8 @@ class PengajuanGolongan extends Controller
             'sk' => 'required|file|mimes:pdf|max:2048'
         ]);
 
-        $id = Auth::user()->id_user;
+        $user = Auth::user();
+        $id = $user->id_user;
         $golongan = Golongans::findOrFail($request->golongan);
 
         $timestampedName = null;
@@ -77,7 +79,7 @@ class PengajuanGolongan extends Controller
             $request->file('sk')->storeAs('sk', $timestampedName);
         }
 
-        PengajuanGolongans::create([
+        $pengajuan = PengajuanGolongans::create([
             'id_user' => $id,
             'id_golongan' => $golongan->id_golongan,
             'tanggal_mulai' => $request->tanggal_mulai,
@@ -85,6 +87,17 @@ class PengajuanGolongan extends Controller
             'status' => 'pending',
             'sk' => $timestampedName
         ]);
+        NotificationService::notifyAdmin(
+            'Pengajuan Kenaikan Golongan Baru',
+            'Ada pengajuan kenaikan jabatan golongan dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.golongan.show',
+            [
+                'id'    => $pengajuan->id_pengajuan_golongan,
+                'jenis' => 'golongan'
+            ]
+        );
+
 
         return redirect()->route('dosen.pengajuan.golongan')->with('Kenaikan golongan berhasil diajukan');
     }
@@ -95,6 +108,13 @@ class PengajuanGolongan extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanGolongans::where('id_pengajuan_golongan', $id)->with(['user.dataDiri', 'golongan'])->first();
+        $idUser = Auth::user()->id_user;
+        if (!$pengajuan) {
+            abort(404);
+        }
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.golongan')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $data = [
             'page' => 'Pengajuan Golongan',
             'selected' => 'Pengajuan Golongan',
@@ -104,36 +124,11 @@ class PengajuanGolongan extends Controller
 
         ];
 
-        // dd($pengajuan);
 
         if ($pengajuan->status === 'pending') {
             return view('dosen.pengajuan.golongan.show', $data);
         } else {
             return view('dosen.pengajuan.golongan.riwayat', $data);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

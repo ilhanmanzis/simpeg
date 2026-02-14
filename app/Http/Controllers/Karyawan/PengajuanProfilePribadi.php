@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanPerubahanDatas;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,7 +55,7 @@ class PengajuanProfilePribadi extends Controller
      */
     public function store(Request $request)
     {
-        $id = Auth::user()->id_user;
+
         $request->validate([
             'name' => 'required|string|max:255',
             // 'email' => 'required|email|max:255|unique:users,email,' . $id . ',id_user',
@@ -81,6 +82,8 @@ class PengajuanProfilePribadi extends Controller
             // Foto
             'foto' => 'nullable|image|max:2048',
         ]);
+        $user = Auth::user();
+        $id = $user->id_user;
 
 
         $timestampedName = null;
@@ -93,7 +96,7 @@ class PengajuanProfilePribadi extends Controller
         }
 
 
-        PengajuanPerubahanDatas::create([
+        $pengajuan = PengajuanPerubahanDatas::create([
             'id_user' => $id,
             'name' => $request->input('name'),
             // 'email' => $request->input('email'),
@@ -122,6 +125,17 @@ class PengajuanProfilePribadi extends Controller
             'foto' => $timestampedName ?? null,
         ]);
 
+        NotificationService::notifyAdmin(
+            'Pengajuan Perubahan Profile Pribadi Baru',
+            'Ada pengajuan perubahan Profile pribadi dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.profile.show',
+            [
+                'id'    => $pengajuan->id_perubahan,
+                'jenis' => 'profile_pribadi'
+            ]
+        );
+
         return redirect()->route('karyawan.pengajuan.profile')->with('success', 'Perubahan Profile Pribadi Berhasil diajukan.');
     }
 
@@ -130,37 +144,21 @@ class PengajuanProfilePribadi extends Controller
      */
     public function show(string $id)
     {
+        $pengajuan = PengajuanPerubahanDatas::where('id_perubahan', $id)->with(['user.dataDiri'])->first();
+        $idUser = Auth::user()->id_user;
+        if (!$pengajuan) {
+            abort(404);
+        }
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('karyawan.pengajuan.profile')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $data = [
             'page' => 'Pengajuan Profile Pribadi',
             'selected' => 'Pengajuan Profile Pribadi',
             'title' => 'Pengajuan Profile Pribadi',
-            'pengajuan' => PengajuanPerubahanDatas::where('id_perubahan', $id)->with(['user.dataDiri'])->first()
+            'pengajuan' => $pengajuan
         ];
 
         return view('karyawan.pengajuan.profile.show', $data);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

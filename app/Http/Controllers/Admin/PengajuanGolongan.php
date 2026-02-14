@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
-use App\Models\Golongans;
 use App\Models\GolonganUsers;
 use App\Models\PengajuanGolongans;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PengajuanGolongan extends Controller
 {
@@ -64,6 +63,7 @@ class PengajuanGolongan extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanGolongans::findOrFail($id);
+        $user = $perubahan->user;
 
         $localPath = storage_path("app/private/sk/{$perubahan->sk}");
         if ($perubahan->sk && is_file($localPath)) {
@@ -74,6 +74,17 @@ class PengajuanGolongan extends Controller
             'status'     => 'ditolak',
             'keterangan' => $request->input('keterangan'),
         ]);
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Kenaikan Golongan Ditolak',
+            'Pengajuan kenaikan golongan ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.pengajuan.golongan.show',
+            [
+                'id'    => $perubahan->id_pengajuan_golongan,
+                'jenis' => 'golongan'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.golongan')
             ->with('success', 'Pengajuan kenaikan golongan ditolak.');
@@ -84,6 +95,7 @@ class PengajuanGolongan extends Controller
         $perubahan = PengajuanGolongans::where('id_pengajuan_golongan', $id)
             ->with(['golongan', 'user.dataDiri'])
             ->firstOrFail();
+        $user = $perubahan->user;
 
         // cari golongan aktif sebelumnya pakai id_user
         $golonganSebelumnya = GolonganUsers::where('id_user', $perubahan->user->id_user)
@@ -145,6 +157,17 @@ class PengajuanGolongan extends Controller
         if (is_file($localPath)) {
             @unlink($localPath);
         }
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Kenaikan Golongan Disetujui',
+            'Pengajuan kenaikan golongan Anda telah disetujui oleh admin.',
+            'dosen.pengajuan.golongan.show',
+            [
+                'id'    => $perubahan->id_pengajuan_golongan,
+                'jenis' => 'golongan'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.golongan')
             ->with('success', 'Pengajuan kenaikan golongan berhasil disetujui.');

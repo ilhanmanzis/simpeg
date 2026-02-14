@@ -10,6 +10,7 @@ use App\Models\JabatanFungsionals;
 use App\Models\PengajuanFungsionals;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,7 +71,8 @@ class PengajuanFungsional extends Controller
             'sk' => 'required|file|mimes:pdf|max:2048'
         ]);
 
-        $id = Auth::user()->id_user;
+        $user = Auth::user();
+        $id = $user->id_user;
         $fungsional = JabatanFungsionals::findOrFail($request->fungsional);
 
         $timestampedName = null;
@@ -82,7 +84,7 @@ class PengajuanFungsional extends Controller
             $request->file('sk')->storeAs('sk', $timestampedName);
         }
 
-        PengajuanFungsionals::create([
+        $pengajuan = PengajuanFungsionals::create([
             'id_user' => $id,
             'id_fungsional' => $fungsional->id_fungsional,
             'tanggal_mulai' => $request->tanggal_mulai,
@@ -91,6 +93,17 @@ class PengajuanFungsional extends Controller
             'status' => 'pending',
             'sk' => $timestampedName
         ]);
+
+        NotificationService::notifyAdmin(
+            'Pengajuan Kenaikan Fungsional Baru',
+            'Ada pengajuan kenaikan jabatan fungsional dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.fungsional.show',
+            [
+                'id'    => $pengajuan->id_pengajuan_fungsional,
+                'jenis' => 'fungsional'
+            ]
+        );
 
         return redirect()->route('dosen.pengajuan.fungsional')->with('Kenaikan jabatan fungsional berhasil diajukan');
     }
@@ -101,6 +114,14 @@ class PengajuanFungsional extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)->with(['user.dataDiri', 'fungsional'])->first();
+        $idUser = Auth::user()->id_user;
+        if (!$pengajuan) {
+            abort(404);
+        }
+
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.fungsional')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $data = [
             'page' => 'Pengajuan Fungsional',
             'selected' => 'Pengajuan Fungsional',
@@ -110,36 +131,11 @@ class PengajuanFungsional extends Controller
 
         ];
 
-        // dd($pengajuan);
 
         if ($pengajuan->status === 'pending') {
             return view('dosen.pengajuan.fungsional.show', $data);
         } else {
             return view('dosen.pengajuan.fungsional.riwayat', $data);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

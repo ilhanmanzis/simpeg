@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanSerdoss;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,7 +56,8 @@ class PengajuanSerdos extends Controller
     public function store(Request $request)
     {
 
-        $id = Auth::user()->id_user;
+        $user = Auth::user();
+        $id = $user->id_user;
         $request->validate([
             'tersertifikasi'         => 'required',
             'serdos'                 => 'required_if:tersertifikasi,sudah|file|mimes:pdf|max:2048',
@@ -69,20 +71,31 @@ class PengajuanSerdos extends Controller
                 // Simpan ke storage/app/sertifikat
                 $request->file('serdos')->storeAs('sertifikat', $timestampedName);
             }
-            PengajuanSerdoss::create([
+            $pengajuan = PengajuanSerdoss::create([
                 'id_user'        => $id,
                 'tersertifikasi' => $request->tersertifikasi,
                 'serdos'        => $timestampedName,
                 'status'         => 'pending',
             ]);
         } else {
-            PengajuanSerdoss::create([
+            $pengajuan =  PengajuanSerdoss::create([
                 'id_user'        => $id,
                 'tersertifikasi' => $request->tersertifikasi,
                 'serdos'        => null,
                 'status'         => 'pending',
             ]);
         }
+
+        NotificationService::notifyAdmin(
+            'Pengajuan Perubahan Serdos Baru',
+            'Ada pengajuan perubahan serdos dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.serdos.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'serdos'
+            ]
+        );
         return redirect()->route('dosen.pengajuan.serdos')->with('success', 'Sertifikat Dosen berhasil diajukan.');
     }
 
@@ -92,6 +105,14 @@ class PengajuanSerdos extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanSerdoss::where('id_pengajuan', $id)->with(['user.dataDiri'])->first();
+        $idUser = Auth::user()->id_user;
+        if (!$pengajuan) {
+            abort(404);
+        }
+
+        if ($idUser != $pengajuan->user->id_user) {
+            return redirect()->route('dosen.pengajuan.serdos')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $data = [
             'page' => 'Pengajuan Serdos',
             'selected' => 'Pengajuan Serdos',
@@ -99,36 +120,12 @@ class PengajuanSerdos extends Controller
             'pengajuan' => $pengajuan,
         ];
 
-        // dd($pengajuan);
+
 
         if ($pengajuan->status === 'pending') {
             return view('dosen.pengajuan.serdos.show', $data);
         } else {
             return view('dosen.pengajuan.serdos.riwayat', $data);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

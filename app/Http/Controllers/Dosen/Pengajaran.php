@@ -8,6 +8,7 @@ use App\Models\PengajuanPengajaranDetails;
 use App\Models\PengajuanPengajarans;
 use App\Models\Semesters;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -78,7 +79,8 @@ class Pengajaran extends Controller
             'semester'              => 'required|integer|exists:semester,id_semester'
         ]);
 
-        $idUser = Auth::user()->id_user;
+        $user = Auth::user();
+        $idUser = $user->id_user;
 
         // sk
         $skFile = $request->file("sk");
@@ -109,6 +111,17 @@ class Pengajaran extends Controller
                 'nilai' => $nilaiName,
             ]);
         }
+
+        NotificationService::notifyAdmin(
+            'Pengajuan BKD Pengajaran Baru',
+            'Ada pengajuan BKD pengajaran dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.pengajaran.show',
+            [
+                'id'    => $pengajaran->id_pengajuan_pengajaran,
+                'jenis' => 'pengajaran'
+            ]
+        );
         return redirect()->route('dosen.pengajaran')->with('success', 'BKD Pengajaran berhasil Diajukan.');
     }
 
@@ -123,8 +136,8 @@ class Pengajaran extends Controller
             abort(404);
         }
 
-        if ($idUser !== $pengajaran->user->id_user) {
-            return redirect()->route('dosen.pengajaran')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $pengajaran->user->id_user) {
+            return redirect()->route('dosen.pengajaran')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Pengajaran',
@@ -142,8 +155,8 @@ class Pengajaran extends Controller
         if (!$pengajaran) {
             abort(404);
         }
-        if ($idUser !== $pengajaran->user->id_user) {
-            return redirect()->route('dosen.pengajaran')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $pengajaran->user->id_user) {
+            return redirect()->route('dosen.pengajaran')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Pengajaran',

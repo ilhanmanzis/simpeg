@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Dosen;
 
-use App\Http\Controllers\Admin\PengajuanPenunjang;
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanPenunjangs;
 use App\Models\Penunjangs;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,15 +70,14 @@ class Penunjang extends Controller
             'dokumen' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-        $idUser = Auth::user()->id_user;
-
-
+        $user = Auth::user();
+        $idUser = $user->id_user;
 
         $dokumenFile = $request->file("dokumen");
         $dokumenName = 'penunjang_' . time() . '_' . $dokumenFile->getClientOriginalName();
         $dokumenFile->storeAs('bkd', $dokumenName);
 
-        PengajuanPenunjangs::create([
+        $pengajuan = PengajuanPenunjangs::create([
             'id_user' => $idUser,
             'name' => $request->input('judul'),
             'penyelenggara' => $request->input('penyelenggara'),
@@ -86,6 +85,16 @@ class Penunjang extends Controller
             'dokumen' => $dokumenName,
             'status' => 'pending'
         ]);
+        NotificationService::notifyAdmin(
+            'Pengajuan BKD Penunjang Baru',
+            'Ada pengajuan BKD penunjang dari '
+                . $user->dataDiri->name,
+            'admin.pengajuan.penunjang.show',
+            [
+                'id'    => $pengajuan->id_pengajuan,
+                'jenis' => 'penunjang'
+            ]
+        );
 
         return redirect()->route('dosen.penunjang')->with('success', 'BKD Penunjang berhasil Diajukan.');
     }
@@ -101,8 +110,8 @@ class Penunjang extends Controller
             abort(404);
         }
 
-        if ($idUser !== $penunjang->user->id_user) {
-            return redirect()->route('dosen.penunjang')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $penunjang->user->id_user) {
+            return redirect()->route('dosen.penunjang')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Penunjang',
@@ -120,8 +129,8 @@ class Penunjang extends Controller
         if (!$penunjang) {
             abort(404);
         }
-        if ($idUser !== $penunjang->user->id_user) {
-            return redirect()->route('dosen.penunjang')->with('success', 'Anda tidak memiliki akses ke halaman tersebut.');
+        if ($idUser != $penunjang->user->id_user) {
+            return redirect()->route('dosen.penunjang')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
         $data = [
             'page' => 'BKD Penunjang',
