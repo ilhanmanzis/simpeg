@@ -7,6 +7,7 @@ use App\Models\Dokumens;
 use App\Models\PengajuanSertifikats;
 use App\Models\Sertifikats;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -45,22 +46,6 @@ class PengajuanSertifikat extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -86,6 +71,7 @@ class PengajuanSertifikat extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanSertifikats::findOrFail($id);
+        $user = $perubahan->user;
 
         if ($perubahan->dokumen && Storage::exists('sertifikat/' . $perubahan->dokumen)) {
             Storage::delete('sertifikat/' . $perubahan->dokumen);
@@ -103,6 +89,22 @@ class PengajuanSertifikat extends Controller
             'status'        => 'ditolak',
             'keterangan'    => $request->keterangan
         ]);
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Sertifikat (' . ucfirst($perubahan->jenis)
+                . ') Ditolak',
+            'Pengajuan sertifikat (' . ucfirst($perubahan->jenis)
+                . ') ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            $user->role === 'dosen'
+                ? 'dosen.sertifikat.riwayat'
+                : 'karyawan.sertifikat.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'sertifikat'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.sertifikat')
             ->with('success', 'Pengajuan perubahan sertifikat ditolak.');
@@ -143,9 +145,18 @@ class PengajuanSertifikat extends Controller
                     $sertifikat->delete();
                 }
 
-
-
-
+                NotificationService::notifyUser(
+                    $user,
+                    'Pengajuan Sertifikat (Hapus) Disetujui',
+                    'Pengajuan sertifikat (Hapus) Anda telah disetujui oleh admin.',
+                    $user->role === 'dosen'
+                        ? 'dosen.sertifikat.riwayat'
+                        : 'karyawan.sertifikat.riwayat',
+                    [
+                        'id'    => $perubahan->id_pengajuan,
+                        'jenis' => 'sertifikat'
+                    ]
+                );
                 return redirect()->route('admin.pengajuan.sertifikat')
                     ->with('success', 'Pengajuan perubahan sertifikat (hapus) disetujui.');
             }
@@ -202,6 +213,18 @@ class PengajuanSertifikat extends Controller
                     'id_sertifikat' => null,
                     'status'        => 'disetujui',
                 ]);
+                NotificationService::notifyUser(
+                    $user,
+                    'Pengajuan Sertifikat (Tambah) Disetujui',
+                    'Pengajuan sertifikat (Tambah) Anda telah disetujui oleh admin.',
+                    $user->role === 'dosen'
+                        ? 'dosen.sertifikat.riwayat'
+                        : 'karyawan.sertifikat.riwayat',
+                    [
+                        'id'    => $perubahan->id_pengajuan,
+                        'jenis' => 'sertifikat'
+                    ]
+                );
 
                 return redirect()->route('admin.pengajuan.sertifikat')
                     ->with('success', 'Pengajuan Sertifikat (tambah) disetujui dan data berhasil dibuat.');
@@ -254,6 +277,19 @@ class PengajuanSertifikat extends Controller
                 'id_sertifikat' => null,
                 'status'        => 'disetujui',
             ]);
+
+            NotificationService::notifyUser(
+                $user,
+                'Pengajuan Sertifikat (Edit) Disetujui',
+                'Pengajuan sertifikat (Edit) Anda telah disetujui oleh admin.',
+                $user->role === 'dosen'
+                    ? 'dosen.sertifikat.riwayat'
+                    : 'karyawan.sertifikat.riwayat',
+                [
+                    'id'    => $perubahan->id_pengajuan,
+                    'jenis' => 'sertifikat'
+                ]
+            );
 
             return redirect()->route('admin.pengajuan.sertifikat')
                 ->with('success', 'Pengajuan perubahan sertifikat (edit) disetujui.');

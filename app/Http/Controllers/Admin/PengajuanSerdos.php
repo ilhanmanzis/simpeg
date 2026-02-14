@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\PengajuanSerdoss;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -43,19 +44,6 @@ class PengajuanSerdos extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create() {}
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -80,6 +68,7 @@ class PengajuanSerdos extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanSerdoss::findOrFail($id);
+        $user = $perubahan->user;
 
         if ($perubahan->serdos && Storage::exists('sertifikat/' . $perubahan->serdos)) {
             Storage::delete('sertifikat/' . $perubahan->serdos);
@@ -88,6 +77,18 @@ class PengajuanSerdos extends Controller
         $perubahan->status     = 'ditolak';
         $perubahan->keterangan = $request->input('keterangan');
         $perubahan->save();
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Serdos Ditolak',
+            'Pengajuan serdos ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.pengajuan.serdos.show',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'serdos'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.serdos')
             ->with('success', 'Pengajuan serdos ditolak.');
@@ -190,6 +191,17 @@ class PengajuanSerdos extends Controller
             $perubahan->keterangan = null;
             $perubahan->save();
         }
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Serdos Disetujui',
+            'Pengajuan serdos Anda telah disetujui oleh admin.',
+            'dosen.pengajuan.serdos.show',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'serdos'
+            ]
+        );
         return redirect()->route('admin.pengajuan.serdos')->with('success', 'Sertifikat Dosen berhasil diperbarui.');
     }
 }

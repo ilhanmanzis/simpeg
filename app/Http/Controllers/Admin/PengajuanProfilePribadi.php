@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanPerubahanDatas;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -56,6 +57,7 @@ class PengajuanProfilePribadi extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanPerubahanDatas::findOrFail($id);
+        $user = $perubahan->user;
 
         if ($perubahan->foto && Storage::exists('perubahanProfile/' . $perubahan->foto)) {
             Storage::delete('perubahanProfile/' . $perubahan->foto);
@@ -64,6 +66,19 @@ class PengajuanProfilePribadi extends Controller
         $perubahan->status     = 'ditolak';
         $perubahan->keterangan = $request->input('keterangan');
         $perubahan->save();
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Perubahan Profile Pribadi Ditolak',
+            'Pengajuan perubahan profile pribadi ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            $user->role === 'dosen'
+                ? 'dosen.pengajuan.profile.show'
+                : 'karyawan.pengajuan.profile.show',
+            [
+                'id'    => $perubahan->id_perubahan,
+                'jenis' => 'profile'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.profile')
             ->with('success', 'Pengajuan perubahan profile pribadi ditolak.');
@@ -74,6 +89,7 @@ class PengajuanProfilePribadi extends Controller
         $perubahan = PengajuanPerubahanDatas::where('id_perubahan', $id)
             ->with(['user.dataDiri.dokumen', 'user'])
             ->first();
+        $user = $perubahan->user;
 
         // Simpan path lama & lokal untuk dipakai setelah upload
         $localPath = null;
@@ -152,6 +168,19 @@ class PengajuanProfilePribadi extends Controller
         }
 
         $perubahan->update(['status' => 'disetujui']);
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan Perubahan Profile Pribadi Disetujui',
+            'Pengajuan Perubahan profile pribadi Anda telah disetujui oleh admin.',
+            $user->role === 'dosen'
+                ? 'dosen.pengajuan.profile.show'
+                : 'karyawan.pengajuan.profile.show',
+            [
+                'id'    => $perubahan->id_perubahan,
+                'jenis' => 'profile'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.profile')
             ->withHeaders([

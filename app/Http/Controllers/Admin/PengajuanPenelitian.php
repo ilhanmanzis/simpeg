@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class PengajuanPenelitian extends Controller
@@ -35,22 +36,6 @@ class PengajuanPenelitian extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -75,10 +60,22 @@ class PengajuanPenelitian extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanPenelitians::findOrFail($id);
+        $user = $perubahan->user;
 
         $perubahan->status     = 'ditolak';
         $perubahan->keterangan = $request->input('keterangan');
         $perubahan->save();
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Penelitian Ditolak',
+            'Pengajuan BKD Penelitian ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.penelitian.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'penelitian'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.penelitian')
             ->with('success', 'Pengajuan BKD Penelitian ditolak.');
@@ -87,6 +84,7 @@ class PengajuanPenelitian extends Controller
     public function setuju(string $id)
     {
         $perubahan = PengajuanPenelitians::findOrFail($id);
+        $user = $perubahan->user;
 
         Penelitians::create([
             'id_user' => $perubahan->id_user,
@@ -97,6 +95,17 @@ class PengajuanPenelitian extends Controller
         $perubahan->status     = 'disetujui';
 
         $perubahan->save();
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Penelitian Disetujui',
+            'Pengajuan BKD Penelitian Anda telah disetujui oleh admin.',
+            'dosen.penelitian.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'sertifikat'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.penelitian')
             ->with('success', 'Pengajuan BKD Penelitian disetujui.');

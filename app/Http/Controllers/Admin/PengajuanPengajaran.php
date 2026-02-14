@@ -8,6 +8,7 @@ use App\Models\PengajaranDetails;
 use App\Models\Pengajarans;
 use App\Models\PengajuanPengajarans;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -72,6 +73,7 @@ class PengajuanPengajaran extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanPengajarans::where('id_pengajuan_pengajaran', $id)->with(['detail'])->firstOrFail();
+        $user = $perubahan->user;
 
         if ($perubahan->sk && Storage::exists('bkd/' . $perubahan->sk)) {
             Storage::delete('bkd/' . $perubahan->sk);
@@ -88,6 +90,17 @@ class PengajuanPengajaran extends Controller
             'status'        => 'ditolak',
             'keterangan'    => $request->keterangan
         ]);
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Pengajaran Ditolak',
+            'Pengajuan BKD pengajaran ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.pengajaran.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan_pengajaran,
+                'jenis' => 'pengajaran'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.pengajaran')
             ->with('success', 'Pengajuan perubahan Pengajaran ditolak.');

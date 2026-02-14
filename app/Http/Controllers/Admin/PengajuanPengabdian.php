@@ -7,6 +7,7 @@ use App\Models\Dokumens;
 use App\Models\Pengabdians;
 use App\Models\PengajuanPengabdians;
 use App\Services\GoogleDriveService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,6 +72,7 @@ class PengajuanPengabdian extends Controller
     public function tolak(Request $request, string $id)
     {
         $perubahan = PengajuanPengabdians::findOrFail($id);
+        $user = $perubahan->user;
 
         if ($perubahan->permohonan && Storage::exists('bkd/' . $perubahan->permohonan)) {
             Storage::delete('bkd/' . $perubahan->permohonan);
@@ -93,6 +95,18 @@ class PengajuanPengabdian extends Controller
             'keterangan'    => $request->keterangan
         ]);
 
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Pengabdian Ditolak',
+            'Pengajuan BKD pengabdian ditolak. Alasan: '
+                . $request->keterangan ?? '-',
+            'dosen.pengabdian.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'pengabdian'
+            ]
+        );
         return redirect()->route('admin.pengajuan.pengabdian')
             ->with('success', 'Pengajuan perubahan pengabdian ditolak.');
     }
@@ -100,6 +114,7 @@ class PengajuanPengabdian extends Controller
     public function setuju(string $id)
     {
         $perubahan = PengajuanPengabdians::where('id_pengajuan', $id)->with(['user.dataDiri'])->firstOrFail();
+        $user = $perubahan->user;
 
         // nomor_dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
@@ -281,6 +296,17 @@ class PengajuanPengabdian extends Controller
         $perubahan->status = 'disetujui';
 
         $perubahan->save();
+
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Pengabdian Disetujui',
+            'Pengajuan BKD pengabdian Anda telah disetujui oleh admin.',
+            'dosen.pengabdian.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'pengabdian'
+            ]
+        );
 
         return redirect()->route('admin.pengajuan.pengabdian')
             ->with('success', 'Pengajuan BKD Pengabdian disetujui.');
