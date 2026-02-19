@@ -15,7 +15,6 @@ use App\Services\LocationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Services\PresensiService;
-use Illuminate\Support\Facades\Auth;
 
 class Presensi extends Controller
 {
@@ -29,12 +28,12 @@ class Presensi extends Controller
         $this->locationService = $locationService;
         $this->presensiService = $presensiService;
     }
-    public function menu()
+    public function index()
     {
-        return view('admin.presensi.input.index', [
-            'page' => 'Input Presensi',
-            'selected' => 'Input Presensi',
-            'title' => 'Input Presensi'
+        return view('admin.presensi.dashboard.index', [
+            'page' => 'Dashboard Presensi',
+            'selected' => 'Dashboard Presensi',
+            'title' => 'Dashboard Presensi'
         ]);
     }
 
@@ -42,8 +41,8 @@ class Presensi extends Controller
     {
         $tanggal = now()->toDateString();
         $data = [
-            'page'      => 'Input Presensi',
-            'selected'  => 'Input Presensi',
+            'page'      => 'Dashboard Presensi',
+            'selected'  => 'Dashboard Presensi',
             'title'     => 'Input Presensi Pegawai',
             'pegawais' => User::query()
                 ->select('id_user', 'npp', 'role')
@@ -63,15 +62,15 @@ class Presensi extends Controller
                 ->get()
         ];
 
-        return view('admin.presensi.input.create', $data);
+        return view('admin.presensi.dashboard.create', $data);
     }
 
     public function pulang(Request $request)
     {
         $keyword = $request->get('search');
         $data = [
-            'page' => 'Input Presensi',
-            'selected' => 'Input Presensi',
+            'page' => 'Dashboard Presensi',
+            'selected' => 'Dashboard Presensi',
             'title' => 'Daftar Belum Presensi Pulang',
             'presensis' => PresensiModel::with(['user.dataDiri'])
                 ->whereNull('jam_pulang')
@@ -84,7 +83,7 @@ class Presensi extends Controller
                 ->orderBy('jam_datang', 'asc')
                 ->get()
         ];
-        return view('admin.presensi.input.pulang', $data);
+        return view('admin.presensi.dashboard.pulang', $data);
     }
 
     public function prosesPulang($id)
@@ -93,7 +92,7 @@ class Presensi extends Controller
             ->where('id_presensi', $id)
             ->firstOrFail();
         if ($presensi->jam_pulang) {
-            return redirect()->route('admin.presensi.input.pulang')
+            return redirect()->route('admin.presensi.pulang')
                 ->with('error', 'Presensi sudah memiliki jam pulang.');
         }
 
@@ -119,22 +118,22 @@ class Presensi extends Controller
         $jamPulangDefault = $jamDatangCarbon->copy()->addHours($jamWajib);
 
         $data = [
-            'page' => 'Input Presensi',
-            'selected' => 'Input Presensi',
+            'page' => 'Dashboard Presensi',
+            'selected' => 'Dashboard Presensi',
             'title' => 'Input Presensi Pulang',
             'presensi' => $presensi,
             'isStruktural' => $isStruktural,
             'jamWajib' => $jamWajib,
             'jamPulangDefault' => $jamPulangDefault,
         ];
-        return view('admin.presensi.input.proses', $data);
+        return view('admin.presensi.dashboard.proses', $data);
     }
 
     public function createIzin()
     {
         $data = [
-            'page' => 'Input Presensi',
-            'selected' => 'Input Presensi',
+            'page' => 'Dashboard Presensi',
+            'selected' => 'Dashboard Presensi',
             'title' => 'Input Izin Pegawai',
             'pegawais' => User::query()
                 ->select('id_user', 'npp', 'role')
@@ -143,14 +142,14 @@ class Presensi extends Controller
                 ->with('dataDiri:id_data_diri,id_user,name')
                 ->get()
         ];
-        return view('admin.presensi.input.izin', $data);
+        return view('admin.presensi.dashboard.izin', $data);
     }
 
     public function createSakit()
     {
         $data = [
-            'page' => 'Input Presensi',
-            'selected' => 'Input Presensi',
+            'page' => 'Dashboard Presensi',
+            'selected' => 'Dashboard Presensi',
             'title' => 'Input Sakit Pegawai',
             'pegawais' => User::query()
                 ->select('id_user', 'npp', 'role')
@@ -159,7 +158,7 @@ class Presensi extends Controller
                 ->with('dataDiri:id_data_diri,id_user,name')
                 ->get()
         ];
-        return view('admin.presensi.input.sakit', $data);
+        return view('admin.presensi.dashboard.sakit', $data);
     }
 
 
@@ -377,7 +376,7 @@ class Presensi extends Controller
             }
         });
 
-        return redirect()->route('admin.presensi.input')
+        return redirect()->route('admin.presensi')
             ->with('success', 'Presensi berhasil disimpan.');
     }
 
@@ -422,7 +421,7 @@ class Presensi extends Controller
             ->where('id_presensi', $request->id_presensi)
             ->firstOrFail();
         if ($presensi->jam_pulang) {
-            return redirect()->route('admin.presensi.input.pulang')
+            return redirect()->route('admin.presensi.pulang')
                 ->with('error', 'Presensi sudah memiliki jam pulang.');
         }
         $user   = $presensi->user;
@@ -560,7 +559,7 @@ class Presensi extends Controller
             }
         });
 
-        return redirect()->route('admin.presensi.input.pulang')
+        return redirect()->route('admin.presensi.pulang')
             ->with('success', 'Presensi berhasil disimpan.');
     }
 
@@ -627,7 +626,7 @@ class Presensi extends Controller
         });
 
         return redirect()
-            ->route('admin.presensi.input.sakit')
+            ->route('admin.presensi.sakit')
             ->with('success', 'Presensi sakit berhasil disimpan.');
     }
 
@@ -694,7 +693,7 @@ class Presensi extends Controller
         });
 
         return redirect()
-            ->route('admin.presensi.input.izin')
+            ->route('admin.presensi.izin')
             ->with('success', 'Presensi izin berhasil disimpan.');
     }
 }

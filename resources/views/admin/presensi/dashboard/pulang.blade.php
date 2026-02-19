@@ -10,7 +10,7 @@
             <div class="flex justify-between mb-4">
 
                 <x-breadcrumb :items="[
-                    'Input Presensi' => route('admin.presensi.input'),
+                    'Dashboard Presensi' => route('admin.presensi'),
                     'Presensi Pulang' => '#',
                 ]" />
                 @if (session('success'))
@@ -88,7 +88,7 @@
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-3">
                         Daftar Dosen & Tendik belum presensi pulang
                     </h3>
-                    <form action="{{ route('admin.presensi.input.pulang') }}" method="get" class="mr-5">
+                    <form action="{{ route('admin.presensi.pulang') }}" method="get" class="mr-5">
                         <div class="flex justify-between mb-2">
 
                             <div class="relative">
@@ -168,7 +168,7 @@
 
 
                                     <td class="px-2 py-3">
-                                        <a href="{{ route('admin.presensi.input.pulang.proses', $item->id_presensi) }}"
+                                        <a href="{{ route('admin.presensi.pulang.proses', $item->id_presensi) }}"
                                             class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
                                             Proses
                                         </a>

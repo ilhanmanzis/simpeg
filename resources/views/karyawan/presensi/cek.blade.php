@@ -35,8 +35,13 @@
                                 Bulan & Tahun
                             </label>
 
-                            <input type="month" name="periode" value="{{ request('periode', now()->format('Y-m')) }}"
-                                class="h-11 rounded-lg border border-gray-300 bg-transparent px-4 text-sm focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90">
+                            <div class="relative">
+                                <input type="month" name="periode"
+                                    value="{{ request('periode', now()->format('Y-m')) }}" placeholder="Select date"
+                                    class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  cursor-pointer bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('periode') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
+                                    onclick="this.showPicker()" required />
+
+                            </div>
                         </div>
 
                         <button type="submit"
@@ -148,15 +153,12 @@
                                     </td>
 
                                     <td class="px-2 py-3">
-                                        @if ($item->status_kehadiran != 'hadir')
-                                            <span class="text-gray-900 dark:text-gray-200">-</span>
-                                        @else
-                                            <a href="{{ route('karyawan.presensi.detail', $item->id_presensi) }}"
-                                                class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
-                                                Lihat
 
-                                            </a>
-                                        @endif
+                                        <a href="{{ route('karyawan.presensi.detail', $item->id_presensi) }}"
+                                            class="inline-flex items-center rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600">
+                                            Lihat
+
+                                        </a>
                                     </td>
                                 </tr>
                             @empty

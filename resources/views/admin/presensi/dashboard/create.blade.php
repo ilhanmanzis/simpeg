@@ -9,7 +9,7 @@
             <div class="flex justify-between mb-4">
 
                 <x-breadcrumb :items="[
-                    'Input Presensi' => route('admin.presensi.input'),
+                    'Dashboard Presensi' => route('admin.presensi'),
                     'Presensi Masuk' => '#',
                 ]" />
                 @if (session('success'))
@@ -89,7 +89,7 @@
                 </div>
 
                 <div class="p-6">
-                    <form method="POST" action="{{ route('admin.presensi.input.masuk.store') }}"
+                    <form method="POST" action="{{ route('admin.presensi.masuk.store') }}"
                         enctype="multipart/form-data" x-data="{ showLoading: false }" @submit="showLoading = true">
                         @csrf
 
@@ -177,10 +177,11 @@
                             <!-- CHECKBOX PULANG -->
                             <div class="flex items-center gap-3 mt-8">
                                 <input type="checkbox" id="pulangCheck" name="is_pulang" value="1"
-                                    class="w-5 h-5 text-blue-600">
+                                    class="w-5 h-5 text-blue-600 cursor-pointer">
 
-                                <label for="pulangCheck" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Presensi Pulang
+                                <label for="pulangCheck"
+                                    class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                                    Silakan centang jika dengan presensi pulang.
                                 </label>
                             </div>
 

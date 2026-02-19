@@ -140,16 +140,14 @@
                             :class="(selected === 'Presensi') ? 'block' : 'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'"
                                 class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                                <x-drop-side-link href="{{ route('admin.jenjang') }}" page="Jenjang">
+                                <x-drop-side-link href="{{ route('admin.presensi') }}" page="Dashboard Presensi">
                                     Dashboard Presensi
                                 </x-drop-side-link>
-                                <x-drop-side-link href="{{ route('admin.golongan') }}" page="Golongan">
-                                    Daftar Presensi
+                                <x-drop-side-link href="{{ route('admin.presensi.daftar') }}"
+                                    page="Daftar Presensi Pegawai">
+                                    Daftar Presensi Pegawai
                                 </x-drop-side-link>
 
-                                <x-drop-side-link href="{{ route('admin.presensi.input') }}" page="Input Presensi">
-                                    Input Presensi
-                                </x-drop-side-link>
 
                             </ul>
                         </div>
@@ -442,7 +440,8 @@
                                 <x-drop-side-link href="{{ route('admin.laporan') }}" page="Laporan Kepegawaian">
                                     Status Kepegawaian
                                 </x-drop-side-link>
-                                <x-drop-side-link href="{{ route('admin.golongan') }}" page="Laporan Presensi">
+                                <x-drop-side-link href="{{ route('admin.laporan.presensi') }}"
+                                    page="Laporan Presensi">
                                     Presensi
                                 </x-drop-side-link>
 

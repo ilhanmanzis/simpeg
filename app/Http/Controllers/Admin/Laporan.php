@@ -25,7 +25,7 @@ class Laporan extends Controller
             'selected' => 'Laporan',
             'title' => 'Laporan Status Kepegawaian',
         ];
-        return view('admin.laporan.index', $data);
+        return view('admin.laporan.kepegawaian.index', $data);
     }
 
     /**
@@ -181,7 +181,7 @@ class Laporan extends Controller
                 'chroot'               => public_path(),
                 'tempDir'              => storage_path('app/dompdf_temp'),
                 'fontDir'              => storage_path('app/dompdf_font'),
-            ])->loadView('admin.laporan.pdf', [
+            ])->loadView('admin.laporan.kepegawaian.pdf', [
                 'title'            => $title,
                 'pegawai'          => $pegawai,
                 'tersertifikasi'   => $tersertifikasi,
@@ -199,7 +199,7 @@ class Laporan extends Controller
         }
 
         // Optional: render halaman non-PDF
-        return view('admin.laporan.index', [
+        return view('admin.laporan.kepegawaian.index', [
             'title'          => 'Laporan Pegawai',
             'pegawai'        => $pegawai,
             'tersertifikasi' => $tersertifikasi,
@@ -350,7 +350,7 @@ class Laporan extends Controller
             'chroot'               => public_path(),
             'tempDir'              => storage_path('app/dompdf_temp'),
             'fontDir'              => storage_path('app/dompdf_font'),
-        ])->loadView('admin.laporan.pegawai', [
+        ])->loadView('admin.laporan.kepegawaian.pegawai', [
             'title'         => $title,
             'user'          => $user,
             'role'          => $role,

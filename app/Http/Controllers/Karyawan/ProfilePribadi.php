@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Karyawan;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\GoogleDriveService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfilePribadi extends Controller

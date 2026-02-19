@@ -10,8 +10,8 @@
         <div class="flex justify-between mb-4">
 
             <x-breadcrumb :items="[
-                'Input Presensi' => route('admin.presensi.input'),
-                'Presensi Pulang' => route('admin.presensi.input.pulang'),
+                'Dashboard Presensi' => route('admin.presensi'),
+                'Presensi Pulang' => route('admin.presensi.pulang'),
                 'Input Presensi Pulang' => '#',
             ]" />
             @if (session('success'))
@@ -219,7 +219,7 @@
                         $isDosen = $presensi->user->role === 'dosen';
                     @endphp
 
-                    <form method="POST" action="{{ route('admin.presensi.input.pulang.store') }}"
+                    <form method="POST" action="{{ route('admin.presensi.pulang.store') }}"
                         enctype="multipart/form-data" x-data="{ showLoading: false }" @submit="showLoading = true">
                         @csrf
                         <input type="hidden" name="id_presensi" value="{{ $presensi->id_presensi }}">

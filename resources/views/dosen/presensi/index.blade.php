@@ -458,7 +458,7 @@
 
                     <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                            Daftar Presensi Hari,
+                            Daftar Presensi Hari
                             {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                         </h3>
                     </div>
@@ -466,23 +466,24 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full">
                             <thead>
-                                <tr class="border-b border-gray-100 dark:border-gray-800">
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">No</th>
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">NPP</th>
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">Nama</th>
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">Datang</th>
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">Pulang</th>
-                                    <th class="px-5 py-3 text-left text-theme-xs text-gray-500">Durasi</th>
+                                <tr class="border-b border-gray-100 dark:border-gray-800 text-sm">
+                                    <th class="pl-3 pr-1 py-3 text-left text-theme-xs text-gray-500">No</th>
+                                    <th class="px-3 py-3 text-left text-theme-xs text-gray-500">NPP</th>
+                                    <th class="px-3 py-3 text-left text-theme-xs text-gray-500">Nama</th>
+                                    <th class="px-3 py-3 text-left text-theme-xs text-gray-500">Datang</th>
+                                    <th class="px-3 py-3 text-left text-theme-xs text-gray-500">Pulang</th>
+                                    <th class="px-3 py-3 text-left text-theme-xs text-gray-500">Durasi</th>
+                                    <th class="pl-3 pr-2 py-3 text-left text-theme-xs text-gray-500">Status</th>
                                 </tr>
                             </thead>
 
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                @foreach ($daftarPresensiHariIni as $i => $item)
+                                @forelse ($daftarPresensiHariIni as $i => $item)
                                     <tr>
-                                        <td class="px-5 py-3 dark:text-white/90">{{ $i + 1 }}</td>
-                                        <td class="px-5 py-3 dark:text-white/90">{{ $item->user->npp }}</td>
+                                        <td class="pl-3 pr-1 py-3 dark:text-white/90">{{ $i + 1 }}</td>
+                                        <td class="px-3 py-3 dark:text-white/90">{{ $item->user->npp }}</td>
 
-                                        <td class="px-5 py-3">
+                                        <td class="px-3 py-3">
                                             <div class="flex items-center gap-2">
 
 
@@ -506,14 +507,31 @@
                                             </div>
                                         </td>
 
-                                        <td class="px-5 py-3 font-mono dark:text-white/90">
+                                        <td class="px-3 py-3 font-mono dark:text-white/90">
                                             {{ $item->jam_datang ?? '00:00:00' }}</td>
-                                        <td class="px-5 py-3 font-mono dark:text-white/90">
+                                        <td class="px-3 py-3 font-mono dark:text-white/90">
                                             {{ $item->jam_pulang ?? '00:00:00' }}</td>
-                                        <td class="px-5 py-3 font-mono dark:text-white/90">{{ $item->durasi }}
+                                        <td class="px-3 py-3 font-mono dark:text-white/90">{{ $item->durasi }}
+                                        </td>
+                                        <td class="pl-3 pr-2 py-3 font-mono dark:text-white/90">
+                                            <span
+                                                class="rounded-full px-3 py-0.5 text-xs font-semibold text-white
+                                                        @if ($item->status_kehadiran === 'hadir') bg-success-500
+                                                        @elseif ($item->status_kehadiran === 'izin') bg-warning-500
+                                                        @elseif ($item->status_kehadiran === 'sakit') bg-brand-500
+                                                        @else bg-error-400 @endif">
+                                                {{ ucfirst($item->status_kehadiran) }}
+                                            </span>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="7"
+                                            class="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
+                                            Tidak ada data presensi pada hari ini
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

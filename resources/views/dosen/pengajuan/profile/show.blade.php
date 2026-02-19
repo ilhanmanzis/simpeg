@@ -215,6 +215,16 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">{{ $pengajuan->tanggal_bergabung }}</div>
                                         </div>
+                                        @if ($pengajuan->status === 'ditolak')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Keterangan</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">
+                                                    <span
+                                                        class="text-error-500">{{ $pengajuan->keterangan ?? '-' }}</span>
+                                                </div>
+                                            </div>
+                                        @endif
 
 
                                     </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DaftarPresensi;
 use App\Http\Controllers\Admin\FungsionalUser;
 use App\Http\Controllers\Admin\Golongan;
 use App\Http\Controllers\Admin\GolonganUser;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
 use App\Http\Controllers\Admin\KategoriSertifikat;
 use App\Http\Controllers\Admin\Laporan;
+use App\Http\Controllers\Admin\LaporanPresensi;
 use App\Http\Controllers\Admin\PegawaiDosen;
 use App\Http\Controllers\Admin\PegawaiKaryawan;
 use App\Http\Controllers\Admin\Penelitian as AdminPenelitian;
@@ -107,6 +109,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/laporan', [Laporan::class, 'index'])->name('laporan');
     Route::post('/laporan/create', [Laporan::class, 'create'])->name('laporan.create');
     Route::get('/laporan/create/{id}', [Laporan::class, 'individu'])->name('laporan.individu');
+
+    // laporan presensi
+    Route::get('/laporan/presensi', [LaporanPresensi::class, 'index'])->name('laporan.presensi');
+    Route::post('/laporan/presensi/store', [LaporanPresensi::class, 'store'])->name('laporan.presensi.store');
 
     // golongan
     Route::get('/golongan', [Golongan::class, 'index'])->name('golongan');
@@ -328,34 +334,41 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::put('/pengajuan-serdos/setuju/{id}', [AdminPengajuanSerdos::class, 'setuju'])->name('pengajuan.serdos.setuju');
     Route::put('/pengajuan-serdos/tolak/{id}', [AdminPengajuanSerdos::class, 'tolak'])->name('pengajuan.serdos.tolak');
 
-    Route::get('/presensi/input', [Presensi::class, 'menu'])
-        ->name('presensi.input');
+    // daftar presensi
+    Route::get('/presensi/daftar', [DaftarPresensi::class, 'index'])->name('presensi.daftar');
+    Route::get('/presensi/daftar/bulan', [DaftarPresensi::class, 'bulan'])->name('presensi.daftar.bulan');
+    Route::post('/presensi/daftar/bulan', [DaftarPresensi::class, 'dataBulan'])->name('presensi.daftar.bulan.data');
+    Route::get('/presensi/daftar/bulan/{id}', [DaftarPresensi::class, 'showBulan'])->name('presensi.daftar.bulan.data.show');
 
-    Route::get('/presensi/input/masuk', [Presensi::class, 'createMasuk'])
-        ->name('presensi.input.masuk');
+    // input presesnsi
+    Route::get('/presensi', [Presensi::class, 'index'])
+        ->name('presensi');
 
-    Route::get('/presensi/input/pulang', [Presensi::class, 'pulang'])
-        ->name('presensi.input.pulang');
-    Route::get('/presensi/input/pulang/{id}', [Presensi::class, 'prosesPulang'])
-        ->name('presensi.input.pulang.proses');
+    Route::get('/presensi/masuk', [Presensi::class, 'createMasuk'])
+        ->name('presensi.masuk');
 
-    Route::get('/presensi/input/izin', [Presensi::class, 'createIzin'])
-        ->name('presensi.input.izin');
+    Route::get('/presensi/pulang', [Presensi::class, 'pulang'])
+        ->name('presensi.pulang');
+    Route::get('/presensi/pulang/{id}', [Presensi::class, 'prosesPulang'])
+        ->name('presensi.pulang.proses');
 
-    Route::get('/presensi/input/sakit', [Presensi::class, 'createSakit'])
-        ->name('presensi.input.sakit');
+    Route::get('/presensi/izin', [Presensi::class, 'createIzin'])
+        ->name('presensi.izin');
 
-    Route::post('/presensi/input/masuk/store', [Presensi::class, 'storeMasuk'])
-        ->name('presensi.input.masuk.store');
+    Route::get('/presensi/sakit', [Presensi::class, 'createSakit'])
+        ->name('presensi.sakit');
 
-    Route::post('/presensi/input/pulang/store', [Presensi::class, 'storePulang'])
-        ->name('presensi.input.pulang.store');
+    Route::post('/presensi/masuk/store', [Presensi::class, 'storeMasuk'])
+        ->name('presensi.masuk.store');
 
-    Route::post('/presensi/input/sakit/store', [Presensi::class, 'storeSakit'])
-        ->name('presensi.input.sakit.store');
+    Route::post('/presensi/pulang/store', [Presensi::class, 'storePulang'])
+        ->name('presensi.pulang.store');
 
-    Route::post('/presensi/input/izin/store', [Presensi::class, 'storeIzin'])
-        ->name('presensi.input.izin.store');
+    Route::post('/presensi/sakit/store', [Presensi::class, 'storeSakit'])
+        ->name('presensi.sakit.store');
+
+    Route::post('/presensi/izin/store', [Presensi::class, 'storeIzin'])
+        ->name('presensi.izin.store');
 });
 
 

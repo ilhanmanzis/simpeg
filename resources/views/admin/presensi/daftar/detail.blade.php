@@ -9,8 +9,8 @@
              <!-- ================= BREADCRUMB ================= -->
              <div class="mb-4 flex justify-between items-center">
                  <x-breadcrumb :items="[
-                     'Presensi' => route('dosen.presensi'),
-                     'Cek Presensi' => route('dosen.presensi.cek'),
+                     'Daftar Presensi Pegawai' => route('admin.presensi.daftar'),
+                     'Bulanan' => route('admin.presensi.daftar.bulan'),
                      'Detail Presensi' => '#',
                  ]" />
              </div>
@@ -127,138 +127,156 @@
 
              <!-- ================= AKTIVITAS ================= -->
              @if ($presensi->status_kehadiran == 'hadir')
-                 <div class="rounded-xl border bg-white p-5 mb-6 dark:bg-white/[0.03] dark:border-gray-800">
-                     <h3 class="mb-4 text-sm font-semibold  text-gray-900 dark:text-gray-100">Aktivitas & Kegiatan</h3>
+                 @if ($presensi->user->role == 'dosen')
+                     <div class="rounded-xl border bg-white p-5 mb-6 dark:bg-white/[0.03] dark:border-gray-800">
+                         <h3 class="mb-4 text-sm font-semibold  text-gray-900 dark:text-gray-100">Aktivitas & Kegiatan
+                         </h3>
 
-                     <div class="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                         <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
+                         <div class="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                             <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
+                                 <div class="grid grid-cols-[140px_10px_1fr]">
+                                     <div>SKS Siang</div>
+                                     <div>:</div>
+                                     <div class="font-mono">{{ $presensi->aktivitas->sks_siang ?? '-' }}</div>
+                                 </div>
+
+                                 <div class="grid grid-cols-[140px_10px_1fr]">
+                                     <div>SKS Malam</div>
+                                     <div>:</div>
+                                     <div class="font-mono">
+                                         {{ $presensi->aktivitas->sks_malam ?? '-' }}
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
+
+                                 <div class="grid grid-cols-[140px_10px_1fr]">
+                                     <div>SKS Praktikum Siang</div>
+                                     <div>:</div>
+                                     <div class="font-mono">
+                                         {{ $presensi->aktivitas->sks_praktikum_siang ?? '-' }}
+                                     </div>
+                                 </div>
+
+                                 <div class="grid grid-cols-[140px_10px_1fr]">
+                                     <div>SKS Praktikum Malam</div>
+                                     <div>:</div>
+                                     <div class="font-mono">{{ $presensi->aktivitas->sks_praktikum_malam ?? '-' }}
+                                     </div>
+                                 </div>
+
+
+
+                             </div>
+                         </div>
+                         <div class="space-y-2 font-mono text-sm text-gray-800 dark:text-gray-100">
                              <div class="grid grid-cols-[140px_10px_1fr]">
-                                 <div>SKS Siang</div>
+                                 <div>Mata Kuliah</div>
                                  <div>:</div>
-                                 <div class="font-mono">{{ $presensi->aktivitas->sks_siang ?? '-' }}</div>
+                                 <div>{!! nl2br(e($presensi->aktivitas->mata_kuliah ?? '-')) !!}
+                                 </div>
+                             </div>
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Kegiatan</div>
+                                 <div>:</div>
+                                 <div>{!! nl2br(e($presensi->aktivitas->kegiatan ?? '-')) !!}
+                                 </div>
                              </div>
 
                              <div class="grid grid-cols-[140px_10px_1fr]">
-                                 <div>SKS Malam</div>
+                                 <div>Seminar (Jumlah)</div>
                                  <div>:</div>
-                                 <div class="font-mono">
-                                     {{ $presensi->aktivitas->sks_malam ?? '-' }}
+                                 <div>
+                                     {{ $presensi->aktivitas->seminar_jumlah ?? '-' }}
+                                 </div>
+                             </div>
+
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Keterangan</div>
+                                 <div>:</div>
+                                 <div>
+                                     {!! nl2br(e($presensi->aktivitas->seminar_keterangan ?? '-')) !!}
+                                 </div>
+                             </div>
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Pembimbing (Jumlah)</div>
+                                 <div>:</div>
+                                 <div>
+                                     {{ $presensi->aktivitas->pembimbing_jumlah ?? '-' }}
+                                 </div>
+                             </div>
+
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Keterangan</div>
+                                 <div>:</div>
+                                 <div>
+                                     {!! nl2br(e($presensi->aktivitas->pembimbing_keterangan ?? '-')) !!}
+                                 </div>
+                             </div>
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Penguji (Jumlah)</div>
+                                 <div>:</div>
+                                 <div>
+                                     {{ $presensi->aktivitas->penguji_jumlah ?? '-' }}
+                                 </div>
+                             </div>
+
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Keterangan</div>
+                                 <div>:</div>
+                                 <div>
+                                     {!! nl2br(e($presensi->aktivitas->penguji_keterangan ?? '-')) !!}
+                                 </div>
+                             </div>
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>KKL (Jumlah)</div>
+                                 <div>:</div>
+                                 <div>
+                                     {{ $presensi->aktivitas->kkl_jumlah ?? '-' }}
+                                 </div>
+                             </div>
+
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Keterangan</div>
+                                 <div>:</div>
+                                 <div>
+                                     {!! nl2br(e($presensi->aktivitas->kkl_keterangan ?? '-')) !!}
+                                 </div>
+                             </div>
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Tugas Luar (Jumlah)</div>
+                                 <div>:</div>
+                                 <div>
+                                     {{ $presensi->aktivitas->tugas_luar_jumlah ?? '-' }}
+                                 </div>
+                             </div>
+
+                             <div class="grid grid-cols-[140px_10px_1fr]">
+                                 <div>Keterangan</div>
+                                 <div>:</div>
+                                 <div>
+                                     {!! nl2br(e($presensi->aktivitas->tugas_luar_keterangan ?? '-')) !!}
                                  </div>
                              </div>
                          </div>
-                         <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
-
-                             <div class="grid grid-cols-[140px_10px_1fr]">
-                                 <div>SKS Praktikum Siang</div>
-                                 <div>:</div>
-                                 <div class="font-mono">
-                                     {{ $presensi->aktivitas->sks_praktikum_siang ?? '-' }}
-                                 </div>
-                             </div>
-
-                             <div class="grid grid-cols-[140px_10px_1fr]">
-                                 <div>SKS Praktikum Malam</div>
-                                 <div>:</div>
-                                 <div class="font-mono">{{ $presensi->aktivitas->sks_praktikum_malam ?? '-' }}</div>
-                             </div>
 
 
-
-                         </div>
                      </div>
-                     <div class="space-y-2 font-mono text-sm text-gray-800 dark:text-gray-100">
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Mata Kuliah</div>
-                             <div>:</div>
-                             <div>{!! nl2br(e($presensi->aktivitas->mata_kuliah ?? '-')) !!}
-                             </div>
-                         </div>
-                         <div class="grid grid-cols-[140px_10px_1fr]">
+                 @else
+                     <div class="rounded-xl border bg-white p-5 mb-6 dark:bg-white/[0.03] dark:border-gray-800">
+                         <h3 class="mb-4 text-sm font-semibold  text-gray-900 dark:text-gray-100">Aktivitas & Kegiatan
+                         </h3>
+                         <div class="grid grid-cols-[140px_10px_1fr] text-gray-800 dark:text-gray-100">
                              <div>Kegiatan</div>
                              <div>:</div>
                              <div>{!! nl2br(e($presensi->aktivitas->kegiatan ?? '-')) !!}
                              </div>
                          </div>
 
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Seminar (Jumlah)</div>
-                             <div>:</div>
-                             <div>
-                                 {{ $presensi->aktivitas->seminar_jumlah ?? '-' }}
-                             </div>
-                         </div>
 
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Keterangan</div>
-                             <div>:</div>
-                             <div>
-                                 {!! nl2br(e($presensi->aktivitas->seminar_keterangan ?? '-')) !!}
-                             </div>
-                         </div>
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Pembimbing (Jumlah)</div>
-                             <div>:</div>
-                             <div>
-                                 {{ $presensi->aktivitas->pembimbing_jumlah ?? '-' }}
-                             </div>
-                         </div>
 
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Keterangan</div>
-                             <div>:</div>
-                             <div>
-                                 {!! nl2br(e($presensi->aktivitas->pembimbing_keterangan ?? '-')) !!}
-                             </div>
-                         </div>
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Penguji (Jumlah)</div>
-                             <div>:</div>
-                             <div>
-                                 {{ $presensi->aktivitas->penguji_jumlah ?? '-' }}
-                             </div>
-                         </div>
-
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Keterangan</div>
-                             <div>:</div>
-                             <div>
-                                 {!! nl2br(e($presensi->aktivitas->penguji_keterangan ?? '-')) !!}
-                             </div>
-                         </div>
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>KKL (Jumlah)</div>
-                             <div>:</div>
-                             <div>
-                                 {{ $presensi->aktivitas->kkl_jumlah ?? '-' }}
-                             </div>
-                         </div>
-
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Keterangan</div>
-                             <div>:</div>
-                             <div>
-                                 {!! nl2br(e($presensi->aktivitas->kkl_keterangan ?? '-')) !!}
-                             </div>
-                         </div>
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Tugas Luar (Jumlah)</div>
-                             <div>:</div>
-                             <div>
-                                 {{ $presensi->aktivitas->tugas_luar_jumlah ?? '-' }}
-                             </div>
-                         </div>
-
-                         <div class="grid grid-cols-[140px_10px_1fr]">
-                             <div>Keterangan</div>
-                             <div>:</div>
-                             <div>
-                                 {!! nl2br(e($presensi->aktivitas->tugas_luar_keterangan ?? '-')) !!}
-                             </div>
-                         </div>
                      </div>
-
-
-                 </div>
+                 @endif
 
                  <!-- ================= FOTO ================= -->
                  <div
@@ -512,6 +530,18 @@
              }
          </script>
      @endpush
+     @php
+         $user = $presensi->user;
+
+         if ($user->isKaryawan()) {
+             $wajibJam = 8;
+         } elseif ($user->isDosen()) {
+             $wajibJam = $isStruktural ? 7 : 6;
+         } else {
+             $wajibJam = 0; // admin / fallback
+         }
+     @endphp
+
 
      <script>
          function dashboardDurasi() {
@@ -520,7 +550,7 @@
                  status: 'merah',
                  durasiText: 'Durasi : 00:00:00',
 
-                 wajibJam: @js($isStruktural ? 7 : 6),
+                 wajibJam: @js($wajibJam),
                  isPulang: @js((bool) $presensi->jam_pulang),
                  durasiMenitDB: @js($presensi->durasi_menit ?? 0),
 

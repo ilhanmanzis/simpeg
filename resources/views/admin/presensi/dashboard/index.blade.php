@@ -7,8 +7,8 @@
         <div class="flex justify-between">
 
             <x-breadcrumb :items="[
-                'Input Presensi' => route('admin.presensi.input'),
-                'Menu' => '#',
+                'Dashboard Presensi' => route('admin.presensi'),
+                'Dashboard' => '#',
             ]" />
 
             @if (session('success'))
@@ -50,7 +50,7 @@
         <div class="my-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {{-- MASUK --}}
-            <a href="{{ route('admin.presensi.input.masuk') }}"
+            <a href="{{ route('admin.presensi.masuk') }}"
                 class="group rounded-2xl p-5 text-left transition-all duration-300
                bg-white dark:bg-slate-800
                border border-slate-200 dark:border-slate-700
@@ -76,7 +76,7 @@
 
 
             {{-- PULANG --}}
-            <a href="{{ route('admin.presensi.input.pulang') }}"
+            <a href="{{ route('admin.presensi.pulang') }}"
                 class="group rounded-2xl p-5 text-left transition-all duration-300
                bg-white dark:bg-slate-800
                border border-slate-200 dark:border-slate-700
@@ -102,7 +102,7 @@
 
 
             {{-- SAKIT --}}
-            <a href="{{ route('admin.presensi.input.sakit') }}"
+            <a href="{{ route('admin.presensi.sakit') }}"
                 class="group rounded-2xl p-5 text-left transition-all duration-300
                bg-white dark:bg-slate-800
                border border-slate-200 dark:border-slate-700
@@ -128,7 +128,7 @@
 
 
             {{-- IZIN --}}
-            <a href="{{ route('admin.presensi.input.izin') }}"
+            <a href="{{ route('admin.presensi.izin') }}"
                 class="group rounded-2xl p-5 text-left transition-all duration-300
                bg-white dark:bg-slate-800
                border border-slate-200 dark:border-slate-700

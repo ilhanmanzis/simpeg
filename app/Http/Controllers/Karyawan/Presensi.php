@@ -8,17 +8,12 @@ use App\Models\Presensi as PresensiModel;
 use App\Models\PresensiAktivitas;
 use App\Models\PresensiDokumen;
 use App\Models\SettingLokasiPresensi;
-use App\Models\StrukturalUsers;
-use App\Models\User;
 use App\Services\LocationService;
 use App\Services\PresensiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-
-use function PHPUnit\Framework\isNull;
 
 class Presensi extends Controller
 {
@@ -379,54 +374,19 @@ class Presensi extends Controller
                     $jam   = intdiv($item->durasi_menit, 60);
                     $menit = $item->durasi_menit % 60;
 
-                    $durasi = sprintf('%02d:%02d:00', $jam, $menit);
+                    $item->durasi = sprintf('%02d:%02d:00', $jam, $menit);
                 } else {
-                    $durasi = '00:00:00';
+                    $item->durasi = '00:00:00';
                 }
-
-                // =============================
-                // STATUS WARNA (HIJAU / KUNING / MERAH)
-                // =============================
-                $durasiJam = 0;
-
-                if (!is_null($item->durasi_menit)) {
-                    $durasiJam = intdiv($item->durasi_menit, 60);
-                }
-
-                if ($durasiJam >= 6) {
-                    $statusJamKerja = 'hijau';
-                } elseif ($durasiJam >= 4) {
-                    $statusJamKerja = 'kuning';
-                } elseif (is_null($item->durasi_menit)) {
-                    $statusJamKerja = '';
-                } else {
-                    $statusJamKerja = 'merah';
-                }
-
-                $item->durasi = $durasi;
-                $item->status_jam_kerja = $statusJamKerja;
-
                 return $item;
             });
 
         // ================= REKAP STATUS KEHADIRAN =================
-        $jumlahHadir = PresensiModel::where('id_user', $userId)
-            ->whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahun)
-            ->where('status_kehadiran', 'hadir')
-            ->count();
+        $jumlahHadir = $presensis->where('status_kehadiran', 'hadir')->count();
 
-        $jumlahSakit = PresensiModel::where('id_user', $userId)
-            ->whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahun)
-            ->where('status_kehadiran', 'sakit')
-            ->count();
+        $jumlahSakit = $presensis->where('status_kehadiran', 'sakit')->count();
 
-        $jumlahIzin = PresensiModel::where('id_user', $userId)
-            ->whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahun)
-            ->where('status_kehadiran', 'izin')
-            ->count();
+        $jumlahIzin = $presensis->where('status_kehadiran', 'izin')->count();
 
         return view('karyawan.presensi.cek', [
             'page'      => 'Presensi',

@@ -76,7 +76,7 @@ class PengajuanProfilePribadi extends Controller
                 : 'karyawan.pengajuan.profile.show',
             [
                 'id'    => $perubahan->id_perubahan,
-                'jenis' => 'profile'
+                'jenis' => 'profile_pribadi'
             ]
         );
 
@@ -178,7 +178,7 @@ class PengajuanProfilePribadi extends Controller
                 : 'karyawan.pengajuan.profile.show',
             [
                 'id'    => $perubahan->id_perubahan,
-                'jenis' => 'profile'
+                'jenis' => 'profile_pribadi'
             ]
         );
 

@@ -9,8 +9,8 @@
             <div class="flex justify-between mb-4">
 
                 <x-breadcrumb :items="[
-                    'Input Presensi' => route('admin.presensi.input'),
-                    'Sakit' => '#',
+                    'Dashboard Presensi' => route('admin.presensi'),
+                    'Izin' => '#',
                 ]" />
                 @if (session('success'))
                     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
@@ -84,13 +84,13 @@
 
                 <div class="px-6 py-4 border-b dark:border-gray-800">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Form Input Sakit
+                        Form Input Izin
                     </h3>
                 </div>
 
                 <div class="p-6" x-data="{ showLoading: false }">
-                    <form method="POST" action="{{ route('admin.presensi.input.sakit.store') }}"
-                        x-data="multiDayForm()" enctype="multipart/form-data" @submit="showLoading = true">
+                    <form method="POST" action="{{ route('admin.presensi.izin.store') }}" x-data="multiDayForm()"
+                        enctype="multipart/form-data" @submit="showLoading = true">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -150,7 +150,7 @@
 
                                 <label for="lebihDariSehari"
                                     class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                                    Klik centang jika lebih dari 1 hari
+                                    Silakan centang apabila lebih dari 1 hari
                                 </label>
                             </div>
                             <div x-show="multiDay" x-transition class="">

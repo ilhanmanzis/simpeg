@@ -9,8 +9,8 @@
             <div class="flex justify-between mb-4">
 
                 <x-breadcrumb :items="[
-                    'Input Presensi' => route('admin.presensi.input'),
-                    'Izin' => '#',
+                    'Dashboard Presensi' => route('admin.presensi'),
+                    'Sakit' => '#',
                 ]" />
                 @if (session('success'))
                     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
@@ -48,35 +48,7 @@
                     </div>
                 @endif
                 {{-- ================= ERROR VALIDATION ================= --}}
-                {{-- @if ($errors->any())
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 7000)" x-show="show" x-transition
-                        class="rounded-xl border border-error-500 bg-error-50 p-4 dark:border-error-500/30 dark:bg-error-500/15 mb-5">
 
-                        <div class="flex items-start gap-3">
-
-                            <!-- Icon -->
-                            <div class="text-error-500">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                           10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                                </svg>
-                            </div>
-
-                            <!-- Error List -->
-                            <div class="text-sm text-gray-800 dark:text-white/90">
-                                <h4 class="font-semibold mb-2">Terjadi kesalahan:</h4>
-                                <ul class="list-disc list-inside space-y-1">
-                                    @foreach ($errors->all() as $error)
-                                        <li class="text-error-600 dark:text-error-400">
-                                            {{ $error }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-
-                        </div>
-                    </div>
-                @endif --}}
 
             </div>
 
@@ -84,12 +56,12 @@
 
                 <div class="px-6 py-4 border-b dark:border-gray-800">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Form Input Izin
+                        Form Input Sakit
                     </h3>
                 </div>
 
                 <div class="p-6" x-data="{ showLoading: false }">
-                    <form method="POST" action="{{ route('admin.presensi.input.izin.store') }}" x-data="multiDayForm()"
+                    <form method="POST" action="{{ route('admin.presensi.sakit.store') }}" x-data="multiDayForm()"
                         enctype="multipart/form-data" @submit="showLoading = true">
                         @csrf
 
@@ -150,7 +122,7 @@
 
                                 <label for="lebihDariSehari"
                                     class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                                    Klik centang jika lebih dari 1 hari
+                                    Silakan centang apabila lebih dari 1 hari
                                 </label>
                             </div>
                             <div x-show="multiDay" x-transition class="">
