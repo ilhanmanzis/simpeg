@@ -458,9 +458,15 @@
                                     <p class="mt-2 text-xl font-bold text-gray-900">
                                         {{ $item->judul }}
                                     </p>
+
                                     @if ($item->tipe === 'pengabdian')
                                         <p class="mt-2 text-md text-gray-900">
                                             Lokasi : {{ $item->lokasi }}
+                                        </p>
+                                    @endif
+                                    @if ($item->tipe === 'penelitian')
+                                        <p class="mt-2 text-md text-gray-900">
+                                            Index : {{ $item->index->name ?? '-' }}
                                         </p>
                                     @endif
                                 </div>

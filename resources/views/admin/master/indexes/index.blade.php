@@ -9,8 +9,8 @@
             <div x-data="{ pageName: `{{ $title }}` }">
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <x-breadcrumb :items="[
-                        'Jabatan Struktural' => route('admin.struktural'),
-                        'Data Jabatan Struktural' => '#',
+                        'Indeks Publikasi' => route('admin.indexes'),
+                        'Data Indeks Publikasi' => '#',
                     ]" />
                     @if (session('success'))
                         <div
@@ -58,9 +58,9 @@
                     <div class="px-5 py-4 sm:px-6 sm:py-5">
                         <div class="flex items-center justify-between gap-5">
                             <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ $title }}</h2>
-                            <a href="{{ route('admin.struktural.create') }}"
+                            <a href="{{ route('admin.indexes.create') }}"
                                 class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 mb-5">
-                                Tambah Jabatan Struktural
+                                Tambah Indeks Publikasi
                             </a>
 
 
@@ -110,7 +110,7 @@
                                         @endphp
                                         <!-- table body start -->
                                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                            @foreach ($strukturals as $struktural)
+                                            @foreach ($indexes as $index)
                                                 <tr>
                                                     <td class="px-5 py-4 sm:px-6">
                                                         <div class="flex items-center">
@@ -130,7 +130,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $struktural['nama_jabatan'] }}
+                                                                    {{ $index->name }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -140,9 +140,10 @@
                                                     <td class="px-5 py-4 sm:px-6">
 
                                                         <div class="flex items-center">
-                                                            @if ($struktural->id_struktural != 1 && $struktural->id_struktural != 2)
+
+                                                            @if ($index->id_index != 1)
                                                                 <form
-                                                                    action="{{ route('admin.struktural.delete', ['id' => $struktural['id_struktural']]) }}"
+                                                                    action="{{ route('admin.indexes.delete', ['id' => $index->id_index]) }}"
                                                                     onsubmit="return confirm('Apakah anda yakin ingin menghapus data?')"
                                                                     method="post">
                                                                     @csrf
@@ -163,7 +164,7 @@
                                                                     </button>
                                                                 </form>
 
-                                                                <a href="{{ route('admin.struktural.edit', ['id' => $struktural['id_struktural']]) }}"
+                                                                <a href="{{ route('admin.indexes.edit', ['id' => $index->id_index]) }}"
                                                                     class="inline-flex items-center gap-2 rounded-lg bg-success-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-success-600 mx-3">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                         fill="none" viewBox="0 0 24 24"
@@ -178,10 +179,9 @@
                                                             @else
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-
                                                                     -
+                                                                </p>
                                                             @endif
-
                                                         </div>
                                                     </td>
 
@@ -193,7 +193,7 @@
                                     </table>
                                     <!-- Pagination links -->
                                     <div class="border-t border-gray-100 dark:border-gray-800 p-4">
-                                        {{ $strukturals->links() }}
+                                        {{ $indexes->links() }}
                                     </div>
                                 </div>
                             </div>

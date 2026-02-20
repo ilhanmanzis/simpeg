@@ -41,7 +41,7 @@ class PengajuanPenelitian extends Controller
     public function show(string $id)
     {
         $pengajuan = PengajuanPenelitians::where('id_pengajuan', $id)
-            ->with(['user.dataDiri'])
+            ->with(['user.dataDiri', 'index'])
             ->firstOrFail();
 
         $data = [
@@ -90,6 +90,7 @@ class PengajuanPenelitian extends Controller
             'id_user' => $perubahan->id_user,
             'judul' => $perubahan->judul,
             'url' => $perubahan->url,
+            'id_index' => $perubahan->id_index,
         ]);
 
         $perubahan->status     = 'disetujui';
@@ -103,7 +104,7 @@ class PengajuanPenelitian extends Controller
             'dosen.penelitian.riwayat',
             [
                 'id'    => $perubahan->id_pengajuan,
-                'jenis' => 'sertifikat'
+                'jenis' => 'penelitian'
             ]
         );
 

@@ -626,7 +626,7 @@ class Presensi extends Controller
         });
 
         return redirect()
-            ->route('admin.presensi.sakit')
+            ->route('admin.presensi')
             ->with('success', 'Presensi sakit berhasil disimpan.');
     }
 
@@ -693,7 +693,7 @@ class Presensi extends Controller
         });
 
         return redirect()
-            ->route('admin.presensi.izin')
+            ->route('admin.presensi')
             ->with('success', 'Presensi izin berhasil disimpan.');
     }
 }

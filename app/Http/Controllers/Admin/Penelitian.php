@@ -29,21 +29,7 @@ class Penelitian extends Controller
         return view('admin.bkd.penelitian.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -71,7 +57,7 @@ class Penelitian extends Controller
     public function show(Request $request, string $id)
     {
 
-        $penelitian = Penelitians::where('id_penelitian', $id)->with(['user.dataDiri'])->firstOrFail();
+        $penelitian = Penelitians::where('id_penelitian', $id)->with(['user.dataDiri', 'index'])->firstOrFail();
 
         $data = [
             'page' => 'BKD Penelitian',
@@ -82,21 +68,6 @@ class Penelitian extends Controller
         return view('admin.bkd.penelitian.show', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

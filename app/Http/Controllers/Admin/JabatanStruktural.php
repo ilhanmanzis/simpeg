@@ -57,19 +57,15 @@ class JabatanStruktural extends Controller
         return redirect()->route('admin.struktural')->with('success', 'Data berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
+        if ($id == 1 || $id == 2) {
+            return redirect()->route('admin.struktural')->with('error', 'Jabatan Struktural ini tidak dapat diedit');
+        }
         $data = [
             'page' => 'Struktural',
             'selected' => 'Struktural',
@@ -77,7 +73,6 @@ class JabatanStruktural extends Controller
             'struktural' => JabatanStrukturals::where('id_struktural', $id)->first()
         ];
 
-        // dd($data);
 
         return view('admin.master.struktural.edit', $data);
     }
@@ -87,6 +82,9 @@ class JabatanStruktural extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if ($id == 1 || $id == 2) {
+            return redirect()->route('admin.struktural')->with('error', 'Jabatan Struktural ini tidak dapat diedit');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
         ], [
@@ -107,6 +105,9 @@ class JabatanStruktural extends Controller
      */
     public function destroy(string $id)
     {
+        if ($id == 1 || $id == 2) {
+            return redirect()->route('admin.struktural')->with('error', 'Jabatan Struktural ini tidak dapat dihapus');
+        }
         $struktural = JabatanStrukturals::findOrFail($id);
         $struktural->delete();
 

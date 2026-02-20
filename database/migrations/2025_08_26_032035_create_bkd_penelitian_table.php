@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('bkd_penelitian', function (Blueprint $table) {
             $table->increments('id_penelitian');
             $table->unsignedInteger('id_user');
+            $table->unsignedInteger('id_index');
             $table->string('judul');
             $table->string('url');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+            $table->foreign('id_index')->references('id_index')->on('indexes')->onDelete('cascade');
         });
     }
 

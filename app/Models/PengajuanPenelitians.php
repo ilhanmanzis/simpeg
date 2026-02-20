@@ -16,4 +16,8 @@ class PengajuanPenelitians extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
+    public function index()
+    {
+        return $this->belongsTo(Indexes::class, 'id_index', 'id_index');
+    }
 }

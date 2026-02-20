@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
+use App\Models\Indexes;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
 use App\Services\GoogleDriveService;
@@ -54,6 +55,7 @@ class Penelitian extends Controller
             'page' => 'BKD Penelitian',
             'selected' => 'BKD Penelitian',
             'title' => 'Tambah BKD Penelitian',
+            'indexes' => Indexes::all()
         ];
         return view('dosen.bkd.penelitian.create', $data);
     }
@@ -66,6 +68,7 @@ class Penelitian extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'url' => 'required|string|max:255',
+            'id_index' => 'required|exists:indexes,id_index',
         ]);
 
         $user = Auth::user();
@@ -75,6 +78,7 @@ class Penelitian extends Controller
             'id_user' => $idUser,
             'judul' => $request->input('judul'),
             'url' => $request->input('url'),
+            'id_index' => $request->input('id_index'),
             'status' => 'pending'
         ]);
         NotificationService::notifyAdmin(
@@ -98,7 +102,7 @@ class Penelitian extends Controller
     {
         $idUser = Auth::user()->id_user;
 
-        $penelitian = Penelitians::where('id_penelitian', $id)->with(['user.dataDiri'])->first();
+        $penelitian = Penelitians::where('id_penelitian', $id)->with(['user.dataDiri', 'index'])->first();
 
         if (!$penelitian) {
             abort(404);
@@ -118,7 +122,7 @@ class Penelitian extends Controller
     public function riwayat(string $id)
     {
         $idUser = Auth::user()->id_user;
-        $pengajuan = PengajuanPenelitians::where('id_pengajuan', $id)->with(['user.dataDiri'])->first();
+        $pengajuan = PengajuanPenelitians::where('id_pengajuan', $id)->with(['user.dataDiri', 'index'])->first();
         if (!$pengajuan) {
             abort(404);
         }

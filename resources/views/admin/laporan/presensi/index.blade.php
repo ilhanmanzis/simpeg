@@ -58,7 +58,7 @@
                     </h3>
                 </div>
 
-                <form method="POST" action="{{ route('admin.laporan.presensi.store') }}"
+                <form method="POST" action="{{ route('admin.laporan.presensi.store') }}" target="_blank"
                     class="mb-5 items-end px-5 py-2 grid grid-cols-1 xl:grid-cols-3 gap-6">
                     @csrf
 
@@ -80,13 +80,13 @@
                     </div>
                     <div class="text-gray-800 dark:text-gray-100">
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Bulan & Tahun
+                            Bulan & Tahun<span class="text-error-500">*</span>
                         </label>
 
 
                         <div class="relative">
                             <input type="month" name="periode" value="{{ request('periode', now()->format('Y-m')) }}"
-                                placeholder="Select date"
+                                placeholder="Select date" required
                                 class="dark:bg-dark-900 shadow-theme-xs  focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border  cursor-pointer bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 {{ $errors->has('periode') ? 'border-error-300 focus:border-error-300 dark:border-error-700 dark:focus:border-error-800' : 'border-gray-300 focus:border-brand-300 dark:border-gray-700' }}"
                                 onclick="this.showPicker()" required />
 

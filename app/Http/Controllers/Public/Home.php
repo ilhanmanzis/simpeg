@@ -163,10 +163,11 @@ class Home extends Controller
         * 6) Carousel Penelitian + Pengabdian
         * ========================= */
 
-        $penelitian = Penelitians::with(['user.dataDiri'])
+        $penelitian = Penelitians::with(['user.dataDiri', 'index'])
             ->select(
                 'id_penelitian as id',
                 'judul',
+                'id_index',
                 'id_user',
                 'created_at',
                 DB::raw('"penelitian" as tipe')
@@ -194,6 +195,7 @@ class Home extends Controller
             ->sortByDesc('created_at')
             ->take(5)
             ->values();
+        // dd($penelitian, $pengabdian, $carouselItems);
 
         $data = [
             'page' => 'Home',
@@ -205,53 +207,5 @@ class Home extends Controller
         ];
 
         return view('public/home', $data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

@@ -26,4 +26,9 @@ class Penelitians extends Model
 
         return $query;
     }
+
+    public function index()
+    {
+        return $this->belongsTo(Indexes::class, 'id_index', 'id_index');
+    }
 }

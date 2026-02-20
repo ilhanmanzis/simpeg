@@ -149,6 +149,7 @@
                         <tr class="border-y border-gray-200">
                             <th class="px-4 py-2.5 text-left font-medium">No</th>
                             <th class="px-4 py-2.5 text-left font-medium">Judul Penelitian</th>
+                            <th class="px-4 py-2.5 text-left font-medium">Index</th>
                             <th class="px-4 py-2.5 text-left font-medium">Url</th>
                         </tr>
                     </thead>
@@ -164,6 +165,7 @@
                                     {{ $i++ }}
                                 </td>
                                 <td class="px-4 py-2 align-top">{{ $penelitian->judul ?? '-' }}</td>
+                                <td class="px-4 py-2 align-top">{{ $penelitian->index->name ?? '-' }}</td>
                                 <td class="px-4 py-2 align-top">
                                     <a href="{{ $penelitian->url }}" target="_blank"
                                         class="inline-flex items-center rounded-xl bg-yellow-500 px-4 py-2 text-white font-semibold hover:bg-yellow-600">

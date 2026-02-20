@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pengajuan_bkd_penelitian', function (Blueprint $table) {
             $table->increments('id_pengajuan');
             $table->unsignedInteger('id_user');
+            $table->unsignedInteger('id_index');
             $table->string('judul');
             $table->string('url');
             $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+            $table->foreign('id_index')->references('id_index')->on('indexes')->onDelete('cascade');
         });
     }
 

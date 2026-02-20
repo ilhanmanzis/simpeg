@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DaftarPresensi;
 use App\Http\Controllers\Admin\FungsionalUser;
 use App\Http\Controllers\Admin\Golongan;
 use App\Http\Controllers\Admin\GolonganUser;
+use App\Http\Controllers\Admin\Indexes;
 use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
@@ -69,24 +70,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
-
-
-
-// Route::get('/', function () {
-//     $user = FacadesAuth::user();
-//     if (!$user) {
-//         return redirect('login')->with('message', 'Silakan login terlebih dahulu');
-//     }
-//     if ($user->role === 'admin') {
-//         return redirect()->route('admin.dashboard');
-//     } else if ($user->role === 'dosen') {
-//         return redirect()->route('dosen.dashboard');
-//     } else if ($user->role === 'karyawan') {
-//         return redirect()->route('karyawan.dashboard');
-//     } else {
-//         return redirect('login')->with('message', 'Silakan login terlebih dahulu');
-//     }
-// });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // OAuth flow
@@ -162,6 +145,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'edit'])->name('kategori-sertifikat.edit');
     Route::put('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'update'])->name('kategori-sertifikat.update');
     Route::delete('/kategori-sertifikat/{id}', [KategoriSertifikat::class, 'destroy'])->name('kategori-sertifikat.delete');
+
+    // jurnal indexes
+    Route::get('/indexes', [Indexes::class, 'index'])->name('indexes');
+    Route::get('/indexes/create', [Indexes::class, 'create'])->name('indexes.create');
+    Route::post('/indexes/store', [Indexes::class, 'store'])->name('indexes.store');
+    Route::get('/indexes/{id}', [Indexes::class, 'edit'])->name('indexes.edit');
+    Route::put('/indexes/{id}', [Indexes::class, 'update'])->name('indexes.update');
+    Route::delete('/indexes/{id}', [Indexes::class, 'destroy'])->name('indexes.delete');
 
     // dosen
     Route::get('/dosen', [PegawaiDosen::class, 'index'])->name('dosen');

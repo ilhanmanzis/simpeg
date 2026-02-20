@@ -96,6 +96,9 @@
                                     page="Kategori Sertifikat">
                                     Kategori Sertifikat
                                 </x-drop-side-link>
+                                <x-drop-side-link href="{{ route('admin.indexes') }}" page="Indexes">
+                                    Indeks Publikasi
+                                </x-drop-side-link>
                             </ul>
                         </div>
                         <!-- Dropdown Menu End -->
