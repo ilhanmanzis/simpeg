@@ -9,6 +9,7 @@ use App\Models\GolonganUsers;
 use App\Models\JabatanFungsionals;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class FungsionalUser extends Controller
@@ -20,47 +21,6 @@ class FungsionalUser extends Controller
         $this->googleDriveService = $googleDriveService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $keyword = $request->get('dosen');
-        $data = [
-            'page' => 'Jabatan Fungsional',
-            'selected' => 'Jabatan Fungsional',
-            'title' => 'Data Jabatan Fungsional Dosen',
-            'dosens' => User::where('role', 'dosen')->with([
-                // Ambil histori fungsional terbaru (urutan tanggal_mulai desc)
-                'fungsional' => function ($q) {
-                    $q->orderByDesc('id_fungsional_user')
-                        ->with('fungsional'); // untuk nama/kode fungsional
-                },
-                // Jika nama ada di relasi dataDiri
-                'dataDiri',
-            ])->when($keyword, function ($query) use ($keyword) {
-                $query->searchDosen($keyword);
-            })->orderBy('created_at', 'desc')->paginate(10)->withQueryString()
-        ];
-
-        return view('admin.jabatan.fungsional.index', $data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -95,7 +55,7 @@ class FungsionalUser extends Controller
         return view('admin.jabatan.fungsional.mutasi', $data);
     }
 
-    public function mutasiStore(Request $request, string $id)
+    public function mutasiStore(Request $request, string $id, SerdosService $serdosService)
     {
         $request->validate([
             'fungsional' => 'required',
@@ -152,30 +112,17 @@ class FungsionalUser extends Controller
                 'tanggal_selesai' => $fungsionalSebelumnya->tanggal_selesai ?? now()
             ]);
         }
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.jabatan.fungsional.show', $id)->with('success', 'Jabatan Fungsional Dosen berhasil dimutasi');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, SerdosService $serdosService)
     {
         $fungsional = FungsionalUsers::where('id_fungsional_user', $id)->with(['dokumen', 'user'])->first();
 
@@ -193,6 +140,7 @@ class FungsionalUser extends Controller
 
         // Hapus record fungsional (tetap sesuai logika kamu)
         $fungsional->delete();
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.jabatan.fungsional.show', $user)->with('success', 'Data berhasil dihapus');
     }

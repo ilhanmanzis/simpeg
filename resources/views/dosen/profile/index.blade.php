@@ -42,206 +42,215 @@
 
 
                                 <div class=" w-64 aspect-[3/4] overflow-hidden ">
-                                    <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}" alt=""
-                                        class="w-full h-full object-cover">
 
+                                    @if ($dosen->dataDiri->foto)
+                                        <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}" alt=""
+                                            class="w-full h-full object-cover">
+                                    @else
+                                        <div
+                                            class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
+                                            Foto tidak tersedia
+                                        </div>
+                                    @endif
 
 
                                 </div>
 
                             </div>
-                            <div class="flex justify-center mb-5">
-                                <button onclick="copyUrl('{{ $dosen->dataDiri->dokumen->view_url }}', this)"
+                            @if ($dosen->dataDiri->foto)
+                                <button onclick="copyUrl('{{ $dosen->dataDiri->dokumen->view_url }}', this)" <div
+                                    class="flex justify-center mb-5">
+
                                     class="text-blue-600 hover:underline">
                                     Salin URL
                                 </button>
-                            </div>
-                            <div
-                                class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
+                        </div>
+                        @endif
+                        <div class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
 
 
 
-                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+                            <div class="lg:w-1/2 md:w-1/2 sm:w-full">
 
-                                    <div class="w-full ">
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Nama</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->name }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->no_ktp }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NPP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->npp }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NUPTK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk ?? '-' }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nip ?? '-' }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDK</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidk ?? '-' }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">NIDN</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nidn ?? '-' }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Email</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->email }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Nomor HP</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->no_hp }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Jenis Kelamin</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->jenis_kelamin }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Agama</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->agama }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Sertifikat Dosen</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">
-                                                @if ($dosen->dataDiri->tersertifikasi === 'sudah')
-                                                    <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
-                                                        target="_blank" class="text-blue-600 hover:underline">
-                                                        Lihat
-                                                    </a> |
-                                                    <button
-                                                        onclick="copyUrl('{{ $dosen->dataDiri->serdosen->view_url }}', this)"
-                                                        class="text-blue-600 hover:underline">
-                                                        Salin URL
-                                                    </button>
-                                                @else
-                                                    Belum Tersertifikasi
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Jumlah Anak</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->anak }}</div>
-                                        </div>
-                                        @if ($dosen->dataDiri->jenis_kelamin === 'Laki-Laki')
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Jumlah Istri</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">{{ $dosen->dataDiri->istri }}</div>
-                                            </div>
-                                        @endif
-
-
+                                <div class="w-full ">
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Nama</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->name }}</div>
                                     </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NIK</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->no_ktp }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NPP</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->npp }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NUPTK</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->nuptk ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NIP</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->nip ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NIDK</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->nidk ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">NIDN</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->nidn ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Email</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->email }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Nomor HP</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->no_hp ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Jenis Kelamin</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->jenis_kelamin }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Agama</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->agama }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Sertifikat Dosen</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">
+                                            @if ($dosen->dataDiri->tersertifikasi === 'sudah')
+                                                <span>Sudah | </span>
+                                                <a href="{{ $dosen->dataDiri->serdosen->preview_url }}" target="_blank"
+                                                    class="text-blue-600 hover:underline">
+                                                    Lihat
+                                                </a> |
+                                                <button
+                                                    onclick="copyUrl('{{ $dosen->dataDiri->serdosen->view_url }}', this)"
+                                                    class="text-blue-600 hover:underline">
+                                                    Salin URL
+                                                </button>
+                                            @else
+                                                Belum Tersertifikasi
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Jumlah Anak</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->anak }}</div>
+                                    </div>
+                                    @if ($dosen->dataDiri->jenis_kelamin === 'Laki-Laki')
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Istri</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->istri }}</div>
+                                        </div>
+                                    @endif
+
+
                                 </div>
-                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-                                    <div class="w-full ">
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Nomor BPJS</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->bpjs ?? '-' }}</div>
-                                        </div>
-
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Golongan Darah</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->golongan_darah }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tempat Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->tempat_lahir }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->tanggal_lahir }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Alamat</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->alamat }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">RT</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->rt }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">RW</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->rw }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Desa/Kelurahan</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->desa }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Kecamatan</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->kecamatan }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Kabupaten/Kota</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->kabupaten }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Provinsi</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->provinsi }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Bergabung</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->tanggal_bergabung }}</div>
-                                        </div>
-
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Status</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->status_keaktifan }}</div>
-                                        </div>
-
+                            </div>
+                            <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+                                <div class="w-full ">
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Nomor BPJS</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->bpjs ?? '-' }}</div>
                                     </div>
 
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Golongan Darah</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->golongan_darah }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Tempat Lahir</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->tempat_lahir }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Tanggal Lahir</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->tanggal_lahir }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Alamat</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->alamat ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">RT</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->rt ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">RW</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->rw ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Desa/Kelurahan</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->desa ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Kecamatan</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->kecamatan ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Kabupaten/Kota</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->kabupaten ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Provinsi</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->provinsi ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Bergabung</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->dataDiri->tanggal_bergabung }}</div>
+                                    </div>
+
+                                    <div class="flex">
+                                        <div class="w-32 font-semibold">Status</div>
+                                        <div class="w-4">:</div>
+                                        <div class="flex-1">{{ $dosen->status_keaktifan }}</div>
+                                    </div>
 
                                 </div>
 
 
                             </div>
+
 
                         </div>
-                        {{-- informasi pendidikan --}}
-
-
 
                     </div>
 
 
+
                 </div>
+
+
             </div>
+        </div>
         </div>
         <script>
             function copyUrl(url, el) {

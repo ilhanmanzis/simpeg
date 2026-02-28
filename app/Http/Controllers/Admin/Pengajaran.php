@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengajarans;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class Pengajaran extends Controller
@@ -36,21 +37,6 @@ class Pengajaran extends Controller
         return view('admin.bkd.pengajaran.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -86,26 +72,12 @@ class Pengajaran extends Controller
         return view('admin.bkd.pengajaran.show', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, SerdosService $serdosService)
     {
         $pengajaran = Pengajarans::where('id_pengajaran', $id)->with(['user.dataDiri', 'skPengajaran', 'detail.nilaiPengajaran', 'semester'])->firstOrFail();
 
@@ -117,6 +89,7 @@ class Pengajaran extends Controller
         }
 
         $pengajaran->delete();
+        $serdosService->clearCache($pengajaran->user->id_user);
 
         return redirect()->route('admin.bkd.pengajaran.all', ['id' => $idUser])->with('success', 'Data BKD Pengajaran berhasil dihapus.');
     }

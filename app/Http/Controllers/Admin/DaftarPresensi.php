@@ -135,7 +135,7 @@ class DaftarPresensi extends Controller
         $lokasiKampus = SettingLokasiPresensi::first();
         $isStruktural = StrukturalUsers::where('id_user', $presensi->id_user)
             ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
+            ->whereDate('tanggal_selesai', $presensi->tanggal)
             ->exists();
 
         return view('admin.presensi.daftar.detail', [

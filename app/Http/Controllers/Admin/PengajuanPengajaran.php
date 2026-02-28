@@ -9,6 +9,7 @@ use App\Models\Pengajarans;
 use App\Models\PengajuanPengajarans;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -102,17 +103,19 @@ class PengajuanPengajaran extends Controller
             ]
         );
 
+
         return redirect()->route('admin.pengajuan.pengajaran')
             ->with('success', 'Pengajuan perubahan Pengajaran ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanPengajarans::where('id_pengajuan_pengajaran', $id)->with(['user.dataDiri', 'detail', 'semester'])->firstOrFail();
         // nomor_dokumen terakhir
         $lastDokumen = Dokumens::orderBy('nomor_dokumen', 'desc')->first();
         $lastNumber  = $lastDokumen ? (int) $lastDokumen->nomor_dokumen : 0;
 
+        $user = $perubahan->user;
 
         // surat sk
         $lastNumber++;
@@ -207,6 +210,17 @@ class PengajuanPengajaran extends Controller
         $perubahan->status = 'disetujui';
 
         $perubahan->save();
+        NotificationService::notifyUser(
+            $user,
+            'Pengajuan BKD Pengajaran Disetujui',
+            'Pengajuan BKD Pengajaran Anda telah disetujui oleh admin.',
+            'dosen.pengajaran.riwayat',
+            [
+                'id'    => $perubahan->id_pengajuan,
+                'jenis' => 'penelitian'
+            ]
+        );
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.pengajuan.pengajaran')
             ->with('success', 'Pengajuan BKD Pengajaran disetujui.');

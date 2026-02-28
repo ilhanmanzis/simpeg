@@ -659,7 +659,7 @@
                                 <div class="w-1/2 ml-3" x-cloak x-show="formData.tersertifikasi === 'sudah'"
                                     x-transition.opacity>
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Sertifikat Dosen<span class="text-error-500">*</span>
+                                        Surat Pengajuan Sertifikat Dosen<span class="text-error-500">*</span>
                                     </label>
                                     <input type="file" id="serdos" name="serdos" accept="application/pdf"
                                         @change="handleFileUpload($event, 'serdos')"

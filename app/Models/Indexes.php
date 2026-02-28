@@ -10,7 +10,7 @@ class Indexes extends Model
     use HasFactory;
     protected $table = 'indexes';
     protected $primaryKey = 'id_index';
-    protected $fillable = ['name'];
+    protected $guarded = [];
 
     public function Penelitian()
     {

@@ -130,7 +130,8 @@
                     </div>
 
                     <p class="text-sm text-slate-500 dark:text-slate-400">
-                        Analisis pola kehadiran pegawai menggunakan algoritma K-Means.
+                        Pengelompokan tingkat kedisiplinan pegawai berdasarkan data presensi menggunakan algoritma
+                        K-Means.
                     </p>
                 </a>
 

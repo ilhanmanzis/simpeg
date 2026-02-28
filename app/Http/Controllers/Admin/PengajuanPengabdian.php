@@ -8,6 +8,7 @@ use App\Models\Pengabdians;
 use App\Models\PengajuanPengabdians;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -111,7 +112,7 @@ class PengajuanPengabdian extends Controller
             ->with('success', 'Pengajuan perubahan pengabdian ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanPengabdians::where('id_pengajuan', $id)->with(['user.dataDiri'])->firstOrFail();
         $user = $perubahan->user;
@@ -307,6 +308,7 @@ class PengajuanPengabdian extends Controller
                 'jenis' => 'pengabdian'
             ]
         );
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.pengajuan.pengabdian')
             ->with('success', 'Pengajuan BKD Pengabdian disetujui.');

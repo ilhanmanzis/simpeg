@@ -8,6 +8,7 @@ use App\Models\PengajuanPenunjangs;
 use App\Models\Penunjangs;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -99,7 +100,7 @@ class PengajuanPenunjang extends Controller
             ->with('success', 'Pengajuan perubahan penunjang ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanPenunjangs::where('id_pengajuan', $id)->with(['user.dataDiri'])->firstOrFail();
         $user = $perubahan->user;
@@ -163,6 +164,7 @@ class PengajuanPenunjang extends Controller
                 'jenis' => 'penunjang'
             ]
         );
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.pengajuan.penunjang')
             ->with('success', 'Pengajuan BKD Penunjang disetujui.');

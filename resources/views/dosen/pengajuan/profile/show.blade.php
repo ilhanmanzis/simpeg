@@ -67,9 +67,10 @@
                                         <img src="{{ route('file.foto.drive', $pengajuan->user->dataDiri->foto) }}"
                                             alt="{{ $pengajuan->foto }}" class="w-full h-full object-cover">
                                     @elseif ($pengajuan->status == 'ditolak')
-                                        <p class="text-error-500 border-b border-error-500">
+                                        <div
+                                            class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
                                             Foto telah dihapus dari sistem
-                                        </p>
+                                        </div>
                                     @else
                                         @if ($pengajuan->foto)
                                             <img src="{{ route('file.foto.perubahan', $pengajuan->foto) }}"

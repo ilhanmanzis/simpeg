@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('indexes', function (Blueprint $table) {
-            $table->increments('id_index');           // id (auto increment)
-            $table->string('name'); // nama index
+            $table->increments('id_index');
+            $table->string('name');
             $table->timestamps();
         });
     }

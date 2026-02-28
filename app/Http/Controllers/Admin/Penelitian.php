@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\User;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class Penelitian extends Controller
@@ -72,12 +73,13 @@ class Penelitian extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, SerdosService $serdosService)
     {
         $penelitian = Penelitians::where('id_penelitian', $id)->with(['user'])->firstOrFail();
         $idUser = $penelitian->id_user;
 
         $penelitian->delete();
+        $serdosService->clearCache($penelitian->user->id_user);
 
         return redirect()->route('admin.bkd.penelitian.all', ['id' => $idUser])->with('success', 'Data BKD Penelitian berhasil dihapus.');
     }

@@ -7,6 +7,7 @@ use App\Models\PengajuanSerdoss;
 use App\Models\User;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,9 +15,26 @@ class PengajuanSerdos extends Controller
 {
     protected $googleDriveService;
 
-    public function __construct(GoogleDriveService $googleDriveService)
+    public function __construct(GoogleDriveService $googleDriveService, SerdosService $serdosService)
     {
         $this->googleDriveService = $googleDriveService;
+        $this->middleware(function ($request, $next) use ($serdosService) {
+
+            $user = Auth::user();
+
+            // safety check
+            if (! $user) {
+                return redirect()->route('login');
+            }
+
+            if (! $serdosService->check($user->id_user)) {
+                return redirect()
+                    ->route('dosen.dashboard')
+                    ->with('error', 'Belum memenuhi syarat pengajuan serdos.');
+            }
+
+            return $next($request);
+        })->only(['index', 'create', 'store', 'show']);
     }
     /**
      * Display a listing of the resource.

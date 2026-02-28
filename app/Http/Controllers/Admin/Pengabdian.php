@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengabdians;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class Pengabdian extends Controller
@@ -107,7 +108,7 @@ class Pengabdian extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, SerdosService $serdosService)
     {
         $pengabdian = Pengabdians::where('id_pengabdian', $id)->with(['user.dataDiri', 'permohonanPengabdian', 'tugasPengabdian', 'modulPengabdian', 'fotoPengabdian'])->first();
 
@@ -119,6 +120,7 @@ class Pengabdian extends Controller
         $this->googleDriveService->deleteById($pengabdian->fotoPengabdian->file_id);
 
         $pengabdian->delete();
+        $serdosService->clearCache($pengabdian->user->id_user);
 
         return redirect()->route('admin.bkd.pengabdian.all', ['id' => $idUser])->with('success', 'Data BKD Pengabdian berhasil dihapus.');
     }

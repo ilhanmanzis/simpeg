@@ -208,10 +208,12 @@
                                     page="Pengajuan Fungsional">
                                     Kenaikan Jabatan Fungsional
                                 </x-drop-side-link>
-                                <x-drop-side-link href="{{ route('dosen.pengajuan.serdos') }}"
-                                    page="Pengajuan Serdos">
-                                    Sertifikat Dosen
-                                </x-drop-side-link>
+                                @if ($memenuhiSerdos)
+                                    <x-drop-side-link href="{{ route('dosen.pengajuan.serdos') }}"
+                                        page="Pengajuan Serdos">
+                                        Sertifikat Dosen
+                                    </x-drop-side-link>
+                                @endif
 
 
                             </ul>

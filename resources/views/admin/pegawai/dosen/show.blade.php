@@ -200,20 +200,28 @@
 
 
                                 <div class=" w-64 aspect-[3/4] overflow-hidden ">
-                                    <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}" alt=""
-                                        class="w-full h-full object-cover">
-
+                                    @if ($dosen->dataDiri->foto)
+                                        <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}"
+                                            alt="" class="w-full h-full object-cover">
+                                    @else
+                                        <div
+                                                    class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
+                                                    Foto tidak tersedia
+                                                </div>
+                                    @endif
 
 
                                 </div>
 
                             </div>
-                            <div class="flex justify-center mb-5">
-                                <button onclick="copyUrl('{{ $dosen->dataDiri->dokumen->view_url }}', this)"
-                                    class="text-blue-600 hover:underline">
-                                    Salin URL
-                                </button>
-                            </div>
+                            @if ($dosen->dataDiri->foto)
+                                <div class="flex justify-center mb-5">
+                                    <button onclick="copyUrl('{{ $dosen->dataDiri->dokumen->view_url }}', this)"
+                                        class="text-blue-600 hover:underline">
+                                        Salin URL
+                                    </button>
+                                </div>
+                            @endif
                             <div
                                 class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
 
@@ -240,7 +248,7 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NUPTK</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->nuptk ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">NIP</div>
@@ -265,7 +273,7 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Nomor HP</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->no_hp }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->no_hp ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Jenis Kelamin</div>
@@ -282,7 +290,9 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">
                                                 @if ($dosen->dataDiri->tersertifikasi === 'sudah')
-                                                    <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
+                                                    
+                                                <span>Sudah | </span>
+                                                <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
                                                         target="_blank" class="text-blue-600 hover:underline">
                                                         Lihat
                                                     </a> |
@@ -339,37 +349,37 @@
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Alamat</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->alamat }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->alamat ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">RT</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->rt }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->rt ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">RW</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->rw }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->rw ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Desa/Kelurahan</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->desa }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->desa ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Kecamatan</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->kecamatan }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->kecamatan ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Kabupaten/Kota</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->kabupaten }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->kabupaten ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Provinsi</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->provinsi }}</div>
+                                            <div class="flex-1">{{ $dosen->dataDiri->provinsi ?? '-' }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-semibold">Bergabung</div>

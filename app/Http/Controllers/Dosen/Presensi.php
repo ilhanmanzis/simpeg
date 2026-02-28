@@ -481,7 +481,7 @@ class Presensi extends Controller
         $lokasiKampus = SettingLokasiPresensi::first();
         $isStruktural = StrukturalUsers::where('id_user', $userId)
             ->where('status', 'aktif')
-            ->whereDate('tanggal_selesai', '>=', $today)
+            ->whereDate('tanggal_selesai', $presensi->tanggal)
             ->exists();
 
         // dd($presensi);

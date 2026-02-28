@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Penunjangs;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class Penunjang extends Controller
@@ -36,21 +37,7 @@ class Penunjang extends Controller
         return view('admin.bkd.penunjang.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -88,26 +75,12 @@ class Penunjang extends Controller
         return view('admin.bkd.penunjang.show', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, SerdosService $serdosService)
     {
         $penunjang = Penunjangs::where('id_penunjang', $id)->with(['user.dataDiri', 'dokumenPenunjang'])->firstOrFail();
 
@@ -116,6 +89,7 @@ class Penunjang extends Controller
         $this->googleDriveService->deleteById($penunjang->dokumenPenunjang->file_id);
 
         $penunjang->delete();
+        $serdosService->clearCache($penunjang->user->id_user);
 
         return redirect()->route('admin.bkd.penunjang.all', ['id' => $idUser])->with('success', 'Data BKD Penunjang berhasil dihapus.');
     }

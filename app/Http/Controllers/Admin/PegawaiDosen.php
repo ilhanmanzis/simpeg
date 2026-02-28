@@ -9,6 +9,7 @@ use App\Models\Jenjangs;
 use App\Models\Pendidikans;
 use App\Models\User;
 use App\Services\GoogleDriveService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -285,7 +286,7 @@ class PegawaiDosen extends Controller
         return view('admin.pegawai.dosen.tambahpendidikan', $data);
     }
 
-    public function storePendidikan(Request $request, string $id)
+    public function storePendidikan(Request $request, string $id, SerdosService $serdosService)
     {
         $request->validate([
             'jenjang'         => 'required|exists:jenjang,id_jenjang',
@@ -360,6 +361,7 @@ class PegawaiDosen extends Controller
             'ijazah'         => $newIdIjazah,
             'transkip_nilai' => $newIdTranskip
         ]);
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.dosen.show', $id)->with('success', 'Pendidikan berhasil ditambahkan.');
     }
@@ -370,7 +372,7 @@ class PegawaiDosen extends Controller
             'page'     => 'Dosen',
             'selected' => 'Dosen',
             'title'    => 'Data Dosen',
-            'dosen'    => User::where('id_user', $id)
+            'dosen'    => User::where('id_user', $id)->where('role', 'dosen')
                 ->with([
                     'dataDiri.dokumen',
                     'dataDiri.serdosen',
@@ -380,7 +382,7 @@ class PegawaiDosen extends Controller
                     'pendidikan.dokumenIjazah',
                     'pendidikan.dokumenTranskipNilai'
                 ])
-                ->first()
+                ->firstOrFail()
         ];
 
         // dd($data);
@@ -618,7 +620,7 @@ class PegawaiDosen extends Controller
             ->with('success', 'Data Diri Dosen berhasil diperbarui.');
     }
 
-    public function pendidikanUpdate(Request $request, string $id, string $idPendidikan)
+    public function pendidikanUpdate(Request $request, string $id, string $idPendidikan, SerdosService $serdosService)
     {
         $request->validate([
             'jenjang'         => 'required|exists:jenjang,id_jenjang',
@@ -630,7 +632,7 @@ class PegawaiDosen extends Controller
             'transkip_nilai'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        return DB::transaction(function () use ($request, $id, $idPendidikan) {
+        return DB::transaction(function () use ($request, $id, $idPendidikan, $serdosService) {
 
             $user = User::findOrFail($id);
 
@@ -752,13 +754,14 @@ class PegawaiDosen extends Controller
                 'gelar'         => $request->gelar,
                 'tahun_lulus'   => $request->tahun_lulus,
             ]);
+            $serdosService->clearCache($user->id_user);
 
             return redirect()->route('admin.dosen.show', $id)
                 ->with('success', 'Pendidikan Dosen berhasil diperbarui.');
         });
     }
 
-    public function deletePendidikan(Request $request, string $id, string $idPendidikan)
+    public function deletePendidikan(Request $request, string $id, string $idPendidikan, SerdosService $serdosService)
     {
         $pendidikan = Pendidikans::where('id_pendidikan', $idPendidikan)
             ->with(['dokumenIjazah', 'dokumenTranskipNilai'])
@@ -778,6 +781,7 @@ class PegawaiDosen extends Controller
                 }
             }
             $pendidikan->delete();
+            $serdosService->clearCache($pendidikan->user->id_user);
             return redirect()->route('admin.dosen.show', $id)->with('success', 'Data pendidikan berhasil dihapus.');
         }
         return redirect()->route('admin.dosen.show', $id)->with('error', 'Data pendidikan tidak ditemukan.');

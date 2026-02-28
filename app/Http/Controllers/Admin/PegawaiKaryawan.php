@@ -324,7 +324,7 @@ class PegawaiKaryawan extends Controller
             'page'     => 'Tenaga Pendidik',
             'selected' => 'Tenaga Pendidik',
             'title'    => 'Data Tenaga Pendidik',
-            'karyawan' => User::where('id_user', $id)
+            'karyawan' => User::where('id_user', $id)->where('role', 'karyawan')
                 ->with([
                     'dataDiri.dokumen',
                     'pendidikan' => function ($q) {
@@ -333,7 +333,7 @@ class PegawaiKaryawan extends Controller
                     'pendidikan.dokumenIjazah',
                     'pendidikan.dokumenTranskipNilai'
                 ])
-                ->first()
+                ->firstOrFail()
         ];
 
         return view('admin.pegawai.karyawan.show', $data);

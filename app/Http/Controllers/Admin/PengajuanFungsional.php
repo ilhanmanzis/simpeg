@@ -8,6 +8,7 @@ use App\Models\FungsionalUsers;
 use App\Models\PengajuanFungsionals;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class PengajuanFungsional extends Controller
@@ -97,7 +98,7 @@ class PengajuanFungsional extends Controller
             ->with('success', 'Pengajuan kenaikan jabatan fungsional ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanFungsionals::where('id_pengajuan_fungsional', $id)
             ->with(['fungsional', 'user.dataDiri'])
@@ -182,6 +183,7 @@ class PengajuanFungsional extends Controller
                 'jenis' => 'fungsional'
             ]
         );
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.pengajuan.fungsional')
             ->with('success', 'Pengajuan kenaikan jabatan fungsional berhasil disetujui');

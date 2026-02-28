@@ -9,6 +9,7 @@ use App\Models\Pendidikans;
 use App\Models\PengajuanPerubahanPendidikans;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -109,7 +110,7 @@ class PengajuanPendikan extends Controller
             ->with('success', 'Pengajuan perubahan pendidikan ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanPerubahanPendidikans::with([
             'user',
@@ -121,7 +122,7 @@ class PengajuanPendikan extends Controller
 
         $user = $perubahan->user;
 
-        return DB::transaction(function () use ($perubahan, $user) {
+        return DB::transaction(function () use ($perubahan, $user, $serdosService) {
 
             // ---- DELETE ----
             if ($perubahan->jenis === 'delete') {
@@ -170,6 +171,7 @@ class PengajuanPendikan extends Controller
                         'jenis' => 'pendidikan'
                     ]
                 );
+                $serdosService->clearCache($user->id_user);
 
                 return redirect()->route('admin.pengajuan.pendidikan')
                     ->with('success', 'Pengajuan perubahan pendidikan (hapus) disetujui.');
@@ -272,6 +274,7 @@ class PengajuanPendikan extends Controller
                         'jenis' => 'pendidikan'
                     ]
                 );
+                $serdosService->clearCache($user->id_user);
 
                 return redirect()->route('admin.pengajuan.pendidikan')
                     ->with('success', 'Pengajuan pendidikan (tambah) disetujui dan data berhasil dibuat.');
@@ -471,7 +474,7 @@ class PengajuanPendikan extends Controller
                     'jenis' => 'pendidikan'
                 ]
             );
-
+            $serdosService->clearCache($user->id_user);
             return redirect()->route('admin.pengajuan.pendidikan')
                 ->with('success', 'Pengajuan perubahan pendidikan (edit) disetujui.');
         });

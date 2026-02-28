@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
 use App\Services\NotificationService;
+use App\Services\SerdosService;
 use Illuminate\Http\Request;
 
 class PengajuanPenelitian extends Controller
@@ -81,7 +82,7 @@ class PengajuanPenelitian extends Controller
             ->with('success', 'Pengajuan BKD Penelitian ditolak.');
     }
 
-    public function setuju(string $id)
+    public function setuju(string $id, SerdosService $serdosService)
     {
         $perubahan = PengajuanPenelitians::findOrFail($id);
         $user = $perubahan->user;
@@ -107,6 +108,7 @@ class PengajuanPenelitian extends Controller
                 'jenis' => 'penelitian'
             ]
         );
+        $serdosService->clearCache($user->id_user);
 
         return redirect()->route('admin.pengajuan.penelitian')
             ->with('success', 'Pengajuan BKD Penelitian disetujui.');

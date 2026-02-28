@@ -39,7 +39,7 @@
                             </div>
 
                             <div class="flex">
-                                <div class="w-48 font-semibold">Sertifikat Dosen</div>
+                                <div class="w-48 font-semibold">Surat Pengajuan Sertifikat Dosen</div>
                                 <div class="w-4">:</div>
                                 <div class="flex-1">
                                     @if ($pengajuan->serdos)

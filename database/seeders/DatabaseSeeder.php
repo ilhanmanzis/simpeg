@@ -10,7 +10,6 @@ use App\Models\KategoriSertifikats;
 use App\Models\Semesters;
 use App\Models\Settings;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -163,7 +162,7 @@ class DatabaseSeeder extends Seeder
         }
 
         Settings::factory()->create([
-            'name' => 'Sistem Kepegawaian El-Rahma',
+            'name' => 'Sistem Kepegawaian STMIK El Rahma',
             'logo' => 'logo.webp',
             'register' => 'aktif'
         ]);
@@ -181,5 +180,10 @@ class DatabaseSeeder extends Seeder
         foreach ($categories as $category) {
             KategoriSertifikats::factory()->create($category);
         }
+
+        $this->call(SettingLokasiPresensiSeeder::class);
+        $this->call(UserDataDiriSeeder::class);
+        $this->call(IndexesSeeder::class);
+        $this->call(PresensiSeeder::class);
     }
 }
