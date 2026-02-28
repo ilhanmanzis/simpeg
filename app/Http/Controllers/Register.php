@@ -8,6 +8,7 @@ use App\Models\Registers;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class Register extends Controller
 {
@@ -59,13 +60,6 @@ class Register extends Controller
         return view('register.karyawan.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -78,9 +72,32 @@ class Register extends Controller
         }
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+
+                // cek unique di tabel users
+                Rule::unique('users', 'email'),
+
+                // cek di tabel register dengan kondisi status
+                Rule::unique('register', 'email')
+                    ->where(function ($query) {
+                        $query->whereIn('status', ['disetujui', 'pending']);
+                    }),
+            ],
             'password' => 'required|min:6',
-            'nik' => 'required|max:20|unique:data_diri,no_ktp',
+            'nik' => [
+                'required',
+                'max:20',
+
+                // cek di users
+                Rule::unique('data_diri', 'no_ktp'),
+
+                // cek di register (selain ditolak)
+                Rule::unique('register', 'no_ktp')
+                    ->where('status', '!=', 'ditolak'),
+            ],
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
@@ -93,7 +110,17 @@ class Register extends Controller
             'kabupaten' => 'required|string|max:255',
             'provinsi' => 'required|string|max:255',
             'alamat' => 'required|string',
-            'npp' => 'required|max:30|unique:users,npp',
+            'npp' => [
+                'required',
+                'max:30',
+
+                // cek di users
+                Rule::unique('users', 'npp'),
+
+                // cek di register (selain ditolak)
+                Rule::unique('register', 'npp')
+                    ->where('status', '!=', 'ditolak'),
+            ],
             'nuptk' => 'required|max:30',
             'nip' => 'nullable|max:30',
             'nidk' => 'nullable|max:30',
@@ -206,9 +233,32 @@ class Register extends Controller
         }
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+
+                // cek unique di tabel users
+                Rule::unique('users', 'email'),
+
+                // cek di tabel register dengan kondisi status
+                Rule::unique('register', 'email')
+                    ->where(function ($query) {
+                        $query->whereIn('status', ['disetujui', 'pending']);
+                    }),
+            ],
             'password' => 'required|min:6',
-            'nik' => 'required|max:20|unique:data_diri,no_ktp',
+            'nik' => [
+                'required',
+                'max:20',
+
+                // cek di users
+                Rule::unique('data_diri', 'no_ktp'),
+
+                // cek di register (selain ditolak)
+                Rule::unique('register', 'no_ktp')
+                    ->where('status', '!=', 'ditolak'),
+            ],
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
@@ -227,7 +277,17 @@ class Register extends Controller
             'jumlah_anak'    => 'required|integer|min:0',
             'jumlah_istri'   => 'required_if:jenis_kelamin,Laki-Laki|nullable|integer|min:0',
 
-            'npp' => 'required|max:30|unique:users,npp',
+            'npp' => [
+                'required',
+                'max:30',
+
+                // cek di users
+                Rule::unique('users', 'npp'),
+
+                // cek di register (selain ditolak)
+                Rule::unique('register', 'npp')
+                    ->where('status', '!=', 'ditolak'),
+            ],
 
 
             'tanggal_bergabung' => 'required|date',
@@ -311,38 +371,5 @@ class Register extends Controller
         }
 
         return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
-    }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

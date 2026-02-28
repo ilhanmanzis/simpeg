@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataDiri;
+use App\Models\Registers;
 use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -116,10 +114,11 @@ class Auth extends Controller
         ]);
 
         $exists = User::where('email', $request->email)->exists();
+        $existsRegister = Registers::where('email', $request->email)->where('status', '!=', 'ditolak')->exists();
 
         return response()->json([
-            'exists' => $exists,
-            'message' => $exists ? 'Email sudah terdaftar.' : 'Email tersedia.',
+            'exists' => $exists || $existsRegister,
+            'message' => $exists || $existsRegister ? 'Email sudah terdaftar atau sedang diajukan oleh user lain.' : 'Email tersedia.',
         ]);
     }
 
@@ -130,14 +129,22 @@ class Auth extends Controller
         ]);
 
         $exists = DataDiri::where('no_ktp', $request->nik)->exists();
+        $existsRegister = Registers::where('no_ktp', $request->nik)->where('status', '!=', 'ditolak')->exists();
 
-        return response()->json(['exists' => $exists]);
+        return response()->json([
+            'exists' => $exists || $existsRegister,
+            'message' => $exists || $existsRegister ? 'NIK sudah terdaftar atau sedang diajukan oleh user lain.' : 'NIK tersedia.',
+        ]);
     }
 
     public function checkNpp(Request $request)
     {
         $request->validate(['npp' => 'required|string']);
         $exists = User::where('npp', $request->npp)->exists();
-        return response()->json(['exists' => $exists]);
+        $existsRegister = Registers::where('npp', $request->npp)->where('status', '!=', 'ditolak')->exists();
+        return response()->json([
+            'exists' => $exists || $existsRegister,
+            'message' => $exists || $existsRegister ? 'NPP sudah terdaftar atau sedang diajukan oleh user lain.' : 'NPP tersedia.',
+        ]);
     }
 }
