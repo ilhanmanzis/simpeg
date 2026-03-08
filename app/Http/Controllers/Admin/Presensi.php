@@ -587,6 +587,15 @@ class Presensi extends Controller
         $currentDate = $tanggalMulai->copy();
 
         while ($currentDate->lte($tanggalSampai)) {
+
+            // Jika tanggal_sampai diisi, skip sabtu & minggu
+            if ($request->tanggal_sampai) {
+                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                    $currentDate->addDay();
+                    continue;
+                }
+            }
+
             $dates[] = $currentDate->copy();
             $currentDate->addDay();
         }
@@ -619,7 +628,6 @@ class Presensi extends Controller
                     'id_user' => $idUser,
                     'tanggal' => $date->toDateString(),
                     'status_kehadiran' => 'sakit',
-                    'status_jam_kerja' => null,
                     'keterangan' => $request->keterangan,
                 ]);
             }
@@ -651,9 +659,19 @@ class Presensi extends Controller
         // =============================
         // Generate semua tanggal
         // =============================
+
         $currentDate = $tanggalMulai->copy();
 
         while ($currentDate->lte($tanggalSampai)) {
+
+            // Jika tanggal_sampai diisi, skip sabtu & minggu
+            if ($request->tanggal_sampai) {
+                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                    $currentDate->addDay();
+                    continue;
+                }
+            }
+
             $dates[] = $currentDate->copy();
             $currentDate->addDay();
         }
@@ -686,7 +704,6 @@ class Presensi extends Controller
                     'id_user' => $idUser,
                     'tanggal' => $date->toDateString(),
                     'status_kehadiran' => 'izin',
-                    'status_jam_kerja' => null,
                     'keterangan' => $request->keterangan,
                 ]);
             }

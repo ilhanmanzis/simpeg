@@ -27,7 +27,7 @@ class UserDataDiriSeeder extends Seeder
             $user = User::create([
                 'npp' => $nppAwal++,
                 'email' => $email,
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('pegawai'),
                 'status_keaktifan' => 'aktif',
                 'role' => $role,
             ]);
@@ -42,7 +42,7 @@ class UserDataDiriSeeder extends Seeder
                 'tanggal_lahir' => '2003-07-12',
                 'jenis_kelamin' => fake()->randomElement(['Laki-Laki', 'Perempuan']),
                 'agama' => 'Islam',
-                'tanggal_bergabung' => '2025-10-01',
+                'tanggal_bergabung' => '2020-01-01',
                 'alamat' => null,
                 'rt' => null,
                 'rw' => null,

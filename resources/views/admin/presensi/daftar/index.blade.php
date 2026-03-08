@@ -112,7 +112,7 @@
                         Lihat rekap presensi pegawai berdasarkan bulan dan tahun.
                     </p>
                 </a>
-                <a href="#"
+                <a href="{{ route('admin.presensi.klasterisasi') }}"
                     class="group rounded-2xl p-5 text-left transition-all duration-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:-translate-y-1">
 
                     <div class="flex items-center gap-3 mb-3">

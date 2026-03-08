@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\JabatanFungsional;
 use App\Http\Controllers\Admin\JabatanStruktural;
 use App\Http\Controllers\Admin\Jenjang;
 use App\Http\Controllers\Admin\KategoriSertifikat;
+use App\Http\Controllers\Admin\KlasterisasiController;
 use App\Http\Controllers\Admin\Laporan;
 use App\Http\Controllers\Admin\LaporanPresensi;
 use App\Http\Controllers\Admin\PegawaiDosen;
@@ -360,6 +361,42 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
 
     Route::post('/presensi/izin/store', [Presensi::class, 'storeIzin'])
         ->name('presensi.izin.store');
+
+    // halaman utama klasterisasi
+    Route::get(
+        '/presensi/klasterisasi',
+        [KlasterisasiController::class, 'index']
+    )->name('presensi.klasterisasi');
+
+    // ambil dataset (bulan)
+    Route::post(
+        '/presensi/klasterisasi/dataset-bulanan',
+        [KlasterisasiController::class, 'datasetBulanan']
+    )->name('presensi.klasterisasi.dataset.bulan');
+
+    // ambil dataset (tahun)
+    Route::post(
+        '/presensi/klasterisasi/dataset-tahunan',
+        [KlasterisasiController::class, 'datasetTahunan']
+    )->name('presensi.klasterisasi.dataset.tahun');
+
+    // centroid
+    Route::post(
+        '/presensi/klasterisasi/centroid',
+        [KlasterisasiController::class, 'centroid']
+    )->name('presensi.klasterisasi.centroid');
+
+    // proses k-means bertahap
+    Route::post(
+        '/presensi/klasterisasi/proses',
+        [KlasterisasiController::class, 'proses']
+    )->name('presensi.klasterisasi.proses');
+
+    // proses k-means otomatis
+    Route::post(
+        '/presensi/klasterisasi/hasil',
+        [KlasterisasiController::class, 'hasil']
+    )->name('presensi.klasterisasi.hasil');
 });
 
 
