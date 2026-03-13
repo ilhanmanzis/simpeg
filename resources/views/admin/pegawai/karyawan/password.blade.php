@@ -9,7 +9,7 @@
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
                 <x-breadcrumb :items="[
                     'Tendik' => route('admin.karyawan'),
-                    'Lihat' => route('admin.karyawan.show', $karyawan->id_user),
+                    $karyawan->dataDiri->name => route('admin.karyawan.show', $karyawan->id_user),
                     'Ubah Password' => '#',
                 ]" />
             </div>

@@ -14,6 +14,7 @@ use App\Services\PresensiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 
@@ -38,6 +39,58 @@ class Presensi extends Controller
     public function index()
     {
         $today = Carbon::today();
+        $bulan = Carbon::now()->month;
+        $tahun = Carbon::now()->year;
+        $userId = Auth::id();
+
+        $cacheKey = "presensi_avg_{$userId}_{$bulan}_{$tahun}";
+        $avgData = Cache::remember($cacheKey, now()->addHours(12), function () use ($userId, $bulan, $tahun) {
+
+            $data = PresensiModel::where('id_user', $userId)
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->get();
+
+            // =============================
+            // RATA JAM MASUK
+            // =============================
+            $avgJamMasuk = $data
+                ->whereNotNull('jam_datang')
+                ->avg(fn($p) => strtotime($p->jam_datang));
+
+            $avgJamMasuk = $avgJamMasuk ? date('H:i:s', $avgJamMasuk) . ' WIB' : '-';
+
+            // =============================
+            // RATA JAM PULANG
+            // =============================
+            $avgJamPulang = $data
+                ->whereNotNull('jam_pulang')
+                ->avg(fn($p) => strtotime($p->jam_pulang));
+
+            $avgJamPulang = $avgJamPulang ? date('H:i:s', $avgJamPulang) . ' WIB' : '-';
+
+            // =============================
+            // RATA JAM KERJA
+            // =============================
+            $avgDurasi = $data
+                ->whereNotNull('durasi_menit')
+                ->avg('durasi_menit');
+
+            if ($avgDurasi) {
+                $jam = intdiv($avgDurasi, 60);
+                $menit = $avgDurasi % 60;
+                $avgJamKerja = sprintf('%02d:%02d:00', $jam, $menit);
+            } else {
+                $avgJamKerja = '-';
+            }
+
+            return [
+                'avgJamMasuk' => $avgJamMasuk,
+                'avgJamPulang' => $avgJamPulang,
+                'avgJamKerja' => $avgJamKerja
+            ];
+        });
+
 
         // =============================
         // PRESENSI USER LOGIN HARI INI
@@ -95,6 +148,10 @@ class Presensi extends Controller
             'jamSekarang' => Carbon::now()->format('H:i:s'),
             'lokasiKampus' => $lokasiKampus,
             'isStruktural' => $dosenStrukturalAktif,
+            'avgJamMasuk' => $avgData['avgJamMasuk'],
+            'avgJamPulang' => $avgData['avgJamPulang'],
+            'avgJamKerja' => $avgData['avgJamKerja'],
+            'bulan' => Carbon::now()->translatedFormat('F'),
         ];
 
         return view('dosen.presensi.index', $data);
@@ -136,7 +193,7 @@ class Presensi extends Controller
 
 
 
-        PresensiModel::create([
+        $presensi = PresensiModel::create([
             'id_user'              => $user->id_user,
             'tanggal'              => now()->toDateString(),
             'jam_datang'           => now()->format('H:i:s'),
@@ -148,6 +205,7 @@ class Presensi extends Controller
                 ? 'didalam_radius'
                 : 'diluar_radius',
         ]);
+        $this->clearPresensiCache($user->id_user, $presensi->tanggal);
 
         return redirect()->route('dosen.presensi')->with('success', 'Presensi masuk berhasil dicatat.');
     }
@@ -407,6 +465,7 @@ class Presensi extends Controller
                 }
             }
         });
+        $this->clearPresensiCache($user->id_user, $presensi->tanggal);
 
         return redirect()->route('dosen.presensi')
             ->with('success', 'Presensi pulang & aktivitas berhasil disimpan.');
@@ -493,5 +552,15 @@ class Presensi extends Controller
             'lokasiKampus' => $lokasiKampus,
             'isStruktural' => $isStruktural,
         ]);
+    }
+
+    private function clearPresensiCache($userId, $tanggal)
+    {
+        $bulan = Carbon::parse($tanggal)->month;
+        $tahun = Carbon::parse($tanggal)->year;
+
+        $cacheKey = "presensi_avg_{$userId}_{$bulan}_{$tahun}";
+
+        Cache::forget($cacheKey);
     }
 }

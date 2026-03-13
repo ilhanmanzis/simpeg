@@ -167,50 +167,39 @@
 
 
                     {{-- ================= SIDEBAR ACTION ================= --}}
-                    {{-- <div class="flex flex-col gap-2 ml-auto">
+                    <div class="flex flex-col gap-2 ml-auto">
 
-                        <button @click="loadDataset()"
-                            class="px-4 py-2 text-sm
-                       bg-indigo-600 hover:bg-indigo-700
-                       text-white rounded-lg shadow-sm transition">
+                        <button @click="showKeterangan=true"
+                            class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition">
 
-                            Dataset
+                            Keterangan
 
                         </button>
 
-                        <button @click="loadCentroid()"
-                            class="px-4 py-2 text-sm
-                       bg-blue-600 hover:bg-blue-700
-                       text-white rounded-lg shadow-sm transition">
 
-                            Centroid Awal
 
-                        </button>
-
-                    </div> --}}
+                    </div>
                 </div>
 
             </div>
 
         </div>
+        <div x-show="loadingProses || loadingIterasi || loadingHasil" x-transition
+            class="flex items-center gap-3 p-4 rounded-xl bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300 text-sm">
+
+            <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                    class="opacity-25" />
+                <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" />
+            </svg>
+
+            <span x-text="pesanProses"></span>
+
+        </div>
 
         <div class="mt-8 space-y-8" x-show="showAnalisis">
             <!-- ================= STATUS PROSES ================= -->
-            <div x-show="loadingProses || loadingIterasi || loadingHasil" x-transition
-                class="flex items-center gap-3 p-4 rounded-xl
-            bg-yellow-50 dark:bg-yellow-900/30
-            border border-yellow-200 dark:border-yellow-800
-            text-yellow-700 dark:text-yellow-300 text-sm">
 
-                <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-                        class="opacity-25" />
-                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" />
-                </svg>
-
-                <span x-text="pesanProses"></span>
-
-            </div>
             <!-- ================= PANEL HEADER ================= -->
             <div
                 class="flex items-center justify-between flex-wrap gap-4
@@ -873,322 +862,502 @@
             </div>
 
         </div>
-    </div>
+        <!-- ================= MODAL ERROR ================= -->
+        <div x-show="showErrorModal" x-transition class="fixed inset-0 z-99999 flex items-center justify-center">
 
-    </div>
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showErrorModal=false"></div>
+
+            <!-- Modal -->
+            <div
+                class="relative w-full max-w-md mx-4
+                bg-white dark:bg-gray-900
+                border border-gray-200 dark:border-gray-700
+                rounded-xl shadow-xl p-6">
+
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-4">
+
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full
+                        bg-red-100 dark:bg-red-900">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-400"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67
+                             1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34
+                             16c-.77 1.33.19 3 1.73 3z" />
+
+                        </svg>
+
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                        Terjadi Kesalahan
+                    </h3>
+
+                </div>
+
+                <!-- Message -->
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6" x-text="errorMessage"></p>
+
+                <!-- Button -->
+                <div class="flex justify-end">
+
+                    <button @click="showErrorModal=false"
+                        class="px-4 py-2
+                           bg-red-600 hover:bg-red-700
+                           text-white text-sm font-medium
+                           rounded-lg transition">
+
+                        Tutup
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= MODAL KETERANGAN ================= -->
+        <div x-show="showKeterangan" x-transition @keydown.escape.window="showKeterangan=false"
+            class="fixed inset-0 z-99999 flex items-center justify-center">
+
+            <!-- overlay -->
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showKeterangan=false"></div>
+
+            <!-- modal -->
+            <div
+                class="relative w-full max-w-4xl mx-4
+                bg-white dark:bg-gray-900
+                border border-gray-200 dark:border-gray-700
+                rounded-xl shadow-xl p-6">
+
+                <!-- header -->
+                <div class="flex items-center justify-between mb-4">
+
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                        Informasi Klasterisasi
+                    </h3>
+
+                    <button @click="showKeterangan=false"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+
+                        ✕
+
+                    </button>
+
+                </div>
+
+                <!-- isi -->
+                <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+
+                    <!-- metode -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                            Metode Klasterisasi
+                        </h4>
+
+                        <p>
+                            Sistem ini menggunakan metode <b>K-Means Clustering</b> untuk
+                            mengelompokkan tingkat kedisiplinan pegawai berdasarkan data presensi.
+                        </p>
+                    </div>
+
+                    <!-- jumlah cluster -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                            Jumlah Cluster
+                        </h4>
+
+                        <ul class="list-disc ml-5 space-y-1">
+                            <li>C1 : Kedisiplinan Tinggi</li>
+                            <li>C2 : Kedisiplinan Sedang</li>
+                            <li>C3 : Kedisiplinan Rendah</li>
+                        </ul>
+                    </div>
+
+                    <!-- variabel -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                            Variabel Perhitungan
+                        </h4>
+
+                        <ul class="list-disc ml-5 space-y-1">
+
+                            <li>
+                                <b>X1</b> = Rata-rata persentase pemenuhan jam kerja pegawai selama periode presensi
+                                berdasarkan data presensi dengan status hadir.
+                            </li>
+
+                            <li>
+                                <b>X2</b> = Persentase kehadiran pegawai selama periode presensi.
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <!-- proses -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                            Proses Perhitungan
+                        </h4>
+
+                        <ul class="list-disc ml-5 space-y-1">
+
+                            <li>Data presensi dikumpulkan berdasarkan periode yang dipilih.</li>
+
+                            <li>Data dinormalisasi agar memiliki skala yang sama.</li>
+
+                            <li>Centroid awal ditentukan sebagai titik awal cluster.</li>
+
+                            <li>Jarak setiap data ke centroid dihitung menggunakan Euclidean Distance.</li>
+
+                            <li>Cluster diperbarui hingga centroid konvergen.</li>
+
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- footer -->
+                <div class="flex justify-end mt-6">
+
+                    <button @click="showKeterangan=false"
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg">
+
+                        Tutup
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-    {{-- ========================================================= --}}
-    {{-- SCRIPT ALPINE --}}
-    {{-- ========================================================= --}}
-    <script>
-        function klasterisasiApp() {
-
-            return {
-
-                /* ==============================
-                   STATE
-                ============================== */
-
-                loadingProses: false,
-                loadingIterasi: false,
-                loadingHasil: false,
-
-                pesanProses: '',
-                modePeriode: 'bulan',
-
-                bulan: new Date().toISOString().slice(0, 7),
-                tahun: new Date().getFullYear(),
-
-                tahunList: (() => {
-
-                    let years = []
-                    let current = new Date().getFullYear()
-
-                    for (let i = current; i >= 2020; i--) {
-                        years.push(i)
-                    }
-
-                    return years
-
-                })(),
-                dataset: [],
-                datasetNormal: [],
-
-                centroidAwal: [],
-                centroidNormal: [],
-                centroidSekarang: [],
-
-                iterasiList: [],
-                hasilCluster: [],
-
-                showAnalisis: false,
-                iterasi: 1,
-                activePanel: 'dataset',
-
-                selesai: false,
-
-                /* ==============================
-                   TODO FUNCTIONS
-                ============================== */
 
 
-                async prosesIterasi() {
-                    this.loadingProses = true
-                    this.pesanProses = "Memproses data klasterisasi. Jangan refresh halaman sampai proses selesai."
-                    this.showAnalisis = false
+        {{-- ========================================================= --}}
+        {{-- SCRIPT ALPINE --}}
+        {{-- ========================================================= --}}
+        <script>
+            function klasterisasiApp() {
 
-                    this.iterasiList = []
-                    this.iterasi = 1
-                    this.selesai = false
+                return {
 
-                    let bulan = ''
-                    let tahun = ''
-                    let mode = ''
+                    /* ==============================
+                       STATE
+                    ============================== */
 
-                    if (this.modePeriode === 'bulan') {
+                    loadingProses: false,
+                    loadingIterasi: false,
+                    loadingHasil: false,
+                    showErrorModal: false,
+                    errorMessage: '',
+                    showKeterangan: false,
 
-                        [tahun, bulan] = this.bulan.split('-')
-                        mode = 'bulan'
+                    pesanProses: '',
+                    modePeriode: 'bulan',
 
-                    } else {
+                    bulan: new Date().toISOString().slice(0, 7),
+                    tahun: new Date().getFullYear(),
 
-                        tahun = this.tahun
-                        mode = 'tahun'
+                    tahunList: (() => {
 
-                    }
+                        let years = []
+                        let current = new Date().getFullYear()
 
-                    const res = await fetch('/admin/presensi/klasterisasi/proses', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                        },
-                        body: JSON.stringify({
-                            mode: mode,
-                            bulan: bulan,
-                            tahun: tahun,
-                            iterasi: this.iterasi
+                        for (let i = current; i >= 2020; i--) {
+                            years.push(i)
+                        }
+
+                        return years
+
+                    })(),
+                    dataset: [],
+                    datasetNormal: [],
+
+                    centroidAwal: [],
+                    centroidNormal: [],
+                    centroidSekarang: [],
+
+                    iterasiList: [],
+                    hasilCluster: [],
+
+                    showAnalisis: false,
+                    iterasi: 1,
+                    activePanel: 'dataset',
+
+                    selesai: false,
+
+                    /* ==============================
+                       TODO FUNCTIONS
+                    ============================== */
+
+
+                    async prosesIterasi() {
+                        this.loadingProses = true
+                        this.pesanProses = "Memproses data klasterisasi. Jangan refresh halaman sampai proses selesai."
+                        this.showAnalisis = false
+
+                        this.iterasiList = []
+                        this.iterasi = 1
+                        this.selesai = false
+
+                        let bulan = ''
+                        let tahun = ''
+                        let mode = ''
+
+                        if (this.modePeriode === 'bulan') {
+
+                            [tahun, bulan] = this.bulan.split('-')
+                            mode = 'bulan'
+
+                        } else {
+
+                            tahun = this.tahun
+                            mode = 'tahun'
+
+                        }
+
+                        const res = await fetch('/admin/presensi/klasterisasi/proses', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            },
+                            body: JSON.stringify({
+                                mode: mode,
+                                bulan: bulan,
+                                tahun: tahun,
+                                iterasi: this.iterasi
+                            })
                         })
-                    })
 
-                    const data = await res.json()
-                    if (!res.ok) {
+                        const data = await res.json()
+                        if (!res.ok) {
 
-                        alert(data.message)
+                            this.errorMessage = data.message
+                            this.showErrorModal = true
 
+                            this.loadingProses = false
+                            return
+                        }
+
+                        this.dataset = data.dataset
+                        this.datasetNormal = data.normalisasi
+
+                        this.centroidAwal = data.centroid_awal
+                        this.centroidNormal = data.centroid_normal
+
+                        this.centroidSekarang = data.iterasi.centroid_baru
+
+                        this.iterasiList.push(data.iterasi)
+
+                        this.showAnalisis = true
+                        this.activePanel = 'dataset'
                         this.loadingProses = false
-                        return
-                    }
+                        this.showAnalisis = true
+                    },
+                    async lanjutIterasi() {
 
-                    this.dataset = data.dataset
-                    this.datasetNormal = data.normalisasi
+                        this.loadingIterasi = true
+                        this.pesanProses = "Menghitung iterasi berikutnya. Jangan refresh halaman."
 
-                    this.centroidAwal = data.centroid_awal
-                    this.centroidNormal = data.centroid_normal
+                        if (this.selesai) return
 
-                    this.centroidSekarang = data.iterasi.centroid_baru
+                        this.iterasi++
 
-                    this.iterasiList.push(data.iterasi)
+                        let bulan = ''
+                        let tahun = ''
+                        let mode = ''
 
-                    this.showAnalisis = true
-                    this.activePanel = 'dataset'
-                    this.loadingProses = false
-                    this.showAnalisis = true
-                },
-                async lanjutIterasi() {
+                        if (this.modePeriode === 'bulan') {
 
-                    this.loadingIterasi = true
-                    this.pesanProses = "Menghitung iterasi berikutnya. Jangan refresh halaman."
+                            [tahun, bulan] = this.bulan.split('-')
+                            mode = 'bulan'
 
-                    if (this.selesai) return
+                        } else {
 
-                    this.iterasi++
+                            tahun = this.tahun
+                            mode = 'tahun'
 
-                    let bulan = ''
-                    let tahun = ''
-                    let mode = ''
+                        }
 
-                    if (this.modePeriode === 'bulan') {
+                        const res = await fetch('/admin/presensi/klasterisasi/proses', {
 
-                        [tahun, bulan] = this.bulan.split('-')
-                        mode = 'bulan'
+                            method: 'POST',
 
-                    } else {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            },
 
-                        tahun = this.tahun
-                        mode = 'tahun'
+                            body: JSON.stringify({
+                                mode: mode,
+                                bulan: bulan,
+                                tahun: tahun,
+                                centroid: this.centroidSekarang,
+                                iterasi: this.iterasi
+                            })
 
-                    }
-
-                    const res = await fetch('/admin/presensi/klasterisasi/proses', {
-
-                        method: 'POST',
-
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                        },
-
-                        body: JSON.stringify({
-                            mode: mode,
-                            bulan: bulan,
-                            tahun: tahun,
-                            centroid: this.centroidSekarang,
-                            iterasi: this.iterasi
                         })
 
-                    })
+                        const data = await res.json()
+                        if (!res.ok) {
 
-                    const data = await res.json()
-                    if (!res.ok) {
+                            this.errorMessage = data.message
+                            this.showErrorModal = true
 
-                        alert(data.message)
+                            this.loadingHasil = false
+                            return
+                        }
 
-                        this.loadingHasil = false
-                        return
-                    }
+                        this.iterasiList.push(data.iterasi)
 
-                    this.iterasiList.push(data.iterasi)
+                        this.centroidSekarang = data.iterasi.centroid_baru
 
-                    this.centroidSekarang = data.iterasi.centroid_baru
+                        if (data.konvergen) {
 
-                    if (data.konvergen) {
+                            this.selesai = true
+                            this.hasilCluster = data.iterasi.perhitungan
+                            this.activePanel = 'hasil'
 
+                        } else {
+
+                            this.activePanel = 'iterasi' + (this.iterasiList.length - 1)
+
+                        }
+
+                        this.loadingIterasi = false
+                    },
+
+                    async prosesOtomatis() {
+                        this.loadingHasil = true
+                        this.pesanProses = "Menghitung seluruh iterasi sampai konvergen. Jangan refresh halaman."
+                        this.showAnalisis = false
+
+                        this.iterasiList = []
                         this.selesai = true
-                        this.hasilCluster = data.iterasi.perhitungan
-                        this.activePanel = 'hasil'
 
-                    } else {
+                        let bulan = ''
+                        let tahun = ''
+                        let mode = ''
 
-                        this.activePanel = 'iterasi' + (this.iterasiList.length - 1)
+                        if (this.modePeriode === 'bulan') {
 
-                    }
+                            [tahun, bulan] = this.bulan.split('-')
+                            mode = 'bulan'
 
-                    this.loadingIterasi = false
-                },
+                        } else {
 
-                async prosesOtomatis() {
-                    this.loadingHasil = true
-                    this.pesanProses = "Menghitung seluruh iterasi sampai konvergen. Jangan refresh halaman."
-                    this.showAnalisis = false
+                            tahun = this.tahun
+                            mode = 'tahun'
 
-                    this.iterasiList = []
-                    this.selesai = true
+                        }
 
-                    let bulan = ''
-                    let tahun = ''
-                    let mode = ''
+                        const res = await fetch('/admin/presensi/klasterisasi/hasil', {
 
-                    if (this.modePeriode === 'bulan') {
+                            method: 'POST',
 
-                        [tahun, bulan] = this.bulan.split('-')
-                        mode = 'bulan'
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            },
 
-                    } else {
+                            body: JSON.stringify({
+                                mode: mode,
+                                bulan: bulan,
+                                tahun: tahun
+                            })
 
-                        tahun = this.tahun
-                        mode = 'tahun'
-
-                    }
-
-                    const res = await fetch('/admin/presensi/klasterisasi/hasil', {
-
-                        method: 'POST',
-
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                        },
-
-                        body: JSON.stringify({
-                            mode: mode,
-                            bulan: bulan,
-                            tahun: tahun
                         })
 
-                    })
+                        const data = await res.json()
+                        if (!res.ok) {
 
-                    const data = await res.json()
-                    if (!res.ok) {
+                            this.errorMessage = data.message
+                            this.showErrorModal = true
 
-                        alert(data.message)
+                            this.loadingHasil = false
+                            return
+                        }
 
+                        /* =========================
+                           DATASET
+                        ========================= */
+
+                        this.dataset = data.dataset
+                        this.datasetNormal = data.normalisasi
+
+                        this.centroidAwal = data.centroid_awal
+                        this.centroidNormal = data.centroid_normal
+
+                        /* =========================
+                           HASIL ITERASI
+                        ========================= */
+
+                        this.iterasiList = data.hasil.iterasi
+
+                        /* =========================
+                           HASIL CLUSTER FINAL
+                        ========================= */
+
+                        this.hasilCluster = data.hasil.hasil_cluster
+
+                        this.showAnalisis = true
+                        this.activePanel = 'hasil'
                         this.loadingHasil = false
-                        return
-                    }
+                        this.showAnalisis = true
 
-                    /* =========================
-                       DATASET
-                    ========================= */
+                    },
+                    get periodeText() {
 
-                    this.dataset = data.dataset
-                    this.datasetNormal = data.normalisasi
+                        if (this.modePeriode === 'bulan' && this.bulan) {
 
-                    this.centroidAwal = data.centroid_awal
-                    this.centroidNormal = data.centroid_normal
+                            let [tahun, bulan] = this.bulan.split('-')
 
-                    /* =========================
-                       HASIL ITERASI
-                    ========================= */
+                            const namaBulan = [
+                                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                            ]
 
-                    this.iterasiList = data.hasil.iterasi
+                            return `Data Presensi ${namaBulan[parseInt(bulan)-1]} ${tahun}`
 
-                    /* =========================
-                       HASIL CLUSTER FINAL
-                    ========================= */
+                        }
 
-                    this.hasilCluster = data.hasil.hasil_cluster
+                        if (this.modePeriode === 'tahun' && this.tahun) {
 
-                    this.showAnalisis = true
-                    this.activePanel = 'hasil'
-                    this.loadingHasil = false
-                    this.showAnalisis = true
+                            return `Data Presensi Tahun ${this.tahun}`
 
-                },
-                get periodeText() {
+                        }
 
-                    if (this.modePeriode === 'bulan' && this.bulan) {
+                        return 'Dataset Presensi'
+                    },
+                    get clusterGroups() {
 
-                        let [tahun, bulan] = this.bulan.split('-')
+                        let groups = {
+                            C1: this.hasilCluster.filter(r => r.cluster === 'C1'),
+                            C2: this.hasilCluster.filter(r => r.cluster === 'C2'),
+                            C3: this.hasilCluster.filter(r => r.cluster === 'C3')
+                        }
 
-                        const namaBulan = [
-                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                        ]
+                        // urutkan dari terbesar ke terkecil berdasarkan X2
+                        Object.keys(groups).forEach(c => {
+                            groups[c].sort((a, b) => b.x1_norm - a.x1_norm)
+                        })
 
-                        return `Data Presensi ${namaBulan[parseInt(bulan)-1]} ${tahun}`
+                        return groups
 
-                    }
+                    },
 
-                    if (this.modePeriode === 'tahun' && this.tahun) {
-
-                        return `Data Presensi Tahun ${this.tahun}`
-
-                    }
-
-                    return 'Dataset Presensi'
-                },
-                get clusterGroups() {
-
-                    let groups = {
-                        C1: this.hasilCluster.filter(r => r.cluster === 'C1'),
-                        C2: this.hasilCluster.filter(r => r.cluster === 'C2'),
-                        C3: this.hasilCluster.filter(r => r.cluster === 'C3')
-                    }
-
-                    // urutkan dari terbesar ke terkecil berdasarkan X2
-                    Object.keys(groups).forEach(c => {
-                        groups[c].sort((a, b) => b.x1_norm - a.x1_norm)
-                    })
-
-                    return groups
-
-                },
+                }
 
             }
-
-        }
-    </script>
+        </script>
 
 </x-layout>

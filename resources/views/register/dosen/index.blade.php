@@ -784,7 +784,7 @@
                                     <div class="w-1/2 mr-3">
                                         <label
                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                            Gelar
+                                            Gelar (contoh S. Kom)
                                         </label>
                                         <input x-model="pendidikan.gelar" type="text"
                                             :name="'pendidikan[' + index + '][gelar]'"

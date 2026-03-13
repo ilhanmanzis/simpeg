@@ -143,6 +143,79 @@ class LaporanPresensi extends Controller
             $logoFileSrc = 'file://' . $path;
         }
 
+        $totalDurasiMenit = 0;
+
+        $totalSS  = 0;
+        $totalSM  = 0;
+        $totalPS  = 0;
+        $totalPM  = 0;
+        $totalSem = 0;
+        $totalBim = 0;
+        $totalUji = 0;
+        $totalKKL = 0;
+        $totalTL  = 0;
+
+        foreach ($presensis as $p) {
+
+            if ($p->durasi_menit) {
+                $totalDurasiMenit += $p->durasi_menit;
+            }
+
+            if ($p->aktivitas) {
+                $totalSS  += $p->aktivitas->sks_siang ?? 0;
+                $totalSM  += $p->aktivitas->sks_malam ?? 0;
+                $totalPS  += $p->aktivitas->sks_praktikum_siang ?? 0;
+                $totalPM  += $p->aktivitas->sks_praktikum_malam ?? 0;
+                $totalSem += $p->aktivitas->seminar_jumlah ?? 0;
+                $totalBim += $p->aktivitas->pembimbing_jumlah ?? 0;
+                $totalUji += $p->aktivitas->penguji_jumlah ?? 0;
+                $totalKKL += $p->aktivitas->kkl_jumlah ?? 0;
+                $totalTL  += $p->aktivitas->tugas_luar_jumlah ?? 0;
+            }
+        }
+
+        $jam   = intdiv($totalDurasiMenit, 60);
+        $menit = $totalDurasiMenit % 60;
+
+        $totalDurasi = sprintf('%02d:%02d:00', $jam, $menit);
+        $memenuhi = 0;
+        $tidakMemenuhi = 0;
+
+        foreach ($presensis as $p) {
+
+            if ($p->status_kehadiran !== 'hadir') {
+                continue;
+            }
+
+            $jamWajib = 480;
+
+            if ($role === 'dosen') {
+
+                $jamWajib = 360;
+
+                foreach ($user->struktural as $struktural) {
+
+                    if (
+                        $struktural->status === 'aktif' &&
+                        $p->tanggal >= $struktural->tanggal_mulai &&
+                        (
+                            $struktural->tanggal_selesai === null ||
+                            $p->tanggal <= $struktural->tanggal_selesai
+                        )
+                    ) {
+                        $jamWajib = 420;
+                        break;
+                    }
+                }
+            }
+
+            if (($p->durasi_menit ?? 0) >= $jamWajib) {
+                $memenuhi++;
+            } else {
+                $tidakMemenuhi++;
+            }
+        }
+
         /** =========================
          *  EXPORT PDF
          *  ========================= */
@@ -165,6 +238,18 @@ class LaporanPresensi extends Controller
             'logoFileSrc'    => $logoFileSrc,
             'logoDataUri'    => $logoDataUri,
             'logoPngData64'  => $logoPngData64,
+            'totalDurasi' => $totalDurasi,
+            'totalSS' => $totalSS,
+            'totalSM' => $totalSM,
+            'totalPS' => $totalPS,
+            'totalPM' => $totalPM,
+            'totalSem' => $totalSem,
+            'totalBim' => $totalBim,
+            'totalUji' => $totalUji,
+            'totalKKL' => $totalKKL,
+            'totalTL' => $totalTL,
+            'memenuhi' => $memenuhi,
+            'tidakMemenuhi' => $tidakMemenuhi,
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download(

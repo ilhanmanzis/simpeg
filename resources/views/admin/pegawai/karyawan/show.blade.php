@@ -10,7 +10,7 @@
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <x-breadcrumb :items="[
                         'Tendik' => route('admin.karyawan'),
-                        'Lihat' => '#',
+                        $karyawan->dataDiri->name => '#',
                     ]" />
                     @if (session('success'))
                         <div
@@ -94,16 +94,99 @@
                                                 class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                                 Ubah Password
                                             </a>
-                                            <form method="POST"
-                                                action="{{ route('admin.karyawan.status', ['id' => $karyawan->id_user]) }}"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin mengubah status karyawan ini menjadi {{ $karyawan->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit"
+                                            <div x-data="{ openStatus: false, processingStatus: false }" class="w-full">
+
+                                                <!-- BUTTON UBAH STATUS -->
+                                                <button @click="openStatus = true" type="button"
                                                     class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                                     Ubah Status
                                                 </button>
-                                            </form>
+
+                                                <!-- MODAL KONFIRMASI -->
+                                                <div x-show="openStatus" x-cloak
+                                                    class="fixed inset-0 z-99999 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                                    <div @click.away="openStatus = false"
+                                                        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                                        <h2
+                                                            class="text-lg font-bold mb-3 text-gray-800 dark:text-white/90">
+                                                            Konfirmasi Perubahan Status
+                                                        </h2>
+
+                                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-5">
+                                                            Apakah Anda yakin ingin mengubah status karyawan ini menjadi
+                                                            <span class="font-semibold">
+                                                                {{ $karyawan->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}
+                                                            </span>?
+                                                        </p>
+
+                                                        <div class="flex justify-end gap-2">
+
+                                                            <button @click="openStatus = false"
+                                                                class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200">
+                                                                Batal
+                                                            </button>
+
+                                                            <button
+                                                                @click="openStatus = false; processingStatus = true; $nextTick(() => { $refs.formStatus.submit(); });"
+                                                                class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                                                                Ya, Ubah
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- FORM UBAH STATUS -->
+                                                <form x-ref="formStatus" method="POST"
+                                                    action="{{ route('admin.karyawan.status', ['id' => $karyawan->id_user]) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                </form>
+
+                                                <!-- LOADING OVERLAY -->
+                                                <div x-show="processingStatus" x-cloak
+                                                    class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
+                                                    <div
+                                                        class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                        <div class="flex items-start gap-3">
+
+                                                            <svg class="h-6 w-6 animate-spin mt-0.5 text-indigo-500"
+                                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                viewBox="0 0 24 24">
+
+                                                                <circle class="opacity-25" cx="12" cy="12"
+                                                                    r="10" stroke="currentColor" stroke-width="4">
+                                                                </circle>
+
+                                                                <path class="opacity-75" fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                                                </path>
+
+                                                            </svg>
+
+                                                            <div>
+                                                                <h3
+                                                                    class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                                    Mengubah Status…
+                                                                </h3>
+
+                                                                <p
+                                                                    class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                                    Sedang memproses perubahan status karyawan.
+                                                                    Jangan menutup atau memuat ulang halaman sampai
+                                                                    selesai.
+                                                                </p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
                                             <div x-data="{ openDeleteK: false, deletingK: false }" class="w-full">
 
                                                 <!-- BUTTON DELETE -->
@@ -114,7 +197,7 @@
 
                                                 <!-- MODAL KONFIRMASI DELETE -->
                                                 <div x-show="openDeleteK" x-cloak
-                                                    class="fixed inset-0 z-50 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+                                                    class="fixed inset-0 z-99999 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
 
                                                     <div @click.away="openDeleteK = false"
                                                         class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
@@ -156,8 +239,9 @@
                                                             <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
                                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24">
-                                                                <circle class="opacity-25" cx="12" cy="12"
-                                                                    r="10" stroke="currentColor" stroke-width="4">
+                                                                <circle class="opacity-25" cx="12"
+                                                                    cy="12" r="10" stroke="currentColor"
+                                                                    stroke-width="4">
                                                                 </circle>
                                                                 <path class="opacity-75" fill="currentColor"
                                                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -187,8 +271,8 @@
                             </div>
                             <div class="flex justify-center mt-10 mb-5">
 
-                                @if ($karyawan->dataDiri->foro)
-                                    <div class=" w-64 aspect-[3/4] overflow-hidden ">
+                                <div class=" w-64 aspect-[3/4] overflow-hidden ">
+                                    @if ($karyawan->dataDiri->foro)
                                         <img src="{{ route('file.foto.drive', $karyawan->dataDiri->foto) }}"
                                             alt="" class="w-full h-full object-cover">
                                     @else
@@ -196,303 +280,386 @@
                                             class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
                                             Foto tidak tersedia
                                         </div>
-                                @endif
-
-                            </div>
-
-                        </div>
-                        @if ($karyawan->dataDiri->foto)
-                            <div class="flex justify-center mb-5">
-                                <button onclick="copyUrl('{{ $karyawan->dataDiri->dokumen->view_url }}', this)"
-                                    class="text-blue-600 hover:underline">
-                                    Salin URL
-                                </button>
-                            </div>
-                        @endif
-                        <div class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
-
-
-
-                            <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-
-                                <div class="w-full ">
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Nama</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->name }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">NIK</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->no_ktp }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">NPP</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->npp }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Email</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->email }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Nomor HP</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->no_hp }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Jenis Kelamin</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->jenis_kelamin }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Agama</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->agama }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Tempat Lahir</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->tempat_lahir }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Tanggal Lahir</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->tanggal_lahir }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Jumlah Anak</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->anak }}</div>
-                                    </div>
-                                    @if ($karyawan->dataDiri->jenis_kelamin === 'Laki-Laki')
-                                        <div class="flex">
-                                            <div class="w-32 font-semibold">Jumlah Istri</div>
-                                            <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->istri }}</div>
-                                        </div>
                                     @endif
+                                </div>
+                            </div>
+
+                            @if ($karyawan->dataDiri->foto)
+                                <div class="flex justify-center mb-5">
+                                    <button onclick="copyUrl('{{ $karyawan->dataDiri->dokumen->view_url }}', this)"
+                                        class="text-blue-600 hover:underline">
+                                        Salin URL
+                                    </button>
+                                </div>
+                            @endif
+                            <div
+                                class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row">
+
+
+
+                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+
+                                    <div class="w-full ">
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nama</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->name }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NIK</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->no_ktp }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">NPP</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->npp }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Email</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->email }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor HP</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->no_hp }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jenis Kelamin</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->jenis_kelamin }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Agama</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->agama }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tempat Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tempat_lahir }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Tanggal Lahir</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_lahir }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Jumlah Anak</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->anak }}</div>
+                                        </div>
+                                        @if ($karyawan->dataDiri->jenis_kelamin === 'Laki-Laki')
+                                            <div class="flex">
+                                                <div class="w-32 font-semibold">Jumlah Istri</div>
+                                                <div class="w-4">:</div>
+                                                <div class="flex-1">{{ $karyawan->dataDiri->istri }}</div>
+                                            </div>
+                                        @endif
+
+
+                                    </div>
+                                </div>
+                                <div class="lg:w-1/2 md:w-1/2 sm:w-full">
+                                    <div class="w-full ">
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Nomor BPJS</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->bpjs ?? '-' }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Golongan Darah</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->golongan_darah }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Alamat</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->alamat ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">RT</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->rt ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">RW</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->rw ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Desa/Kelurahan</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->desa ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Kecamatan</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->kecamatan ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Kabupaten/Kota</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->kabupaten ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Provinsi</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->provinsi ?? '-' }}</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Bergabung</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->dataDiri->tanggal_bergabung }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-32 font-semibold">Status</div>
+                                            <div class="w-4">:</div>
+                                            <div class="flex-1">{{ $karyawan->status_keaktifan }}</div>
+                                        </div>
+
+                                    </div>
 
 
                                 </div>
-                            </div>
-                            <div class="lg:w-1/2 md:w-1/2 sm:w-full">
-                                <div class="w-full ">
-
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Nomor BPJS</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->bpjs ?? '-' }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Golongan Darah</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->golongan_darah }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Alamat</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->alamat ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">RT</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->rt ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">RW</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->rw ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Desa/Kelurahan</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->desa ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Kecamatan</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->kecamatan ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Kabupaten/Kota</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->kabupaten ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Provinsi</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->provinsi ?? '-' }}</div>
-                                    </div>
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Bergabung</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->dataDiri->tanggal_bergabung }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-32 font-semibold">Status</div>
-                                        <div class="w-4">:</div>
-                                        <div class="flex-1">{{ $karyawan->status_keaktifan }}</div>
-                                    </div>
-
-                                </div>
 
 
                             </div>
 
-
                         </div>
+                        {{-- informasi pendidikan --}}
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 mt-10">
+                            <div
+                                class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
+                                    Informasi Pendidikan</h2>
 
-                    </div>
-                    {{-- informasi pendidikan --}}
-                    <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6 mt-10">
-                        <div
-                            class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
-                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
-                                Informasi Pendidikan</h2>
+                                <a href="{{ route('admin.karyawan.pendidikan.create', ['id' => $karyawan->id_user]) }}"
+                                    class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 -mt-5">
+                                    Tambah Pendidikan
+                                </a>
+                            </div>
 
-                            <a href="{{ route('admin.karyawan.pendidikan.create', ['id' => $karyawan->id_user]) }}"
-                                class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-success-500 shadow-theme-xs hover:bg-success-600 -mt-5">
-                                Tambah Pendidikan
-                            </a>
-                        </div>
+                            @foreach ($karyawan->pendidikan as $i => $pendidikan)
+                                <div class="mt-5 border border-gray-100 dark:border-gray-800 ">
+                                    <div
+                                        class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 px-5">
 
-                        @foreach ($karyawan->pendidikan as $i => $pendidikan)
-                            <div class="mt-5 border border-gray-100 dark:border-gray-800 ">
-                                <div
-                                    class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 px-5">
-
-                                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  ">
-                                        Pendidikan {{ $i + 1 }}</h2>
+                                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  ">
+                                            Pendidikan {{ $i + 1 }}</h2>
 
 
-                                    <div class="flex justify-start">
+                                        <div class="flex justify-start">
 
-                                        <a href="{{ route('admin.karyawan.pendidikan', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                            class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 ">
-                                            Edit Pendidikan
-                                        </a>
-                                        <div x-data="{ openDropDown: false }" class="relative h-fit mt-2">
-                                            <button @click="openDropDown = !openDropDown"
-                                                :class="openDropDown ? 'text-gray-700 dark:text-white' :
-                                                    'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
-                                                <svg class="fill-current" width="24" height="24"
-                                                    viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                                                        fill="" />
-                                                </svg>
-                                            </button>
-                                            <div x-show="openDropDown" @click.outside="openDropDown = false"
-                                                class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
+                                            <a href="{{ route('admin.karyawan.pendidikan', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
+                                                class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium  text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 ">
+                                                Edit Pendidikan
+                                            </a>
+                                            <div x-data="{ openDropDown: false }" class="relative h-fit mt-2">
+                                                <button @click="openDropDown = !openDropDown"
+                                                    :class="openDropDown ? 'text-gray-700 dark:text-white' :
+                                                        'text-gray-400 hover:text-gray-700 dark:hover:text-white'">
+                                                    <svg class="fill-current" width="24" height="24"
+                                                        viewBox="0 0 24 24" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                            d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
+                                                            fill="" />
+                                                    </svg>
+                                                </button>
+                                                <div x-show="openDropDown" @click.outside="openDropDown = false"
+                                                    class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
 
-                                                <form method="POST"
-                                                    action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
-                                                        Delete
-                                                    </button>
-                                                </form>
+                                                    <div x-data="{ openDeleteP: false, deletingP: false }" class="w-full">
+
+                                                        <!-- BUTTON DELETE -->
+                                                        <button @click="openDeleteP = true" type="button"
+                                                            class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
+                                                            Delete
+                                                        </button>
+
+                                                        <!-- MODAL KONFIRMASI DELETE -->
+                                                        <div x-show="openDeleteP" x-cloak
+                                                            class="fixed inset-0 z-99999 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                                            <div @click.away="openDeleteP = false"
+                                                                class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                                                <h2
+                                                                    class="text-lg font-bold mb-4 text-gray-800 dark:text-white/90">
+                                                                    Hapus Data Pendidikan
+                                                                </h2>
+
+                                                                <p
+                                                                    class="text-sm text-gray-600 dark:text-gray-300 mb-5">
+                                                                    Apakah Anda yakin ingin menghapus data pendidikan
+                                                                    ini?
+                                                                    Data yang sudah dihapus tidak dapat dikembalikan.
+                                                                </p>
+
+                                                                <div class="flex justify-end gap-2">
+
+                                                                    <button @click="openDeleteP = false"
+                                                                        class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200">
+                                                                        Batal
+                                                                    </button>
+
+                                                                    <button
+                                                                        @click="openDeleteP = false; deletingP = true; $nextTick(() => { $refs.formDeleteP.submit(); });"
+                                                                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                                                                        Hapus
+                                                                    </button>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- FORM DELETE -->
+                                                        <form x-ref="formDeleteP" method="POST"
+                                                            action="{{ route('admin.karyawan.pendidikan.delete', ['id' => $karyawan->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+
+                                                        <!-- OVERLAY LOADING -->
+                                                        <div x-show="deletingP" x-cloak
+                                                            class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
+                                                            <div
+                                                                class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                                <div class="flex items-start gap-3">
+
+                                                                    <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="none" viewBox="0 0 24 24">
+
+                                                                        <circle class="opacity-25" cx="12"
+                                                                            cy="12" r="10"
+                                                                            stroke="currentColor" stroke-width="4">
+                                                                        </circle>
+
+                                                                        <path class="opacity-75" fill="currentColor"
+                                                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                                                        </path>
+
+                                                                    </svg>
+
+                                                                    <div>
+                                                                        <h3
+                                                                            class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                                            Menghapus Data…
+                                                                        </h3>
+
+                                                                        <p
+                                                                            class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                                            Sedang menghapus data pendidikan. Jangan
+                                                                            menutup atau memuat ulang halaman sampai
+                                                                            proses selesai.
+                                                                        </p>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row  p-4">
+                                        <div class="w-full">
+
+                                            <div class="w-full ">
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Jenjang</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">
+                                                        {{ $pendidikan->jenjang->nama_jenjang }}</div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Institusi</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">{{ $pendidikan->institusi }}</div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Program Studi</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">{{ $pendidikan->program_studi }}</div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Gelar</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">{{ $pendidikan->gelar }}</div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Tahun Lulus</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">{{ $pendidikan->tahun_lulus }}</div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Ijazah</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">
+                                                        @if ($pendidikan->ijazah)
+                                                            <a href="{{ $pendidikan->dokumenIjazah->preview_url }}"
+                                                                target="_blank" class="text-blue-600 hover:underline">
+                                                                Lihat
+                                                            </a> |
+                                                            <button
+                                                                onclick="copyUrl('{{ $pendidikan->dokumenIjazah->view_url }}', this)"
+                                                                class="text-blue-600 hover:underline">
+                                                                Salin URL
+                                                            </button>
+                                                        @else
+                                                            <span class="text-gray-500 italic">-</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="w-32 font-semibold">Transkip Nilai</div>
+                                                    <div class="w-4">:</div>
+                                                    <div class="flex-1">
+                                                        @if ($pendidikan->transkip_nilai)
+                                                            <a href="{{ $pendidikan->dokumenTranskipNilai->preview_url }}"
+                                                                target="_blank" class="text-blue-600 hover:underline">
+                                                                Lihat
+                                                            </a> |
+                                                            <button
+                                                                onclick="copyUrl('{{ $pendidikan->dokumenTranskipNilai->view_url }}', this)"
+                                                                class="text-blue-600 hover:underline">
+                                                                Salin URL
+                                                            </button>
+                                                        @else
+                                                            <span class="text-gray-500 italic">-</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div
-                                    class=" w-full text-gray-800 dark:text-white/90 flex justify-start flex-col lg:flex-row  p-4">
-                                    <div class="w-full">
+                            @endforeach
 
-                                        <div class="w-full ">
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Jenjang</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">
-                                                    {{ $pendidikan->jenjang->nama_jenjang }}</div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Institusi</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">{{ $pendidikan->institusi }}</div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Program Studi</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">{{ $pendidikan->program_studi }}</div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Gelar</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">{{ $pendidikan->gelar }}</div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Tahun Lulus</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">{{ $pendidikan->tahun_lulus }}</div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Ijazah</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">
-                                                    @if ($pendidikan->ijazah)
-                                                        <a href="{{ $pendidikan->dokumenIjazah->preview_url }}"
-                                                            target="_blank" class="text-blue-600 hover:underline">
-                                                            Lihat
-                                                        </a> |
-                                                        <button
-                                                            onclick="copyUrl('{{ $pendidikan->dokumenIjazah->view_url }}', this)"
-                                                            class="text-blue-600 hover:underline">
-                                                            Salin URL
-                                                        </button>
-                                                    @else
-                                                        <span class="text-gray-500 italic">-</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="flex">
-                                                <div class="w-32 font-semibold">Transkip Nilai</div>
-                                                <div class="w-4">:</div>
-                                                <div class="flex-1">
-                                                    @if ($pendidikan->transkip_nilai)
-                                                        <a href="{{ $pendidikan->dokumenTranskipNilai->preview_url }}"
-                                                            target="_blank" class="text-blue-600 hover:underline">
-                                                            Lihat
-                                                        </a> |
-                                                        <button
-                                                            onclick="copyUrl('{{ $pendidikan->dokumenTranskipNilai->view_url }}', this)"
-                                                            class="text-blue-600 hover:underline">
-                                                            Salin URL
-                                                        </button>
-                                                    @else
-                                                        <span class="text-gray-500 italic">-</span>
-                                                    @endif
-                                                </div>
-                                            </div>
+                        </div>
 
 
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
 
                     </div>
-
 
 
                 </div>
-
-
             </div>
-        </div>
         </div>
         <script>
             function copyUrl(url, el) {

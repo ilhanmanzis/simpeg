@@ -63,7 +63,7 @@ class PegawaiKaryawan extends Controller
             'program_studi'  => 'nullable|string|max:255',
             'gelar'          => 'nullable|string|max:255',
             'tahun_lulus'    => 'required|date_format:Y',
-            'ijazah'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'ijazah'         => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'transkip_nilai' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 

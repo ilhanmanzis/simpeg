@@ -11,8 +11,9 @@ class PresensiSeeder extends Seeder
 {
     public function run(): void
     {
+
         $start = Carbon::create(2020, 1, 1);
-        $end   = Carbon::create(2026, 2, 28);
+        $end   = Carbon::create(2026, 4, 28);
 
         $currentMonth = $start->copy()->startOfMonth();
 
@@ -23,53 +24,39 @@ class PresensiSeeder extends Seeder
 
             /*
             ============================
-            AMBIL USER
+            AMBIL USER SEKALI
             ============================
             */
 
-            $dosen = User::whereBetween('id_user', [2, 20])->pluck('id_user')->toArray();
-            $karyawan = User::whereBetween('id_user', [21, 25])->pluck('id_user')->toArray();
-
-            shuffle($dosen);
-            shuffle($karyawan);
+            $users = User::whereBetween('id_user', [2, 26])
+                ->get()
+                ->keyBy('id_user');
 
             /*
             ============================
-            BAGI KATEGORI BULAN INI
+            BAGI KATEGORI BULAN
             ============================
             */
 
             $kategoriUser = [];
 
-            // DOSEN
-            foreach (array_slice($dosen, 0, 15) as $id) {
-                $kategoriUser[$id] = 'full';
-            }
+            $selaluHadir = [2, 3, 4, 5, 6, 7, 8, 9, 10, 22, 23];
 
-            foreach (array_slice($dosen, 15, 3) as $id) {
-                $kategoriUser[$id] = 'normal';
-            }
+            foreach ($users as $id => $user) {
 
-            foreach (array_slice($dosen, 18, 2) as $id) {
-                $kategoriUser[$id] = 'buruk';
-            }
+                if (in_array($id, $selaluHadir)) {
 
-            // KARYAWAN
-            foreach (array_slice($karyawan, 0, 3) as $id) {
-                $kategoriUser[$id] = 'full';
-            }
+                    $kategoriUser[$id] = 'full';
+                } else {
 
-            foreach (array_slice($karyawan, 3, 1) as $id) {
-                $kategoriUser[$id] = 'normal';
-            }
-
-            foreach (array_slice($karyawan, 4, 1) as $id) {
-                $kategoriUser[$id] = 'buruk';
+                    // random tiap bulan
+                    $kategoriUser[$id] = rand(0, 1) ? 'normal' : 'buruk';
+                }
             }
 
             /*
             ============================
-            GENERATE PRESENSI BULAN INI
+            GENERATE PRESENSI
             ============================
             */
 
@@ -84,21 +71,35 @@ class PresensiSeeder extends Seeder
 
                 foreach ($kategoriUser as $id_user => $kategori) {
 
-                    $user = User::find($id_user);
+                    $user = $users[$id_user];
+
+                    /*
+                    ============================
+                    STATUS KEHADIRAN
+                    ============================
+                    */
 
                     $statusKehadiran = 'hadir';
 
                     if ($kategori === 'normal') {
-                        if (rand(1, 20) === 1) {
+
+                        if (rand(1, 5) === 1) {
                             $statusKehadiran = rand(0, 1) ? 'izin' : 'sakit';
                         }
                     }
 
                     if ($kategori === 'buruk') {
-                        if (rand(1, 4) !== 1) {
+
+                        if (rand(1, 2) === 1) {
                             $statusKehadiran = rand(0, 1) ? 'izin' : 'sakit';
                         }
                     }
+
+                    /*
+                    ============================
+                    JIKA IZIN / SAKIT
+                    ============================
+                    */
 
                     if ($statusKehadiran !== 'hadir') {
 
@@ -121,7 +122,7 @@ class PresensiSeeder extends Seeder
 
                     /*
                     ============================
-                    DURASI
+                    DURASI KERJA
                     ============================
                     */
 
@@ -150,24 +151,45 @@ class PresensiSeeder extends Seeder
                         $statusJam = 'hijau';
                     }
 
-                    $jamDatang = '08:00:00';
+                    /*
+                    ============================
+                    JAM DATANG
+                    ============================
+                    */
 
-                    $jamPulang = Carbon::createFromTimeString($jamDatang)
+                    if (rand(1, 10) <= 2) {
+
+                        $jamDatang = Carbon::createFromTime(9, rand(0, 20), 0);
+                    } else {
+
+                        $jamDatang = Carbon::createFromTime(8, rand(0, 20), 0);
+                    }
+
+                    $jamPulang = $jamDatang->copy()
                         ->addHours($durasiJam)
                         ->format('H:i:s');
 
+                    /*
+                    ============================
+                    SIMPAN DATA
+                    ============================
+                    */
+
                     Presensi::create([
+
                         'id_user' => $id_user,
                         'tanggal' => $tanggal->toDateString(),
 
-                        'jam_datang' => $jamDatang,
+                        'jam_datang' => $jamDatang->format('H:i:s'),
                         'jam_pulang' => $jamPulang,
+
                         'durasi_menit' => $durasiJam * 60,
 
                         'lat_datang' => -7.8229397,
                         'long_datang' => 110.3728715,
                         'lat_pulang' => -7.8229397,
                         'long_pulang' => 110.3728715,
+
                         'jarak_datang' => 0,
                         'jarak_pulang' => 0,
 
@@ -176,6 +198,7 @@ class PresensiSeeder extends Seeder
 
                         'status_jam_kerja' => $statusJam,
                         'status_kehadiran' => 'hadir',
+
                     ]);
                 }
 

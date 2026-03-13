@@ -174,7 +174,7 @@
                             </td>
                             <td>
                                 <div class="inst-name">{{ 'STMIK EL RAHMA YOGYAKARTA' }}</div>
-                                <div class="inst-web">{{ 'www.stmikelrahma.ac.id' }}</div>
+                                <div class="inst-web">{{ 'stmikelrahma.ac.id' }}</div>
                             </td>
                         </tr>
                     </table>
@@ -274,26 +274,83 @@
                     @endif
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr style="font-weight:bold">
+                    <td colspan="4" class="center">TOTAL</td>
+                    <td class="center">{{ $totalDurasi }}</td>
+
+                    @if ($isDosen)
+                        <td class="center">{{ $totalSS }}</td>
+                        <td class="center">{{ $totalSM }}</td>
+                        <td class="center">{{ $totalPS }}</td>
+                        <td class="center">{{ $totalPM }}</td>
+                        <td class="center">{{ $totalSem }}</td>
+                        <td class="center">{{ $totalBim }}</td>
+                        <td class="center">{{ $totalUji }}</td>
+                        <td class="center">{{ $totalKKL }}</td>
+                        <td class="center">{{ $totalTL }}</td>
+                    @endif
+                </tr>
+            </tfoot>
         </table>
 
 
         {{-- REKAP --}}
-        <table class="table-data" style="width:200px;margin-top:12px">
+        <table style="margin-top:12px; width:60%; border-collapse:collapse;">
             <tr>
-                <th>Status</th>
-                <th>Jumlah</th>
-            </tr>
-            <tr>
-                <td>Hadir</td>
-                <td class="center">{{ $rekap['hadir'] }}</td>
-            </tr>
-            <tr>
-                <td>Sakit</td>
-                <td class="center">{{ $rekap['sakit'] }}</td>
-            </tr>
-            <tr>
-                <td>Izin</td>
-                <td class="center">{{ $rekap['izin'] }}</td>
+
+                <!-- KOLOM KIRI -->
+                <td style="width:220px; vertical-align:top; padding-right:20px;">
+
+                    <table class="table-data" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hadir</td>
+                                <td class="center">{{ $rekap['hadir'] }}</td>
+                            </tr>
+                            <tr>
+                                <td>Sakit</td>
+                                <td class="center">{{ $rekap['sakit'] }}</td>
+                            </tr>
+                            <tr>
+                                <td>Izin</td>
+                                <td class="center">{{ $rekap['izin'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </td>
+
+                <!-- KOLOM KANAN -->
+                <td style="width:260px; vertical-align:top;">
+
+                    <table class="table-data" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Status Jam Kerja</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Memenuhi</td>
+                                <td class="center">{{ $memenuhi }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tidak Memenuhi</td>
+                                <td class="center">{{ $tidakMemenuhi }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </td>
+
             </tr>
         </table>
 

@@ -11,7 +11,7 @@
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <x-breadcrumb :items="[
                         'Dosen' => route('admin.dosen'),
-                        'Lihat' => '#',
+                        $dosen->dataDiri->name => '#',
                     ]" />
                     @if (session('success'))
                         <div
@@ -101,16 +101,98 @@
                                                 class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                                 Ubah Password
                                             </a>
-                                            <form method="POST"
-                                                action="{{ route('admin.dosen.status', ['id' => $dosen->id_user]) }}"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin mengubah status dosen ini menjadi {{ $dosen->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}?');">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit"
+                                            <div x-data="{ openStatusD: false, processingStatusD: false }" class="w-full">
+
+                                                <!-- BUTTON UBAH STATUS -->
+                                                <button @click="openStatusD = true" type="button"
                                                     class="flex w-full px-3 py-2 font-medium text-left text-gray-900 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-300">
                                                     Ubah Status
                                                 </button>
-                                            </form>
+
+                                                <!-- MODAL KONFIRMASI -->
+                                                <div x-show="openStatusD" x-cloak
+                                                    class="fixed inset-0 z-99999 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                                    <div @click.away="openStatusD = false"
+                                                        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                                        <h2
+                                                            class="text-lg font-bold mb-3 text-gray-800 dark:text-white/90">
+                                                            Konfirmasi Perubahan Status
+                                                        </h2>
+
+                                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-5">
+                                                            Apakah Anda yakin ingin mengubah status dosen ini menjadi
+                                                            <span class="font-semibold">
+                                                                {{ $dosen->status_keaktifan === 'aktif' ? 'nonaktif' : 'aktif' }}
+                                                            </span>?
+                                                        </p>
+
+                                                        <div class="flex justify-end gap-2">
+
+                                                            <button @click="openStatusD = false"
+                                                                class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200">
+                                                                Batal
+                                                            </button>
+
+                                                            <button
+                                                                @click="openStatusD = false; processingStatusD = true; $nextTick(() => { $refs.formStatusD.submit(); });"
+                                                                class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+                                                                Ya, Ubah
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- FORM UBAH STATUS -->
+                                                <form x-ref="formStatusD" method="POST"
+                                                    action="{{ route('admin.dosen.status', ['id' => $dosen->id_user]) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                </form>
+
+                                                <!-- LOADING OVERLAY -->
+                                                <div x-show="processingStatusD" x-cloak
+                                                    class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
+                                                    <div
+                                                        class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                        <div class="flex items-start gap-3">
+
+                                                            <svg class="h-6 w-6 animate-spin mt-0.5 text-indigo-500"
+                                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                viewBox="0 0 24 24">
+
+                                                                <circle class="opacity-25" cx="12" cy="12"
+                                                                    r="10" stroke="currentColor" stroke-width="4">
+                                                                </circle>
+
+                                                                <path class="opacity-75" fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                                                </path>
+
+                                                            </svg>
+
+                                                            <div>
+                                                                <h3
+                                                                    class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                                    Mengubah Status…
+                                                                </h3>
+
+                                                                <p
+                                                                    class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                                    Sedang memproses perubahan status dosen.
+                                                                    Jangan menutup atau memuat ulang halaman sampai
+                                                                    proses selesai.
+                                                                </p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                             <div x-data="{ openDelete: false, deleting: false }" class="w-full">
 
                                                 <!-- BUTTON DELETE (di dalam dropdown) -->
@@ -164,8 +246,9 @@
                                                             <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
                                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                 viewBox="0 0 24 24">
-                                                                <circle class="opacity-25" cx="12" cy="12"
-                                                                    r="10" stroke="currentColor" stroke-width="4">
+                                                                <circle class="opacity-25" cx="12"
+                                                                    cy="12" r="10" stroke="currentColor"
+                                                                    stroke-width="4">
                                                                 </circle>
                                                                 <path class="opacity-75" fill="currentColor"
                                                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -205,9 +288,9 @@
                                             alt="" class="w-full h-full object-cover">
                                     @else
                                         <div
-                                                    class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
-                                                    Foto tidak tersedia
-                                                </div>
+                                            class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 dark:text-gray-100 text-gray-500">
+                                            Foto tidak tersedia
+                                        </div>
                                     @endif
 
 
@@ -290,9 +373,8 @@
                                             <div class="w-4">:</div>
                                             <div class="flex-1">
                                                 @if ($dosen->dataDiri->tersertifikasi === 'sudah')
-                                                    
-                                                <span>Sudah | </span>
-                                                <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
+                                                    <span>Sudah | </span>
+                                                    <a href="{{ $dosen->dataDiri->serdosen->preview_url }}"
                                                         target="_blank" class="text-blue-600 hover:underline">
                                                         Lihat
                                                     </a> |
@@ -445,16 +527,99 @@
                                                 <div x-show="openDropDown" @click.outside="openDropDown = false"
                                                     class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
 
-                                                    <form method="POST"
-                                                        action="{{ route('admin.dosen.pendidikan.delete', ['id' => $dosen->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}"
-                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
+                                                    <div x-data="{ openDeleteDP: false, deletingDP: false }" class="w-full">
+
+                                                        <!-- BUTTON DELETE -->
+                                                        <button @click="openDeleteDP = true" type="button"
                                                             class="flex w-full px-3 py-2 font-medium text-left text-error-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-error-700 dark:text-error-400 dark:hover:bg-white/5 dark:hover:text-error-300">
                                                             Delete
                                                         </button>
-                                                    </form>
+
+                                                        <!-- MODAL KONFIRMASI DELETE -->
+                                                        <div x-show="openDeleteDP" x-cloak
+                                                            class="fixed inset-0 z-99999 flex items-center justify-center bg-white/40 dark:bg-black/40 backdrop-blur-sm">
+
+                                                            <div @click.away="openDeleteDP = false"
+                                                                class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 dark:bg-gray-800">
+
+                                                                <h2
+                                                                    class="text-lg font-bold mb-4 text-gray-800 dark:text-white/90">
+                                                                    Hapus Data Pendidikan
+                                                                </h2>
+
+                                                                <p
+                                                                    class="text-sm text-gray-600 dark:text-gray-300 mb-5">
+                                                                    Apakah Anda yakin ingin menghapus data pendidikan
+                                                                    ini?
+                                                                    Data yang sudah dihapus tidak dapat dikembalikan.
+                                                                </p>
+
+                                                                <div class="flex justify-end gap-2">
+
+                                                                    <button @click="openDeleteDP = false"
+                                                                        class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200">
+                                                                        Batal
+                                                                    </button>
+
+                                                                    <button
+                                                                        @click="openDeleteDP = false; deletingDP = true; $nextTick(() => { $refs.formDeleteDP.submit(); });"
+                                                                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                                                                        Hapus
+                                                                    </button>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- FORM DELETE -->
+                                                        <form x-ref="formDeleteDP" method="POST"
+                                                            action="{{ route('admin.dosen.pendidikan.delete', ['id' => $dosen->id_user, 'idPendidikan' => $pendidikan->id_pendidikan]) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+
+                                                        <!-- OVERLAY LOADING -->
+                                                        <div x-show="deletingDP" x-cloak
+                                                            class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
+
+                                                            <div
+                                                                class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+                                                                <div class="flex items-start gap-3">
+
+                                                                    <svg class="h-6 w-6 animate-spin mt-0.5 text-error-500"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="none" viewBox="0 0 24 24">
+
+                                                                        <circle class="opacity-25" cx="12"
+                                                                            cy="12" r="10"
+                                                                            stroke="currentColor" stroke-width="4">
+                                                                        </circle>
+
+                                                                        <path class="opacity-75" fill="currentColor"
+                                                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                                                        </path>
+
+                                                                    </svg>
+
+                                                                    <div>
+                                                                        <h3
+                                                                            class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                                                            Menghapus Data…
+                                                                        </h3>
+
+                                                                        <p
+                                                                            class="mt-1 text-sm text-gray-600 dark:text-white/70">
+                                                                            Sedang menghapus data pendidikan dosen.
+                                                                            Jangan menutup atau memuat ulang halaman
+                                                                            sampai proses selesai.
+                                                                        </p>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

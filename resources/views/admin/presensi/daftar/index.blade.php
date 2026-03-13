@@ -149,7 +149,7 @@
                         <tbody class="space-y-1">
                             <tr>
                                 <td class="pr-2 align-top">•</td>
-                                <td>Jam kerja minimum dosen: <b>6 jam</b></td>
+                                <td>Jam kerja dosen: <b>6 jam</b></td>
                             </tr>
 
                             <tr>

@@ -9,7 +9,7 @@
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
                 <x-breadcrumb :items="[
                     'Dosen' => route('admin.dosen'),
-                    'Lihat' => route('admin.dosen.show', $dosen->id_user),
+                    $dosen->dataDiri->name => route('admin.dosen.show', $dosen->id_user),
                     'Edit Profile' => '#',
                 ]" />
             </div>

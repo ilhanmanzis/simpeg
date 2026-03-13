@@ -9,7 +9,7 @@
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3 mx-5">
                 <x-breadcrumb :items="[
                     'Dosen' => route('admin.dosen'),
-                    'Lihat' => route('admin.dosen.show', $dosen->id_user),
+                    $dosen->dataDiri->name => route('admin.dosen.show', $dosen->id_user),
                     'Edit Sertifikat Dosen' => '#',
                 ]" />
             </div>
@@ -78,7 +78,7 @@
                             </div>
                             <div class="w-1/2 ml-3" x-show="status === 'sudah'" x-transition>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Sertifikat Dosen<span class="text-error-500">*</span>
+                                    Surat Pengajuan Sertifikat Dosen<span class="text-error-500">*</span>
                                     @if ($dosen->dataDiri->serdos)
                                         <a href="{{ $dosen->dataDiri->serdosen->preview_url }}" target="_blank"
                                             class="text-blue-600 hover:underline">

@@ -198,7 +198,7 @@
                             <td class="inst-block">
                                 {{-- Isi nama kampus dari profile agar dinamis --}}
                                 <div class="inst-name">{{ 'STMIK EL RAHMA YOGYAKARTA' }}</div>
-                                <div class="inst-web">{{ 'www.stmikelrahma.ac.id' }}</div>
+                                <div class="inst-web">{{ 'stmikelrahma.ac.id' }}</div>
                             </td>
                         </tr>
                     </table>

@@ -245,7 +245,7 @@
 
                 <td class="brand">
                     <div class="brand-title">{{ $setting->instansi_nama ?? 'STMIK EL RAHMA YOGYAKARTA' }}</div>
-                    <div class="brand-sub">{{ $setting->website ?? 'www.stmikelrahma.ac.id' }}</div>
+                    <div class="brand-sub">{{ $setting->website ?? 'stmikelrahma.ac.id' }}</div>
                 </td>
                 <td class="right print-meta nowrap">
                     Dicetak: {{ $now->format('d M Y H:i') }} WIB
