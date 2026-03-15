@@ -170,7 +170,7 @@ class Presensi extends Controller
 
             foreach ($durasiKerja as $row) {
 
-                $labels[] = Carbon::create()->month($row->bulan)->translatedFormat('F');
+                $labels[] = Carbon::create()->month((int) $row->bulan)->translatedFormat('F');
 
                 // ubah menit ke jam desimal
                 $data[] = round($row->rata_durasi / 60, 2);
