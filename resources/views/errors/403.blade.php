@@ -7,8 +7,8 @@
                 ERROR
             </h1>
 
-            <img src="{{ asset('images/error/403.svg') }}" alt="403" class="dark:hidden" />
-            <img src="{{ asset('images/error/403-dark.svg') }}" alt="403" class="hidden dark:block" />
+            <img src="{{ asset('images/error/403.svg') }}" alt="403" class="dark:hidden ml-16" />
+            <img src="{{ asset('images/error/403-dark.svg') }}" alt="403" class="hidden ml-16 dark:block" />
 
             <p class="mb-6 mt-10 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
                 Anda tidak memiliki izin untuk mengakses halaman ini!

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Dosen;
 
 use App\Exports\PresensiSemuaExport;
 use App\Http\Controllers\Controller;
@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Settings;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanPresensi extends Controller
@@ -19,6 +20,9 @@ class LaporanPresensi extends Controller
      */
     public function index()
     {
+        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
+            return abort(403, 'Unauthorized');
+        }
         $data = [
             'page' => 'Laporan Presensi',
             'selected' => 'Laporan',
@@ -30,7 +34,7 @@ class LaporanPresensi extends Controller
                 ->with('dataDiri:id_data_diri,id_user,name')
                 ->get()
         ];
-        return view('admin.laporan.presensi.index', $data);
+        return view('dosen.pimpinan.laporan.presensi.index', $data);
     }
 
 
@@ -39,6 +43,9 @@ class LaporanPresensi extends Controller
      */
     public function store(Request $request)
     {
+        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
+            return abort(403, 'Unauthorized');
+        }
         $validated = $request->validate([
             'id_user' => 'required|exists:users,id_user',
             'periode' => 'required|date_format:Y-m',
@@ -241,7 +248,7 @@ class LaporanPresensi extends Controller
             'chroot'               => public_path(),
             'tempDir'              => storage_path('app/dompdf_temp'),
             'fontDir'              => storage_path('app/dompdf_font'),
-        ])->loadView('admin.laporan.presensi.pdf', [
+        ])->loadView('dosen.pimpinan.laporan.presensi.pdf', [
             'title'          => $title,
             'user'           => $user,
             'role'           => $role,
@@ -273,6 +280,9 @@ class LaporanPresensi extends Controller
 
     public function cetakSemua(Request $request)
     {
+        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
+            return abort(403, 'Unauthorized');
+        }
         $request->validate([
             'periode' => 'required|date_format:Y-m',
             'type' => 'required|in:pdf,excel'
@@ -501,7 +511,7 @@ class LaporanPresensi extends Controller
             'chroot'               => public_path(),
             'tempDir'              => storage_path('app/dompdf_temp'),
             'fontDir'              => storage_path('app/dompdf_font'),
-        ])->loadView('admin.laporan.presensi.pdf_semua', [
+        ])->loadView('dosen.pimpinan.laporan.presensi.pdf_semua', [
             'rows' => $rows,
             'periode' => $periode->translatedFormat('F Y'),
             'setting'        => $setting,

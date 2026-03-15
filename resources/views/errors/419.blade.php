@@ -7,8 +7,8 @@
                 ERROR
             </h1>
 
-            <img src="{{ asset('images/error/419.svg') }}" alt="419" class="dark:hidden" />
-            <img src="{{ asset('images/error/419-dark.svg') }}" alt="419" class="hidden dark:block" />
+            <img src="{{ asset('images/error/419.svg') }}" alt="419" class="dark:hidden ml-16" />
+            <img src="{{ asset('images/error/419-dark.svg') }}" alt="419" class="hidden dark:block ml-16" />
 
             <p class="mb-6 mt-10 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
 

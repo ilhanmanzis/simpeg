@@ -1,5 +1,5 @@
 <x-layout>
-    <meta name="presensi-show-url" content="{{ route('admin.presensi.daftar.bulan.data.show', ':id') }}">
+    <meta name="presensi-show-url" content="{{ route('dosen.presensi.daftar.bulan.data.show', ':id') }}">
 
     <x-slot name="selected">{{ $selected }}</x-slot>
     <x-slot name="page">{{ $page }}</x-slot>
@@ -11,7 +11,7 @@
             <!-- ================= BREADCRUMB ================= -->
             <div class="flex justify-between mb-2">
                 <x-breadcrumb :items="[
-                    'Daftar Presensi Pegawai' => route('admin.presensi.daftar'),
+                    'Daftar Presensi Pegawai' => route('dosen.presensi.daftar'),
                     'Bulanan' => '#',
                 ]" />
                 @if (session('success'))
@@ -412,7 +412,7 @@
                     </tr>
                 `;
 
-                fetch("{{ route('admin.presensi.daftar.bulan.data') }}", {
+                fetch("{{ route('dosen.presensi.daftar.bulan.data') }}", {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',

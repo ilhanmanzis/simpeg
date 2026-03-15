@@ -4,7 +4,134 @@
     <x-slot:title>{{ $title }}</x-slot:title>
 
     <section class="">
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {{-- chart --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Line Chart -->
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+                    <h2 class="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                        Tren Kehadiran {{ $periode }}
+                    </h2>
+                    <div id="lineChart"></div>
+                </div>
+
+                <!-- Pie Chart -->
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h2 class="font-semibold text-gray-800 dark:text-gray-200">
+                            Status Kehadiran
+                        </h2>
+
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $periode }}
+                        </span>
+
+                    </div>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Total presensi bulan ini:
+                        <span class="font-semibold text-gray-700 dark:text-gray-200">
+                            {{ $totalPresensi }}
+                        </span>
+                    </p>
+
+                    <div id="pieChart"></div>
+
+                </div>
+
+                {{-- durasi --}}
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+
+                    <div class="flex justify-between mb-3">
+
+                        <h2 class="font-semibold text-gray-800 dark:text-gray-200">
+                            Rata-rata Durasi Kerja Semua Pegawai
+                        </h2>
+
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $tahun }}
+                        </span>
+
+                    </div>
+
+                    <div id="durasiChart"></div>
+
+                </div>
+
+                <!-- Cluster -->
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h2 class="font-semibold text-gray-800 dark:text-gray-200">
+                            Klaster Kedisiplinan
+                        </h2>
+
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $periode }}
+                        </span>
+
+                    </div>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Distribusi kedisiplinan pegawai berdasarkan hasil klasterisasi K-Means
+                    </p>
+
+                    <div id="clusterChart"></div>
+
+                </div>
+
+                <!-- Jam Masuk -->
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h2 class="font-semibold text-gray-800 dark:text-gray-200">
+                            Distribusi Jam Masuk
+                        </h2>
+
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $periode }}
+                        </span>
+
+                    </div>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Menampilkan jumlah presensi pegawai berdasarkan jam kedatangan.
+                    </p>
+
+                    <div id="jamMasukChart"></div>
+
+                </div>
+
+                <!-- Jam Pulang -->
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow p-5">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h2 class="font-semibold text-gray-800 dark:text-gray-200">
+                            Distribusi Jam Pulang
+                        </h2>
+
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $periode }}
+                        </span>
+
+                    </div>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Menampilkan jumlah presensi pegawai berdasarkan jam kepulangan.
+                    </p>
+
+                    <div id="jamPulangChart"></div>
+
+                </div>
+
+            </div>
 
             @php
                 $counts = $stats['counts'];
@@ -409,6 +536,452 @@
 
                 // Opsional: kalau kamu mau trigger manual
                 window.addEventListener('themechange', reThemeAll);
+            });
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const darkMode = document.documentElement.classList.contains('dark');
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | LINE CHART
+                |--------------------------------------------------------------------------
+                */
+
+                var lineChart = new ApexCharts(document.querySelector("#lineChart"), {
+
+                    chart: {
+                        type: 'line',
+                        height: 320,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+
+                    series: [
+
+                        {
+                            name: 'Hadir',
+                            data: @json($lineChart['hadir'])
+                        },
+
+                        {
+                            name: 'Sakit',
+                            data: @json($lineChart['sakit'])
+                        },
+
+                        {
+                            name: 'Izin',
+                            data: @json($lineChart['izin'])
+                        }
+
+                    ],
+
+                    xaxis: {
+                        categories: @json($lineChart['labels']),
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    grid: {
+                        borderColor: darkMode ? '#374151' : '#e5e7eb'
+                    },
+
+                    stroke: {
+                        curve: 'smooth',
+                        width: 3
+                    },
+
+                    colors: [
+                        '#10B981', // hadir
+                        '#F59E0B', // sakit
+                        '#3B82F6' // izin
+                    ],
+
+                    legend: {
+                        labels: {
+                            colors: darkMode ? '#d1d5db' : '#374151'
+                        }
+                    },
+                    tooltip: {
+                        theme: darkMode ? 'dark' : 'light'
+                    }
+
+                });
+
+                lineChart.render();
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | PIE CHART
+                |--------------------------------------------------------------------------
+                */
+
+                var pieChart = new ApexCharts(document.querySelector("#pieChart"), {
+
+                    chart: {
+                        type: 'donut',
+                        height: 320
+                    },
+
+                    series: [
+                        {{ $pieChart['hadir'] }},
+                        {{ $pieChart['sakit'] }},
+                        {{ $pieChart['izin'] }}
+                    ],
+
+                    labels: ['Hadir', 'Sakit', 'Izin'],
+
+                    colors: [
+                        '#10B981', // hijau hadir
+                        '#F59E0B', // kuning sakit
+                        '#3B82F6' // biru izin
+                    ],
+
+
+
+                    tooltip: {
+                        theme: darkMode ? 'dark' : 'light',
+                        y: {
+                            formatter: function(value) {
+                                return value + " presensi";
+                            }
+                        }
+                    },
+
+
+                    dataLabels: {
+
+                        enabled: true,
+
+                        style: {
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            colors: [darkMode ? '#ffffff' : '#111827']
+                        },
+
+                        formatter: function(val) {
+                            return Math.round(val) + "%"
+                        }
+                    },
+
+                });
+
+                pieChart.render();
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | CHART DURASI
+                |--------------------------------------------------------------------------
+                */
+
+                var durasiChart = new ApexCharts(document.querySelector("#durasiChart"), {
+
+                    chart: {
+                        type: 'bar',
+                        height: 320
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '45%'
+                        }
+                    },
+
+                    series: [{
+                        name: 'Rata-rata Durasi Kerja',
+                        data: @json($durasiChart['data'])
+                    }],
+
+                    xaxis: {
+                        categories: @json($durasiChart['labels'])
+                    },
+
+                    colors: ['#6366F1'],
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Y AXIS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    yaxis: {
+                        labels: {
+                            formatter: function(val) {
+
+                                // tampil hanya jam agar axis rapi
+                                let h = Math.floor(val);
+                                return String(h).padStart(2, '0') + ":00";
+
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function(val) {
+                            return jamFormat(val);
+                        }
+                    },
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TOOLTIP
+                    |--------------------------------------------------------------------------
+                    */
+
+                    tooltip: {
+                        y: {
+                            formatter: function(val) {
+                                return jamFormat(val);
+                            }
+                        }
+                    }
+
+                });
+
+                durasiChart.render();
+
+                function jamFormat(hours) {
+
+                    let totalSeconds = Math.round(hours * 3600);
+
+                    let h = Math.floor(totalSeconds / 3600);
+                    let m = Math.floor((totalSeconds % 3600) / 60);
+                    let s = totalSeconds % 60;
+
+                    return String(h).padStart(2, '0') + ":" +
+                        String(m).padStart(2, '0');
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | DISTRIBUSI JAM MASUK
+                |--------------------------------------------------------------------------
+                */
+
+                var jamMasukChart = new ApexCharts(document.querySelector("#jamMasukChart"), {
+
+                    chart: {
+                        type: 'bar',
+                        height: 320,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+
+                    series: [{
+                        name: 'Jumlah Presensi',
+                        data: @json($jamMasukChart['data'])
+                    }],
+
+                    xaxis: {
+                        categories: @json($jamMasukChart['labels']),
+
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    grid: {
+                        borderColor: darkMode ? '#374151' : '#e5e7eb'
+                    },
+
+                    colors: ['#6366F1'],
+
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '45%'
+                        }
+                    },
+
+                    tooltip: {
+                        theme: darkMode ? 'dark' : 'light',
+                        y: {
+                            formatter: function(val) {
+                                return val + " presensi";
+                            }
+                        }
+                    }
+
+                });
+
+                jamMasukChart.render();
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | DISTRIBUSI JAM PULANG
+                |--------------------------------------------------------------------------
+                */
+
+                var jamPulangChart = new ApexCharts(document.querySelector("#jamPulangChart"), {
+
+                    chart: {
+                        type: 'bar',
+                        height: 320,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+
+                    series: [{
+                        name: 'Jumlah Presensi',
+                        data: @json($jamPulangChart['data'])
+                    }],
+
+                    xaxis: {
+                        categories: @json($jamPulangChart['labels']),
+
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    grid: {
+                        borderColor: darkMode ? '#374151' : '#e5e7eb'
+                    },
+
+                    colors: ['#8B5CF6'],
+
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '45%'
+                        }
+                    },
+
+                    tooltip: {
+                        theme: darkMode ? 'dark' : 'light',
+                        y: {
+                            formatter: function(val) {
+                                return val + " presensi";
+                            }
+                        }
+                    }
+
+                });
+
+                jamPulangChart.render();
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | CLUSTER KEDISIPLINAN
+                |--------------------------------------------------------------------------
+                */
+
+                var clusterChart = new ApexCharts(document.querySelector("#clusterChart"), {
+
+                    chart: {
+                        type: 'bar',
+                        height: 320,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+
+                    series: [{
+                        name: 'Jumlah Pegawai',
+                        data: @json($clusterChart['data'])
+                    }],
+
+                    xaxis: {
+                        categories: @json($clusterChart['labels']),
+
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: darkMode ? '#d1d5db' : '#374151'
+                            }
+                        }
+                    },
+
+                    grid: {
+                        borderColor: darkMode ? '#374151' : '#e5e7eb'
+                    },
+
+                    colors: [
+                        '#22C55E', // tinggi hijau
+                        '#F59E0B', // sedang orange
+                        '#EF4444' // rendah merah
+                    ],
+
+                    plotOptions: {
+                        bar: {
+                            distributed: true,
+                            borderRadius: 6,
+                            columnWidth: '45%'
+                        }
+                    },
+
+                    dataLabels: {
+                        enabled: true
+                    },
+
+                    tooltip: {
+                        theme: darkMode ? 'dark' : 'light',
+                        y: {
+                            formatter: function(val) {
+                                return val + " pegawai";
+                            }
+                        }
+                    }
+
+                });
+
+                clusterChart.render();
+
             });
         </script>
     </section>

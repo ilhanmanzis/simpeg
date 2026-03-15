@@ -1,24 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
 use App\Models\Presensi;
 use App\Models\SettingLokasiPresensi;
 use App\Models\StrukturalUsers;
 use App\Models\User;
-use App\Services\GoogleDriveService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DaftarPresensi extends Controller
 {
-    protected $googleDriveService;
 
-    public function __construct(GoogleDriveService $googleDriveService)
-    {
-        $this->googleDriveService = $googleDriveService;
-    }
 
     /**
      * Display a listing of the resource.
@@ -61,7 +55,7 @@ class DaftarPresensi extends Controller
             'selected' => 'Daftar Presensi Pegawai',
             'daftarPresensi' => $daftarPresensi
         ];
-        return view('admin.presensi.daftar.index', $data);
+        return view('dosen.pimpinan.presensi.index', $data);
     }
 
     public function bulan()
@@ -77,7 +71,7 @@ class DaftarPresensi extends Controller
                 ->with('dataDiri:id_data_diri,id_user,name')
                 ->get()
         ];
-        return view('admin.presensi.daftar.bulan', $data);
+        return view('dosen.pimpinan.presensi.bulan', $data);
     }
 
     public function dataBulan(Request $request)
@@ -171,7 +165,6 @@ class DaftarPresensi extends Controller
 
     public function showBulan($id)
     {
-        $today = Carbon::today();
 
         $presensi = Presensi::with(['user.dataDiri', 'aktivitas', 'dokumen'])
             ->where('id_presensi', $id)
@@ -183,7 +176,7 @@ class DaftarPresensi extends Controller
             ->whereDate('tanggal_selesai', $presensi->tanggal)
             ->exists();
 
-        return view('admin.presensi.daftar.detail', [
+        return view('dosen.pimpinan.presensi.detail', [
             'page'      => 'Presensi',
             'selected'  => 'Presensi',
             'title'     => 'Detail Presensi',
@@ -191,40 +184,5 @@ class DaftarPresensi extends Controller
             'lokasiKampus' => $lokasiKampus,
             'isStruktural' => $isStruktural,
         ]);
-    }
-
-
-    public function destroy($id)
-    {
-        $presensi = Presensi::findOrFail($id);
-
-        // ambil semua dokumen presensi
-        $dokumens = $presensi->dokumen;
-
-        foreach ($dokumens as $doc) {
-
-            // hapus file dari google drive
-            if ($doc->file_id) {
-                $this->googleDriveService->deleteById($doc->file_id);
-            }
-
-            // hapus record dokumen
-            $doc->delete();
-        }
-
-        // hapus relasi pivot
-        $presensi->dokumen()->detach();
-
-        // hapus aktivitas jika ada
-        if ($presensi->aktivitas) {
-            $presensi->aktivitas->delete();
-        }
-
-        // hapus presensi
-        $presensi->delete();
-
-        return redirect()
-            ->route('admin.presensi.daftar.bulan')
-            ->with('success', 'Presensi berhasil dihapus');
     }
 }

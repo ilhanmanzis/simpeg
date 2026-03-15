@@ -9,6 +9,7 @@ use App\Models\PresensiAktivitas;
 use App\Models\PresensiDokumen;
 use App\Models\SettingLokasiPresensi;
 use App\Models\StrukturalUsers;
+use App\Models\User;
 use App\Services\LocationService;
 use App\Services\PresensiService;
 use Carbon\Carbon;
@@ -16,19 +17,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Settings;
+use App\Services\Kmeans\KedisiplinanService;
 
 
 class Presensi extends Controller
 {
     protected LocationService $locationService;
     protected PresensiService $presensiService;
+    protected KedisiplinanService $kedisiplinanService;
 
     public function __construct(
         LocationService $locationService,
-        PresensiService $presensiService
+        PresensiService $presensiService,
+        KedisiplinanService $kedisiplinanService
     ) {
         $this->locationService = $locationService;
         $this->presensiService = $presensiService;
+        $this->kedisiplinanService = $kedisiplinanService;
     }
 
 
@@ -138,6 +145,15 @@ class Presensi extends Controller
         // =============================
         // DATA UNTUK VIEW
         // =============================
+
+
+
+        $cluster = $this->kedisiplinanService
+            ->getClusterUser($bulan, $tahun, Auth::id());
+
+        $kedisiplinan = $this->kedisiplinanService
+            ->mappingCluster($cluster);
+
         $data = [
             'title' => 'Presensi',
             'page' => 'Presensi',
@@ -152,6 +168,8 @@ class Presensi extends Controller
             'avgJamPulang' => $avgData['avgJamPulang'],
             'avgJamKerja' => $avgData['avgJamKerja'],
             'bulan' => Carbon::now()->translatedFormat('F'),
+            'kedisiplinan' => $kedisiplinan['label'],
+            'warnaKedisiplinan' => $kedisiplinan['color'],
         ];
 
         return view('dosen.presensi.index', $data);
@@ -472,7 +490,9 @@ class Presensi extends Controller
     }
     public function cekPresensi(Request $request)
     {
-        $userId = Auth::id();
+        $user = User::with('struktural')->find(Auth::id());
+        $role = $user->role;
+        $userId = $user->id_user;
         $periode = $request->get('periode');
 
         if (is_null($periode)) {
@@ -484,25 +504,53 @@ class Presensi extends Controller
 
         $bulan = $tanggal->month;
         $tahun = $tanggal->year;
-
+        $memenuhi = 0;
+        $tidakMemenuhi = 0;
         $presensis = PresensiModel::where('id_user', $userId)
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
             ->orderBy('tanggal', 'desc')
             ->get()
-            ->map(function ($item) {
+            ->map(function ($item) use ($user, $role, &$memenuhi, &$tidakMemenuhi) {
 
-                // =============================
-                // DURASI DARI durasi_menit
-                // =============================
                 if (!is_null($item->durasi_menit)) {
                     $jam   = intdiv($item->durasi_menit, 60);
                     $menit = $item->durasi_menit % 60;
-
                     $item->durasi = sprintf('%02d:%02d:00', $jam, $menit);
                 } else {
                     $item->durasi = '00:00:00';
                 }
+
+                // =========================
+                // Hitung pemenuhan jam kerja
+                // =========================
+                if ($item->status_kehadiran === 'hadir') {
+
+                    $jamWajib = 360;
+
+                    foreach ($user->struktural as $struktural) {
+
+                        if (
+                            $struktural->status === 'aktif' &&
+                            $item->tanggal >= $struktural->tanggal_mulai &&
+                            (
+                                $struktural->tanggal_selesai === null ||
+                                $item->tanggal <= $struktural->tanggal_selesai
+                            )
+                        ) {
+                            $jamWajib = 420;
+                            break;
+                        }
+                    }
+
+
+                    if (($item->durasi_menit ?? 0) >= $jamWajib) {
+                        $memenuhi++;
+                    } else {
+                        $tidakMemenuhi++;
+                    }
+                }
+
                 return $item;
             });
 
@@ -524,6 +572,8 @@ class Presensi extends Controller
             'jumlahHadir'   => $jumlahHadir,
             'jumlahSakit'   => $jumlahSakit,
             'jumlahIzin'    => $jumlahIzin,
+            'memenuhi' => $memenuhi,
+            'tidakMemenuhi' => $tidakMemenuhi,
         ]);
     }
 
@@ -536,6 +586,10 @@ class Presensi extends Controller
             ->where('id_user', $userId)
             ->where('id_presensi', $id)
             ->firstOrFail();
+
+        if ($userId != $presensi->id_user) {
+            return redirect()->route('dosen.presensi.cek')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
 
         $lokasiKampus = SettingLokasiPresensi::first();
         $isStruktural = StrukturalUsers::where('id_user', $userId)
@@ -562,5 +616,235 @@ class Presensi extends Controller
         $cacheKey = "presensi_avg_{$userId}_{$bulan}_{$tahun}";
 
         Cache::forget($cacheKey);
+    }
+    public function cetakPdf(Request $request)
+    {
+        $periode = $request->periode ?? now()->format('Y-m');
+
+        $tanggal = Carbon::createFromFormat('Y-m', $periode);
+        $bulan   = $tanggal->month;
+        $tahun   = $tanggal->year;
+
+
+
+        /** =========================
+         *  DATA USER
+         *  ========================= */
+
+        $user = User::with(['struktural', 'dataDiri'])->where('id_user', Auth::id())->firstOrFail();
+        $role = $user->role;
+
+        /** =========================
+         *  DATA PRESENSI
+         *  ========================= */
+        $presensis = PresensiModel::where('id_user', $user->id_user)
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->where(function ($q) {
+
+                // hadir
+                $q->where(function ($sub) {
+                    $sub->whereNotNull('jam_datang')
+                        ->whereNotNull('jam_pulang')
+                        ->whereNotNull('durasi_menit');
+                })
+
+                    // sakit / izin
+                    ->orWhereIn('status_kehadiran', ['sakit', 'izin']);
+            })
+            ->orderBy('tanggal', 'asc')
+            ->get()
+            ->map(function ($p) use ($role) {
+
+                // Format tanggal
+                $p->tanggal_label = Carbon::parse($p->tanggal)->translatedFormat('d-m-Y');
+
+                // Datang & Pulang
+                $p->datang = $p->jam_datang ?? '-';
+                $p->pulang = $p->jam_pulang ?? '-';
+
+                // Durasi
+                if (!is_null($p->durasi_menit)) {
+                    $jam   = intdiv($p->durasi_menit, 60);
+                    $menit = $p->durasi_menit % 60;
+                    $p->durasi = sprintf('%02d:%02d:00', $jam, $menit);
+                } else {
+                    $p->durasi = '-';
+                }
+
+                // Jika bukan hadir
+                if ($p->status_kehadiran !== 'hadir') {
+                    $p->keterangan = ucfirst($p->status_kehadiran);
+                } else {
+                    $p->keterangan = null;
+                }
+
+                // Khusus karyawan → buang kolom aktivitas
+                if ($role === 'karyawan') {
+                    $p->aktivitas = null;
+                }
+
+                return $p;
+            });
+
+        /** =========================
+         *  REKAP STATUS
+         *  ========================= */
+        $rekap = [
+            'hadir' => $presensis->where('status_kehadiran', 'hadir')->count(),
+            'sakit' => $presensis->where('status_kehadiran', 'sakit')->count(),
+            'izin'  => $presensis->where('status_kehadiran', 'izin')->count(),
+        ];
+
+        /** =========================
+         *  HEADER / KOP PDF
+         *  ========================= */
+        $setting = Settings::first();
+
+        // === LOGO HANDLING (sama seperti laporan pegawai)
+        $original = public_path('storage/logo/' . ($setting->logo ?? ''));
+        $alt      = storage_path('app/public/logo/' . ($setting->logo ?? ''));
+
+        $path = is_file($original) ? $original : (is_file($alt) ? $alt : null);
+
+        $logoFileSrc   = null;
+        $logoDataUri   = null;
+        $logoPngData64 = null;
+
+        if ($path) {
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if ($ext === 'webp' && function_exists('imagecreatefromwebp')) {
+                if ($im = @imagecreatefromwebp($path)) {
+                    ob_start();
+                    imagepng($im, null, 9);
+                    imagedestroy($im);
+                    $png = ob_get_clean();
+                    if ($png) {
+                        $logoPngData64 = 'data:image/png;base64,' . base64_encode($png);
+                    }
+                }
+            } else {
+                $bytes = @file_get_contents($path);
+                if ($bytes !== false) {
+                    $mime = mime_content_type($path) ?: 'image/png';
+                    $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($bytes);
+                }
+            }
+
+            $logoFileSrc = 'file://' . $path;
+        }
+
+        $totalDurasiMenit = 0;
+
+        $totalSS  = 0;
+        $totalSM  = 0;
+        $totalPS  = 0;
+        $totalPM  = 0;
+        $totalSem = 0;
+        $totalBim = 0;
+        $totalUji = 0;
+        $totalKKL = 0;
+        $totalTL  = 0;
+
+        foreach ($presensis as $p) {
+
+            if ($p->durasi_menit) {
+                $totalDurasiMenit += $p->durasi_menit;
+            }
+
+            if ($p->aktivitas) {
+                $totalSS  += $p->aktivitas->sks_siang ?? 0;
+                $totalSM  += $p->aktivitas->sks_malam ?? 0;
+                $totalPS  += $p->aktivitas->sks_praktikum_siang ?? 0;
+                $totalPM  += $p->aktivitas->sks_praktikum_malam ?? 0;
+                $totalSem += $p->aktivitas->seminar_jumlah ?? 0;
+                $totalBim += $p->aktivitas->pembimbing_jumlah ?? 0;
+                $totalUji += $p->aktivitas->penguji_jumlah ?? 0;
+                $totalKKL += $p->aktivitas->kkl_jumlah ?? 0;
+                $totalTL  += $p->aktivitas->tugas_luar_jumlah ?? 0;
+            }
+        }
+
+        $jam   = intdiv($totalDurasiMenit, 60);
+        $menit = $totalDurasiMenit % 60;
+
+        $totalDurasi = sprintf('%02d:%02d:00', $jam, $menit);
+        $memenuhi = 0;
+        $tidakMemenuhi = 0;
+
+        foreach ($presensis as $p) {
+
+            if ($p->status_kehadiran !== 'hadir') {
+                continue;
+            }
+
+            $jamWajib = 480;
+
+            if ($role === 'dosen') {
+
+                $jamWajib = 360;
+
+                foreach ($user->struktural as $struktural) {
+
+                    if (
+                        $struktural->status === 'aktif' &&
+                        $p->tanggal >= $struktural->tanggal_mulai &&
+                        (
+                            $struktural->tanggal_selesai === null ||
+                            $p->tanggal <= $struktural->tanggal_selesai
+                        )
+                    ) {
+                        $jamWajib = 420;
+                        break;
+                    }
+                }
+            }
+
+            if (($p->durasi_menit ?? 0) >= $jamWajib) {
+                $memenuhi++;
+            } else {
+                $tidakMemenuhi++;
+            }
+        }
+
+        /** =========================
+         *  EXPORT PDF
+         *  ========================= */
+        $title = 'Rekap Presensi Pegawai';
+
+        $pdf = PDF::setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'      => true,
+            'chroot'               => public_path(),
+            'tempDir'              => storage_path('app/dompdf_temp'),
+            'fontDir'              => storage_path('app/dompdf_font'),
+        ])->loadView('dosen.presensi.pdf', [
+            'title'          => $title,
+            'user'           => $user,
+            'role'           => $role,
+            'periode'        => $tanggal->translatedFormat('F Y'),
+            'presensis'      => $presensis,
+            'rekap'          => $rekap,
+            'setting'        => $setting,
+            'logoFileSrc'    => $logoFileSrc,
+            'logoDataUri'    => $logoDataUri,
+            'logoPngData64'  => $logoPngData64,
+            'totalDurasi' => $totalDurasi,
+            'totalSS' => $totalSS,
+            'totalSM' => $totalSM,
+            'totalPS' => $totalPS,
+            'totalPM' => $totalPM,
+            'totalSem' => $totalSem,
+            'totalBim' => $totalBim,
+            'totalUji' => $totalUji,
+            'totalKKL' => $totalKKL,
+            'totalTL' => $totalTL,
+            'memenuhi' => $memenuhi,
+            'tidakMemenuhi' => $tidakMemenuhi,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download(
+            'rekap-presensi-' . $user->npp . '-' . $user->dataDiri->name . '-' . $tanggal->format('Y-m') . '.pdf'
+        );
     }
 }

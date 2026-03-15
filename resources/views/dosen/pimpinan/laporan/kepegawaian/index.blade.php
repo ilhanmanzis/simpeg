@@ -2,7 +2,49 @@
     <x-slot name="selected">{{ $selected }}</x-slot>
     <x-slot name="page">{{ $page }}</x-slot>
     <x-slot:title>{{ $title }}</x-slot:title>
-    <div class="p-8">
+    <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <!-- ================= BREADCRUMB ================= -->
+        <div class="flex justify-between mb-2">
+            <x-breadcrumb :items="[
+                'Laporan Kepegawaian' => route('dosen.laporan'),
+                'Cetak Laporan' => '#',
+            ]" />
+            @if (session('success'))
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
+                    class="rounded-xl border border-success-500 bg-success-50 p-4 dark:border-success-500/30 dark:bg-success-500/15 mb-5">
+                    <div class="flex items-start gap-3">
+                        <div class="-mt-0.5 text-success-500">
+                            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M3.70186 12.0001C3.70186 7.41711 7.41711 3.70186 12.0001 3.70186C16.5831 3.70186 20.2984 7.41711 20.2984 12.0001C20.2984 16.5831 16.5831 20.2984 12.0001 20.2984C7.41711 20.2984 3.70186 16.5831 3.70186 12.0001ZM12.0001 1.90186C6.423 1.90186 1.90186 6.423 1.90186 12.0001C1.90186 17.5772 6.423 22.0984 12.0001 22.0984C17.5772 22.0984 22.0984 17.5772 22.0984 12.0001C22.0984 6.423 17.5772 1.90186 12.0001 1.90186ZM15.6197 10.7395C15.9712 10.388 15.9712 9.81819 15.6197 9.46672C15.2683 9.11525 14.6984 9.11525 14.347 9.46672L11.1894 12.6243L9.6533 11.0883C9.30183 10.7368 8.73198 10.7368 8.38051 11.0883C8.02904 11.4397 8.02904 12.0096 8.38051 12.3611L10.553 14.5335C10.7217 14.7023 10.9507 14.7971 11.1894 14.7971C11.428 14.7971 11.657 14.7023 11.8257 14.5335L15.6197 10.7395Z"
+                                    fill="" />
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
+                                {{ session('success') }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            @if (session('error'))
+                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
+                    class="rounded-xl border border-error-500 bg-error-50 p-4 dark:border-error-500/30 dark:bg-error-500/15 mb-5">
+                    <div class="flex items-start gap-3">
+
+
+                        <div>
+                            <h4 class="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
+                                {{ session('error') }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
 
         <div class="space-y-5 sm:space-y-6 mb-5">
             <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -41,7 +83,8 @@
                                             <option value="dosen"
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Dosen</option>
                                             <option value="karyawan"
-                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Karyawan
+                                                class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Tenaga
+                                                Pendidik
                                             </option>
                                         </select>
                                         <span
@@ -53,6 +96,7 @@
                                             </svg>
                                         </span>
                                     </div>
+
 
                                     <!-- Select Tersertifikasi (aktif hanya ketika pegawai = dosen) -->
                                     <div class="relative z-20 bg-transparent lg:w-64" x-show="pegawai === 'dosen'">
@@ -81,6 +125,7 @@
                                         <p class="mt-1 text-xs text-gray-500 dark:text-white/50">Hanya muncul & wajib
                                             diisi jika Pegawai = Dosen.</p>
                                     </div>
+
                                     <div class="relative z-20 bg-transparent lg:w-64">
                                         <label
                                             class="mb-1 block text-sm text-gray-600 dark:text-white/70">Status</label>
@@ -99,9 +144,11 @@
                                         <span
                                             class="pointer-events-none absolute top-[40px] right-4 z-30 text-gray-500 dark:text-gray-400">
                                             <svg class="stroke-current" width="20" height="20"
-                                                viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                viewBox="0 0 20 20" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                    stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
                                             </svg>
                                         </span>
                                     </div>
@@ -110,8 +157,9 @@
                                         <button type="submit" value="pdf" name="export"
                                             class="inline-flex items-center gap-2 rounded-lg bg-warning-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-warning-600 cursor-pointer mr-2">
 
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
 

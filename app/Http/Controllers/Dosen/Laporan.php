@@ -26,7 +26,7 @@ class Laporan extends Controller
             'selected' => 'Laporan',
             'title' => 'Laporan',
         ];
-        return view('dosen.laporan.index', $data);
+        return view('dosen.pimpinan.laporan.kepegawaian.index', $data);
     }
 
     /**
@@ -180,7 +180,7 @@ class Laporan extends Controller
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled'      => true, // penting utk img dari URL
                 'chroot' => public_path(),
-            ])->loadView('dosen.laporan.pdf', [
+            ])->loadView('dosen.pimpinan.laporan.kepegawaian.pdf', [
                 'title'          => $title,
                 'pegawai'        => $pegawai,
                 'tersertifikasi' => $tersertifikasi,

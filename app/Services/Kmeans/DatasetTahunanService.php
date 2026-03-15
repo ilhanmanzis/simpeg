@@ -16,6 +16,18 @@ class DatasetTahunanService
                 $q->where('status_keaktifan', 'aktif');
             })
             ->whereYear('tanggal', $tahun)
+            ->where(function ($q) {
+
+                // hadir
+                $q->where(function ($sub) {
+                    $sub->whereNotNull('jam_datang')
+                        ->whereNotNull('jam_pulang')
+                        ->whereNotNull('durasi_menit');
+                })
+
+                    // sakit / izin
+                    ->orWhereIn('status_kehadiran', ['sakit', 'izin']);
+            })
             ->get();
 
         $dataset = [];

@@ -3,14 +3,14 @@
      <x-slot name="page">{{ $page }}</x-slot>
      <x-slot:title>{{ $title }}</x-slot:title>
 
-     <main x-data="{ ...dashboardDurasi(), openMenu: false, openModal: false, deletingPresensi: false }" x-init="init()">
+     <main x-data="dashboardDurasi()" x-init="init()">
          <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
 
              <!-- ================= BREADCRUMB ================= -->
              <div class="mb-4 flex justify-between items-center">
                  <x-breadcrumb :items="[
-                     'Daftar Presensi Pegawai' => route('admin.presensi.daftar'),
-                     'Bulanan' => route('admin.presensi.daftar.bulan'),
+                     'Daftar Presensi Pegawai' => route('dosen.presensi.daftar'),
+                     'Bulanan' => route('dosen.presensi.daftar.bulan'),
                      'Detail Presensi' => '#',
                  ]" />
              </div>
@@ -21,32 +21,7 @@
                  <!-- INFORMASI PRESENSI -->
                  <div class="relative rounded-xl border bg-white p-5 dark:bg-white/[0.03] dark:border-gray-800">
                      <!-- tombol titik tiga -->
-                     <div class="absolute top-3 right-3">
 
-                         <button @click="openMenu = !openMenu"
-                             class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-
-                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600 dark:text-gray-300"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                     d="M12 6h.01M12 12h.01M12 18h.01" />
-                             </svg>
-                         </button>
-
-                         <!-- dropdown -->
-                         <div x-show="openMenu" x-transition @click.outside="openMenu=false"
-                             class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg">
-
-                             <button @click="openModal=true; openMenu=false"
-                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-
-                                 Hapus Presensi
-                             </button>
-
-                         </div>
-
-                     </div>
                      <h3 class="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-200">
                          Informasi Presensi
                      </h3>
@@ -452,85 +427,7 @@
 
 
          </div>
-         <!-- MODAL HAPUS PRESENSI -->
-         <div x-show="openModal" x-cloak x-transition
-             class="fixed inset-0 flex items-center justify-center bg-black/40 z-99999">
 
-             <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
-
-                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                     Hapus Presensi
-                 </h2>
-
-                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-5">
-                     Apakah Anda yakin ingin menghapus presensi ini?
-                     Data presensi yang sudah dihapus tidak dapat dikembalikan.
-                 </p>
-
-                 <div class="flex justify-end gap-3">
-
-                     <button @click="openModal=false"
-                         class="px-4 py-2 text-sm rounded-lg border text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-
-                         Batal
-                     </button>
-
-                     <form method="POST" action="{{ route('admin.presensi.destroy', $presensi->id_presensi) }}"
-                         @submit="openModal=false; deletingPresensi=true">
-
-                         @csrf
-                         @method('DELETE')
-
-                         <button class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">
-
-                             Hapus
-                         </button>
-
-                     </form>
-
-                 </div>
-
-             </div>
-
-         </div>
-         <!-- LOADING HAPUS PRESENSI -->
-         <div x-show="deletingPresensi" x-cloak
-             class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40">
-
-             <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
-
-                 <div class="flex items-start gap-3">
-
-                     <svg class="h-6 w-6 animate-spin mt-0.5 text-red-500" xmlns="http://www.w3.org/2000/svg"
-                         fill="none" viewBox="0 0 24 24">
-
-                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                             stroke-width="4">
-                         </circle>
-
-                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
-                         </path>
-
-                     </svg>
-
-                     <div>
-                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                             Menghapus presensi…
-                         </h3>
-
-                         <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
-
-                             Sistem sedang menghapus data presensi dan dokumen terkait.
-                             Jangan menutup atau memuat ulang halaman sampai proses selesai.
-
-                         </p>
-                     </div>
-
-                 </div>
-
-             </div>
-
-         </div>
      </main>
 
      @push('scripts')

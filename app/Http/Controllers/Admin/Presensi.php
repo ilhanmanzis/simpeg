@@ -11,29 +11,311 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Presensi as PresensiModel;
+use App\Services\Kmeans\KedisiplinanService;
 use App\Services\LocationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Services\PresensiService;
+use Illuminate\Support\Facades\Cache;
 
 class Presensi extends Controller
 {
     protected LocationService $locationService;
     protected PresensiService $presensiService;
+    protected $kedisiplinanService;
+
 
     public function __construct(
         LocationService $locationService,
-        PresensiService $presensiService
+        PresensiService $presensiService,
+        KedisiplinanService $kedisiplinanService
     ) {
         $this->locationService = $locationService;
         $this->presensiService = $presensiService;
+        $this->kedisiplinanService = $kedisiplinanService;
     }
     public function index()
     {
+        $bulan = now()->month;
+        $tahun = now()->year;
+        $periode = Carbon::create($tahun, $bulan)->translatedFormat('F Y');
+        $cacheKey = "dashboard_presensi_{$bulan}_{$tahun}";
+        $data = Cache::remember($cacheKey, now()->addHours(6), function () use ($bulan, $tahun) {
+
+            /*
+        |--------------------------------------------------------------------------
+        | LINE CHART
+        | Tren Kehadiran Harian (bulan ini)
+        |--------------------------------------------------------------------------
+        */
+
+            $kehadiranHarian = PresensiModel::select(
+                DB::raw('DAY(tanggal) as hari'),
+                'status_kehadiran',
+                DB::raw('COUNT(*) as total')
+            )
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->whereIn('status_kehadiran', ['hadir', 'sakit', 'izin'])
+                ->where(function ($q) {
+
+                    // hadir
+                    $q->where(function ($sub) {
+                        $sub->whereNotNull('jam_datang')
+                            ->whereNotNull('jam_pulang')
+                            ->whereNotNull('durasi_menit');
+                    })
+
+                        // sakit / izin
+                        ->orWhereIn('status_kehadiran', ['sakit', 'izin']);
+                })
+                ->groupBy('hari', 'status_kehadiran')
+                ->orderBy('hari')
+                ->get();
+
+            $labels = $kehadiranHarian->pluck('hari')->unique()->values();
+
+            $hadir = [];
+            $sakit = [];
+            $izin  = [];
+
+            foreach ($labels as $hari) {
+
+                $hadir[] = $kehadiranHarian
+                    ->where('hari', $hari)
+                    ->where('status_kehadiran', 'hadir')
+                    ->first()->total ?? 0;
+
+                $sakit[] = $kehadiranHarian
+                    ->where('hari', $hari)
+                    ->where('status_kehadiran', 'sakit')
+                    ->first()->total ?? 0;
+
+                $izin[] = $kehadiranHarian
+                    ->where('hari', $hari)
+                    ->where('status_kehadiran', 'izin')
+                    ->first()->total ?? 0;
+            }
+
+            $lineChart = [
+                'labels' => $labels,
+                'hadir' => $hadir,
+                'sakit' => $sakit,
+                'izin' => $izin
+            ];
+
+            /*
+        |--------------------------------------------------------------------------
+        | PIE CHART
+        | Status Kehadiran
+        |--------------------------------------------------------------------------
+        */
+
+            $status = PresensiModel::select(
+                'status_kehadiran',
+                DB::raw('COUNT(*) as total')
+            )
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->where(function ($q) {
+
+                    // hadir
+                    $q->where(function ($sub) {
+                        $sub->whereNotNull('jam_datang')
+                            ->whereNotNull('jam_pulang')
+                            ->whereNotNull('durasi_menit');
+                    })
+
+                        // sakit / izin
+                        ->orWhereIn('status_kehadiran', ['sakit', 'izin']);
+                })
+                ->groupBy('status_kehadiran')
+                ->pluck('total', 'status_kehadiran');
+
+            $pieChart = [
+                'hadir' => $status['hadir'] ?? 0,
+                'sakit' => $status['sakit'] ?? 0,
+                'izin' => $status['izin'] ?? 0
+            ];
+            $totalPresensi = PresensiModel::whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->count();
+
+            /*
+        |--------------------------------------------------------------------------
+        | Durasi CHART
+        |--------------------------------------------------------------------------
+        */
+
+            $durasiKerja = PresensiModel::select(
+                DB::raw('MONTH(tanggal) as bulan'),
+                DB::raw('AVG(durasi_menit) as rata_durasi')
+            )
+                ->whereYear('tanggal', $tahun)
+                ->where(function ($q) {
+
+                    // hadir
+                    $q->where(function ($sub) {
+                        $sub->whereNotNull('jam_datang')
+                            ->whereNotNull('jam_pulang')
+                            ->whereNotNull('durasi_menit');
+                    });
+                })
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get();
+
+            $labels = [];
+            $data = [];
+
+            foreach ($durasiKerja as $row) {
+
+                $labels[] = Carbon::create()->month($row->bulan)->translatedFormat('F');
+
+                // ubah menit ke jam desimal
+                $data[] = round($row->rata_durasi / 60, 2);
+            }
+
+            $durasiChart = [
+                'labels' => $labels,
+                'data' => $data
+            ];
+
+            /*
+        |--------------------------------------------------------------------------
+        | DISTRIBUSI JAM MASUK
+        |--------------------------------------------------------------------------
+        */
+
+            $jamMasuk = PresensiModel::select(
+                DB::raw('HOUR(jam_datang) as jam'),
+                DB::raw('COUNT(*) as total')
+            )
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->where(function ($q) {
+
+                    // hadir
+                    $q->where(function ($sub) {
+                        $sub->whereNotNull('jam_datang')
+                            ->whereNotNull('jam_pulang')
+                            ->whereNotNull('durasi_menit');
+                    });
+                })
+                ->groupBy('jam')
+                ->orderBy('jam')
+                ->get();
+
+            $jamMasukChart = [
+                'labels' => $jamMasuk->pluck('jam')->map(fn($j) => $j . ':00'),
+                'data' => $jamMasuk->pluck('total')
+            ];
+
+            /*
+        |--------------------------------------------------------------------------
+        | DISTRIBUSI JAM PULANG
+        |--------------------------------------------------------------------------
+        */
+
+            $jamPulang = PresensiModel::select(
+                DB::raw('HOUR(jam_pulang) as jam'),
+                DB::raw('COUNT(*) as total')
+            )
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->where(function ($q) {
+
+                    // hadir
+                    $q->where(function ($sub) {
+                        $sub->whereNotNull('jam_datang')
+                            ->whereNotNull('jam_pulang')
+                            ->whereNotNull('durasi_menit');
+                    });
+                })
+                ->groupBy('jam')
+                ->orderBy('jam')
+                ->get();
+
+            $jamPulangChart = [
+                'labels' => $jamPulang->pluck('jam')->map(fn($j) => $j . ':00'),
+                'data' => $jamPulang->pluck('total')
+            ];
+
+            /*
+        |--------------------------------------------------------------------------
+        | CLUSTER KEDISIPLINAN
+        |--------------------------------------------------------------------------
+        */
+
+            $cluster = [
+                'tinggi' => 0,
+                'sedang' => 0,
+                'rendah' => 0
+            ];
+
+            $kmeans = $this->kedisiplinanService->getKedisiplinanUser($bulan, $tahun);
+
+            if ($kmeans) {
+
+                foreach ($kmeans['clusters'] as $row) {
+
+                    $mapping = $this->kedisiplinanService->mappingCluster($row['cluster']);
+
+                    if ($mapping['label'] == 'Tinggi') {
+                        $cluster['tinggi']++;
+                    }
+
+                    if ($mapping['label'] == 'Sedang') {
+                        $cluster['sedang']++;
+                    }
+
+                    if ($mapping['label'] == 'Rendah') {
+                        $cluster['rendah']++;
+                    }
+                }
+            }
+
+            $clusterChart = [
+                'labels' => ['Tinggi', 'Sedang', 'Rendah'],
+                'data' => [
+                    $cluster['tinggi'],
+                    $cluster['sedang'],
+                    $cluster['rendah']
+                ]
+            ];
+
+            return [
+                'lineChart' => $lineChart,
+                'pieChart' => $pieChart,
+                'totalPresensi' => $totalPresensi,
+                'durasiChart' => $durasiChart,
+                'jamMasukChart' => $jamMasukChart,
+                'jamPulangChart' => $jamPulangChart,
+                'clusterChart' => $clusterChart,
+                'tahun' => $tahun
+            ];
+        });
+        /*
+        |--------------------------------------------------------------------------
+        | VIEW
+        |--------------------------------------------------------------------------
+        */
+
         return view('admin.presensi.dashboard.index', [
             'page' => 'Dashboard Presensi',
             'selected' => 'Dashboard Presensi',
-            'title' => 'Dashboard Presensi'
+            'title' => 'Dashboard Presensi',
+            'periode' => $periode,
+
+
+            'lineChart' => $data['lineChart'],
+            'pieChart' => $data['pieChart'],
+            'totalPresensi' => $data['totalPresensi'],
+            'durasiChart' => $data['durasiChart'],
+            'tahun' => $data['tahun'],
+            'jamMasukChart' => $data['jamMasukChart'],
+            'jamPulangChart' => $data['jamPulangChart'],
+            'clusterChart' => $data['clusterChart']
         ]);
     }
 

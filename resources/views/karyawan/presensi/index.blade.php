@@ -407,8 +407,8 @@
                         </p>
 
                         <!-- VALUE -->
-                        <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
-                            Tinggi
+                        <p class="mt-2 text-lg font-semibold {{ $warnaKedisiplinan }}">
+                            {{ $kedisiplinan }}
                         </p>
 
                     </div>

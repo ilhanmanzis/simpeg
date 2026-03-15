@@ -6,7 +6,7 @@
 
     <div x-data="klasterisasiApp()" class="space-y-6 p-6 mx-auto max-w-(--breakpoint-2xl)">
         <x-breadcrumb :items="[
-            'Daftar Presensi Pegawai' => route('admin.presensi.daftar'),
+            'Daftar Presensi Pegawai' => route('dosen.presensi.daftar'),
             'Clustering' => '#',
         ]" />
 
@@ -110,10 +110,7 @@
 
                         {{-- PROSES BERTAHAP --}}
                         <button @click="prosesIterasi()" :disabled="loadingProses"
-                            class="flex items-center gap-2 px-4 py-2
-                       bg-amber-500 hover:bg-amber-600
-                       text-white text-sm font-medium
-                       rounded-lg shadow-sm transition">
+                            class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg shadow-sm transition">
                             <template x-if="!loadingProses">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -137,10 +134,7 @@
 
                         {{-- HASIL OTOMATIS --}}
                         <button @click="prosesOtomatis()" :disabled="loadingHasil"
-                            class="flex items-center gap-2 px-4 py-2
-                       bg-emerald-600 hover:bg-emerald-700
-                       text-white text-sm font-medium
-                       rounded-lg shadow-sm transition">
+                            class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow-sm transition">
                             <template x-if="!loadingHasil">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -1123,7 +1117,7 @@
 
                         }
 
-                        const res = await fetch('/admin/presensi/klasterisasi/proses', {
+                        const res = await fetch('/dosen/presensi/klasterisasi/proses', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1187,7 +1181,7 @@
 
                         }
 
-                        const res = await fetch('/admin/presensi/klasterisasi/proses', {
+                        const res = await fetch('/dosen/presensi/klasterisasi/proses', {
 
                             method: 'POST',
 
@@ -1259,7 +1253,7 @@
 
                         }
 
-                        const res = await fetch('/admin/presensi/klasterisasi/hasil', {
+                        const res = await fetch('/dosen/presensi/klasterisasi/hasil', {
 
                             method: 'POST',
 

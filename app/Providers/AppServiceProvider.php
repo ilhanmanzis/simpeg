@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Presensi;
+use App\Observers\PresensiObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -38,5 +40,6 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('notifications', Auth::user()->unreadNotifications);
             }
         });
+        Presensi::observe(PresensiObserver::class);
     }
 }

@@ -10,7 +10,7 @@
             <!-- ================= BREADCRUMB ================= -->
             <div class="flex justify-between mb-2">
                 <x-breadcrumb :items="[
-                    'Laporan Presensi' => route('admin.laporan.presensi'),
+                    'Laporan Presensi' => route('dosen.laporan.presensi'),
                     'Cetak Laporan' => '#',
                 ]" />
                 @if (session('success'))
@@ -58,7 +58,7 @@
                     </h3>
                 </div>
 
-                <form method="POST" action="{{ route('admin.laporan.presensi.store') }}" target="_blank"
+                <form method="POST" action="{{ route('dosen.laporan.presensi.store') }}" target="_blank"
                     class="mb-5 items-end px-5 py-2 grid grid-cols-1 xl:grid-cols-3 gap-6">
                     @csrf
 
@@ -118,7 +118,7 @@
                     </h3>
                 </div>
 
-                <form method="POST" action="{{ route('admin.laporan.presensi.semua') }}" target="_blank"
+                <form method="POST" action="{{ route('dosen.laporan.presensi.semua') }}" target="_blank"
                     class="items-end px-5 py-5 grid grid-cols-1 xl:grid-cols-3 gap-6">
 
                     @csrf
