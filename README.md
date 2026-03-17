@@ -50,6 +50,12 @@ DB_DATABASE=simpeg
 DB_USERNAME=root
 DB_PASSWORD=
 
+
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=xxxxxxx
+MAIL_FROM_ADDRESS="your_email@gmail.com"
+
+
 # setup google drive
 FILESYSTEM_CLOUD=google
 GOOGLE_DRIVE_CLIENT_ID=""
@@ -180,6 +186,80 @@ Ikuti langkah berikut untuk mendapatkan `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_
     ```
     GOOGLE_DRIVE_FOLDER_ID="xxxxxxxxxxxxxxx"
     ```
+
+## 🔐 Panduan Membuat Sandi Aplikasi (App Password) Google
+
+Sandi Aplikasi Google digunakan untuk menghubungkan aplikasi pihak ketiga (seperti Laravel, SMTP email, dll) tanpa menggunakan password utama akun Google.
+
+---
+
+### 📌 Persyaratan
+
+Sebelum membuat Sandi Aplikasi, pastikan:
+
+- Akun Google Anda **sudah mengaktifkan Verifikasi 2 Langkah (2FA)**
+- Anda dapat login ke akun Google
+
+---
+
+### 🚀 Langkah-langkah Membuat Sandi Aplikasi
+
+### 1. Masuk ke Akun Google
+
+Buka halaman berikut: [Login Google](https://myaccount.google.com)
+
+### 2. Buka Menu Keamanan
+
+- Klik menu **"Security" / "Keamanan"**
+- Scroll ke bagian **"Signing in to Google"**
+
+---
+
+### 3. Aktifkan Verifikasi 2 Langkah
+
+Jika belum aktif:
+
+- Klik **"2-Step Verification"**
+- Ikuti proses aktivasi sampai selesai
+
+---
+
+### 4. Buka Menu Sandi Aplikasi
+
+Setelah 2FA aktif:
+
+- Klik **"App Passwords" / "Sandi Aplikasi"**
+
+---
+
+### 5. Pilih Aplikasi & Perangkat
+
+- Pada bagian **Select App** → pilih:
+    - `Mail` (untuk email)
+- Pada bagian **Select Device** → pilih:
+    - `Other (Custom name)` → isi misalnya: `Laravel SMTP`
+
+---
+
+### 6. Generate Sandi
+
+- Klik tombol **"Generate"**
+- Google akan menampilkan **16 karakter sandi**
+
+Contoh: abcd efgh ijkl mnop
+
+### 7. Masukan ke dalam file .env
+
+- ubah pada bagian ini
+
+```
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=xxxxxxx
+MAIL_FROM_ADDRESS="your_email@gmail.com"
+```
+
+- masukan password pada bagian **MAIL_PASSWORD=xxxxxxx** (tanpa menggunakan spasi)
+- untuk bagian **MAIL_USERNAME=your_email@gmail.com** dan **MAIL_FROM_ADDRESS="your_email@gmail.com"** isi dengan alamat email sebagai pengirim (yang digunakan saat login pada langkah 1)
 
 ## ⚠ Info
 
