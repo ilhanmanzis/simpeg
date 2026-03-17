@@ -137,9 +137,9 @@
                                             @endif
 
                                         </p>
-                                        {{-- <a href="/reset-password.html"
-                                            class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">Forgot
-                                            password?</a> --}}
+                                        <a href="{{ route('password.request') }}"
+                                            class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">Lupa
+                                            Kata Sandi?</a>
                                     </div>
 
                                     <!-- Button -->

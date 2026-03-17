@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\FungsionalUsers;
 use App\Models\PengajuanFungsionals;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
@@ -94,6 +95,9 @@ class PengajuanFungsional extends Controller
             ]
         );
 
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Jabatan Fungsional', 'dosen.pengajuan.fungsional.show', $perubahan->id_pengajuan_fungsional)
+        );
         return redirect()->route('admin.pengajuan.fungsional')
             ->with('success', 'Pengajuan kenaikan jabatan fungsional ditolak.');
     }
@@ -184,6 +188,9 @@ class PengajuanFungsional extends Controller
             ]
         );
         $serdosService->clearCache($user->id_user);
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Jabatan Fungsional', 'dosen.pengajuan.fungsional.show', $perubahan->id_pengajuan_fungsional)
+        );
 
         return redirect()->route('admin.pengajuan.fungsional')
             ->with('success', 'Pengajuan kenaikan jabatan fungsional berhasil disetujui');

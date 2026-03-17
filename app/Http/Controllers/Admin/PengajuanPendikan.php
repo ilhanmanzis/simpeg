@@ -7,6 +7,7 @@ use App\Models\Dokumens;
 use App\Models\Jenjangs;
 use App\Models\Pendidikans;
 use App\Models\PengajuanPerubahanPendidikans;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
@@ -105,6 +106,10 @@ class PengajuanPendikan extends Controller
                 'jenis' => 'pendidikan'
             ]
         );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Pendidikan', $user->role == 'dosen' ? 'dosen.pengajuan.pendidikan.show' : 'karyawan.pengajuan.pendidikan.show', $perubahan->id_perubahan)
+        );
+
 
         return redirect()->route('admin.pengajuan.pendidikan')
             ->with('success', 'Pengajuan perubahan pendidikan ditolak.');
@@ -475,6 +480,9 @@ class PengajuanPendikan extends Controller
                 ]
             );
             $serdosService->clearCache($user->id_user);
+            $user->notify(
+                new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Pendidikan', $user->role == 'dosen' ? 'dosen.pengajuan.pendidikan.show' : 'karyawan.pengajuan.pendidikan.show', $perubahan->id_perubahan)
+            );
             return redirect()->route('admin.pengajuan.pendidikan')
                 ->with('success', 'Pengajuan perubahan pendidikan (edit) disetujui.');
         });

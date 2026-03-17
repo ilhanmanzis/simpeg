@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\PengajuanSertifikats;
 use App\Models\Sertifikats;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -104,6 +105,9 @@ class PengajuanSertifikat extends Controller
                 'id'    => $perubahan->id_pengajuan,
                 'jenis' => 'sertifikat'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Pendidikan', $user->role == 'dosen' ? 'dosen.sertifikat.riwayat' : 'karyawan.sertifikat.riwayat', $perubahan->id_pengajuan)
         );
 
         return redirect()->route('admin.pengajuan.sertifikat')
@@ -289,6 +293,9 @@ class PengajuanSertifikat extends Controller
                     'id'    => $perubahan->id_pengajuan,
                     'jenis' => 'sertifikat'
                 ]
+            );
+            $user->notify(
+                new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Pendidikan', $user->role == 'dosen' ? 'dosen.sertifikat.riwayat' : 'karyawan.sertifikat.riwayat', $perubahan->id_pengajuan)
             );
 
             return redirect()->route('admin.pengajuan.sertifikat')

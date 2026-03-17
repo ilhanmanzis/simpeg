@@ -9,6 +9,8 @@ use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Services\NotificationService;
+use Illuminate\Support\Facades\DB;
 
 class Register extends Controller
 {
@@ -81,10 +83,16 @@ class Register extends Controller
                 Rule::unique('users', 'email'),
 
                 // cek di tabel register dengan kondisi status
-                Rule::unique('register', 'email')
-                    ->where(function ($query) {
-                        $query->whereIn('status', ['disetujui', 'pending']);
-                    }),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('email', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('Email sudah ada sebelumnya.');
+                    }
+                }
             ],
             'password' => 'required|min:6',
             'nik' => [
@@ -95,8 +103,16 @@ class Register extends Controller
                 Rule::unique('data_diri', 'no_ktp'),
 
                 // cek di register (selain ditolak)
-                Rule::unique('register', 'no_ktp')
-                    ->where('status', '!=', 'ditolak'),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('no_ktp', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('NIK sudah ada sebelumnya.');
+                    }
+                }
             ],
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
@@ -118,8 +134,16 @@ class Register extends Controller
                 Rule::unique('users', 'npp'),
 
                 // cek di register (selain ditolak)
-                Rule::unique('register', 'npp')
-                    ->where('status', '!=', 'ditolak'),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('npp', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('Email sudah ada sebelumnya.');
+                    }
+                }
             ],
             'nuptk' => 'required|max:30',
             'nip' => 'nullable|max:30',
@@ -222,8 +246,18 @@ class Register extends Controller
                 'transkip_nilai' => $transkipNilaiName
             ]);
         }
+        NotificationService::notifyAdmin(
+            'Pengajuan Akun Baru',
+            'Ada pengajuan Akun Baru '
+                . $register->name,
+            'admin.pengajuan.akun.show',
+            [
+                'id'    => $register->id_register,
+                'jenis' => 'registrasi'
+            ]
+        );
 
-        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
+        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui. Informasi Registrasi Akun Baru akan di kirim lewat email');
     }
     public function storeKaryawan(Request $request)
     {
@@ -242,10 +276,16 @@ class Register extends Controller
                 Rule::unique('users', 'email'),
 
                 // cek di tabel register dengan kondisi status
-                Rule::unique('register', 'email')
-                    ->where(function ($query) {
-                        $query->whereIn('status', ['disetujui', 'pending']);
-                    }),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('email', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('Email sudah ada sebelumnya.');
+                    }
+                }
             ],
             'password' => 'required|min:6',
             'nik' => [
@@ -256,8 +296,16 @@ class Register extends Controller
                 Rule::unique('data_diri', 'no_ktp'),
 
                 // cek di register (selain ditolak)
-                Rule::unique('register', 'no_ktp')
-                    ->where('status', '!=', 'ditolak'),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('no_ktp', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('NIK sudah ada sebelumnya.');
+                    }
+                }
             ],
             'no_hp' => 'required|max:20',
             'tanggal_lahir' => 'required|date',
@@ -285,8 +333,16 @@ class Register extends Controller
                 Rule::unique('users', 'npp'),
 
                 // cek di register (selain ditolak)
-                Rule::unique('register', 'npp')
-                    ->where('status', '!=', 'ditolak'),
+                function ($attribute, $value, $fail) {
+                    $exists = DB::table('register')
+                        ->where('npp', $value)
+                        ->whereIn('status', ['pending', 'disetujui'])
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('NPP sudah ada sebelumnya.');
+                    }
+                }
             ],
 
 
@@ -369,7 +425,16 @@ class Register extends Controller
                 'transkip_nilai' => $transkipNilaiName
             ]);
         }
-
-        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui');
+        NotificationService::notifyAdmin(
+            'Pengajuan Akun Baru',
+            'Ada pengajuan Akun Baru'
+                . $register->name,
+            'admin.pengajuan.akun.show',
+            [
+                'id'    => $register->id_register,
+                'jenis' => 'registrasi'
+            ]
+        );
+        return redirect()->route('login')->with('success', 'Registrasi Berhasil, Status akun masih pending. Tunggu sampai Admin menyetujui. Informasi Registrasi Akun Baru akan di kirim lewat email');
     }
 }

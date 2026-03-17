@@ -34,6 +34,8 @@ use App\Http\Controllers\Admin\Semester;
 use App\Http\Controllers\Admin\Sertifikat as AdminSertifikat;
 use App\Http\Controllers\Admin\StrukturalUser;
 use App\Http\Controllers\Auth;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Dosen\DaftarPresensi as DosenDaftarPresensi;
 use App\Http\Controllers\Dosen\Fungsional;
@@ -714,3 +716,11 @@ Route::get('/data-tendik/{npp}', [Tendik::class, 'show'])->name('public.tendik.s
 
 Route::get('/foto/{id}', [FileController::class, 'showFotoPublic'])->name('public.foto');
 Route::get('/dokumen/{id}', [FileController::class, 'showDokumenPublic'])->name('public.dokumen');
+
+// lupa password
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// reset password
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');

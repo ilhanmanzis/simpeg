@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Penelitians;
 use App\Models\PengajuanPenelitians;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
 use Illuminate\Http\Request;
@@ -77,6 +78,9 @@ class PengajuanPenelitian extends Controller
                 'jenis' => 'penelitian'
             ]
         );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Penelitian', 'dosen.penelitian.riwayat', $perubahan->id_pengajuan)
+        );
 
         return redirect()->route('admin.pengajuan.penelitian')
             ->with('success', 'Pengajuan BKD Penelitian ditolak.');
@@ -109,6 +113,9 @@ class PengajuanPenelitian extends Controller
             ]
         );
         $serdosService->clearCache($user->id_user);
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Penelitian', 'dosen.penelitian.riwayat', $perubahan->id_pengajuan)
+        );
 
         return redirect()->route('admin.pengajuan.penelitian')
             ->with('success', 'Pengajuan BKD Penelitian disetujui.');

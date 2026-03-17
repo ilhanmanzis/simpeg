@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\GolonganUsers;
 use App\Models\PengajuanGolongans;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -85,7 +86,9 @@ class PengajuanGolongan extends Controller
                 'jenis' => 'golongan'
             ]
         );
-
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Golongan', 'dosen.pengajuan.golongan.show', $perubahan->id_pengajuan_golongan)
+        );
         return redirect()->route('admin.pengajuan.golongan')
             ->with('success', 'Pengajuan kenaikan golongan ditolak.');
     }
@@ -167,6 +170,9 @@ class PengajuanGolongan extends Controller
                 'id'    => $perubahan->id_pengajuan_golongan,
                 'jenis' => 'golongan'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Golongan', 'dosen.pengajuan.golongan.show', $perubahan->id_pengajuan_golongan)
         );
 
         return redirect()->route('admin.pengajuan.golongan')

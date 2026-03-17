@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\PengajuanSerdoss;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -88,6 +89,9 @@ class PengajuanSerdos extends Controller
                 'id'    => $perubahan->id_pengajuan,
                 'jenis' => 'serdos'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Pengajuan Sertifikat Dosen', 'dosen.serdos.riwayat', $perubahan->id_pengajuan)
         );
 
         return redirect()->route('admin.pengajuan.serdos')
@@ -202,6 +206,10 @@ class PengajuanSerdos extends Controller
                 'jenis' => 'serdos'
             ]
         );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Pengajuan Sertifikat Dosen', 'dosen.serdos.riwayat', $perubahan->id_pengajuan)
+        );
+
         return redirect()->route('admin.pengajuan.serdos')->with('success', 'Sertifikat Dosen berhasil diperbarui.');
     }
 }

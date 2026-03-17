@@ -5,9 +5,9 @@ STMIK El Rahma Yogyakarta
 SIMPEG adalah aplikasi Sistem Informasi Kepegawaian yang dikembangkan untuk memenuhi kebutuhan mata kuliah **Kerja Praktek** di kampus **STMIK El Rahma Yogyakarta**.  
 Sistem ini ditujukan untuk membantu pengelolaan data kepegawaian dengan tiga jenis pengguna utama:
 
--   **Admin** → mengelola data pegawai, dokumen, serta akses pengguna.
--   **Dosen** → mengunggah dan mengelola dokumen/arsip terkait (Sertifikasi, BKD, dan lain-lain).
--   **Karyawan** → mengunggah dan mengelola dokumen/arsip terkait(Sertifikasi dan lain lain).
+- **Admin** → mengelola data pegawai, dokumen, serta akses pengguna.
+- **Dosen** → mengunggah dan mengelola dokumen/arsip terkait (Sertifikasi, BKD, dan lain-lain).
+- **Karyawan** → mengunggah dan mengelola dokumen/arsip terkait(Sertifikasi dan lain lain).
 
 Semua file dan foto yang diunggah oleh pengguna **disimpan di Google Drive** menggunakan integrasi API, sehingga lebih aman dan terstruktur.
 
@@ -180,3 +180,10 @@ Ikuti langkah berikut untuk mendapatkan `GOOGLE_DRIVE_CLIENT_ID`, `GOOGLE_DRIVE_
     ```
     GOOGLE_DRIVE_FOLDER_ID="xxxxxxxxxxxxxxx"
     ```
+
+## ⚠ Info
+
+Jika ada eror karena cache, ubah dulu di dalam file .env.
+
+- ubah **CACHE_STORE=database** menjadi **CACHE_STORE=file**
+- setelah berhasil ubah lagi seperti semula menjadi **CACHE_STORE=database**

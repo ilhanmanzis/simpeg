@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\PengajuanPenunjangs;
 use App\Models\Penunjangs;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
@@ -94,6 +95,9 @@ class PengajuanPenunjang extends Controller
                 'id'    => $perubahan->id_pengajuan,
                 'jenis' => 'penunjang'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Penunjang', 'dosen.penunjang.riwayat', $perubahan->id_pengajuan)
         );
 
         return redirect()->route('admin.pengajuan.penunjang')

@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Services\GoogleDriveService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\StatusRegisterMail;
 
 class PengajuanAkun extends Controller
 {
@@ -47,21 +49,7 @@ class PengajuanAkun extends Controller
         return view('admin.pengajuan.akun.index', $data);
     }
 
-    public function create()
-    { /* kosong */
-    }
-    public function store(Request $request)
-    { /* kosong */
-    }
-    public function edit(string $id)
-    { /* kosong */
-    }
-    public function update(Request $request, string $id)
-    { /* kosong */
-    }
-    public function destroy(string $id)
-    { /* kosong */
-    }
+  
 
     public function show(string $id)
     {
@@ -267,6 +255,8 @@ class PengajuanAkun extends Controller
             }
 
             $register->update(['status' => 'disetujui']);
+             Mail::to($register->email)
+        ->send(new StatusRegisterMail($register, $register->status));
 
             return redirect()->route('admin.pengajuan.akun')
                 ->withHeaders([
@@ -298,6 +288,8 @@ class PengajuanAkun extends Controller
         }
 
         $register->update(['status' => 'ditolak']);
+             Mail::to($register->email)
+        ->send(new StatusRegisterMail($register, $register->status));
 
         return redirect()->route('admin.pengajuan.akun')->with('success', 'Pengajuan akun ditolak.');
     }

@@ -2,6 +2,15 @@
     <x-slot:page>{{ $page }}</x-slot:page>
     <x-slot:selected>{{ $selected }}</x-slot:selected>
     <x-slot:title>{{ $title }}</x-slot:title>
+    @if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+        <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">

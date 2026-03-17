@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanPerubahanDatas;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -78,6 +79,9 @@ class PengajuanProfilePribadi extends Controller
                 'id'    => $perubahan->id_perubahan,
                 'jenis' => 'profile_pribadi'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Profile Pribadi', $user->role == 'dosen' ? 'dosen.pengajuan.profile.show' : 'karyawan.pengajuan.profile.show', $perubahan->id_perubahan)
         );
 
         return redirect()->route('admin.pengajuan.profile')
@@ -180,6 +184,9 @@ class PengajuanProfilePribadi extends Controller
                 'id'    => $perubahan->id_perubahan,
                 'jenis' => 'profile_pribadi'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'Perubahan Profile Pribadi', $user->role == 'dosen' ? 'dosen.pengajuan.profile.show' : 'karyawan.pengajuan.profile.show', $perubahan->id_perubahan)
         );
 
         return redirect()->route('admin.pengajuan.profile')

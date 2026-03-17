@@ -7,9 +7,7 @@
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
             <!-- Breadcrumb Start -->
             <div x-data="{ pageName: `{{ $title }}` }">
-                <div class="flex items-center justify-between gap-5">
-                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Pengajuan Akun</h2>
-                </div>
+
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <x-breadcrumb :items="[
                         'Pengajuan Akun' => route('admin.pengajuan.akun'),
@@ -44,8 +42,11 @@
 
             <div class="space-y-5 sm:space-y-6">
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-                    <div class="px-5 py-4 sm:px-6 sm:py-5">
 
+                    <div class="px-5 py-4 sm:px-6 sm:py-5">
+                        <div class="flex items-center justify-center gap-5 w-full">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Pengajuan Akun</h2>
+                        </div>
 
                         {{-- profil pribadi --}}
                         <div class="p-5 border border-gray-100 dark:border-gray-800 sm:p-6">

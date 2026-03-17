@@ -7,6 +7,7 @@ use App\Models\Dokumens;
 use App\Models\PengajaranDetails;
 use App\Models\Pengajarans;
 use App\Models\PengajuanPengajarans;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
@@ -102,7 +103,9 @@ class PengajuanPengajaran extends Controller
                 'jenis' => 'pengajaran'
             ]
         );
-
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Pengajaran', 'dosen.pengabdian.riwayat', $perubahan->id_pengajuan_pengajaran)
+        );
 
         return redirect()->route('admin.pengajuan.pengajaran')
             ->with('success', 'Pengajuan perubahan Pengajaran ditolak.');
@@ -221,6 +224,10 @@ class PengajuanPengajaran extends Controller
             ]
         );
         $serdosService->clearCache($user->id_user);
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Pengajaran', 'dosen.pengabdian.riwayat', $perubahan->id_pengajuan_pengajaran)
+        );
+
 
         return redirect()->route('admin.pengajuan.pengajaran')
             ->with('success', 'Pengajuan BKD Pengajaran disetujui.');

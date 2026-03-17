@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dokumens;
 use App\Models\Pengabdians;
 use App\Models\PengajuanPengabdians;
+use App\Notifications\StatusPengajuanNotification;
 use App\Services\GoogleDriveService;
 use App\Services\NotificationService;
 use App\Services\SerdosService;
@@ -107,6 +108,9 @@ class PengajuanPengabdian extends Controller
                 'id'    => $perubahan->id_pengajuan,
                 'jenis' => 'pengabdian'
             ]
+        );
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Pengabdian', 'dosen.pengabdian.riwayat', $perubahan->id_pengajuan)
         );
         return redirect()->route('admin.pengajuan.pengabdian')
             ->with('success', 'Pengajuan perubahan pengabdian ditolak.');
@@ -309,7 +313,9 @@ class PengajuanPengabdian extends Controller
             ]
         );
         $serdosService->clearCache($user->id_user);
-
+        $user->notify(
+            new StatusPengajuanNotification($perubahan, $perubahan->status, 'BKD Pengabdian', 'dosen.pengabdian.riwayat', $perubahan->id_pengajuan)
+        );
         return redirect()->route('admin.pengajuan.pengabdian')
             ->with('success', 'Pengajuan BKD Pengabdian disetujui.');
     }
