@@ -113,14 +113,9 @@ class KlasterisasiController extends Controller
 
             // iterasi selanjutnya
             $centroidNormal = $request->centroid;
-            $centroidAwal = null;
         } else {
-
-            // iterasi pertama
-            $centroidAwal = $this->centroidService->centroidAwal($dataset);
-
-            $centroidNormal = $this->centroidService
-                ->normalisasiCentroid($centroidAwal, $dataset);
+            // centroid diambil dari data yang sudah dinormalisasi
+            $centroidNormal = $this->centroidService->centroidAwal($datasetNormal);
         }
 
 
@@ -168,7 +163,6 @@ class KlasterisasiController extends Controller
             'dataset' => $dataset,
             'normalisasi' => $datasetNormal,
 
-            'centroid_awal' => $centroidAwal,
             'centroid_normal' => $centroidNormal,
 
             'iterasi' => $hasil,
@@ -234,12 +228,9 @@ class KlasterisasiController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $centroidAwal = $this->centroidService
-            ->centroidAwal($dataset);
-
+        // centroid langsung dari data yang SUDAH DINORMALISASI
         $centroidNormal = $this->centroidService
-            ->normalisasiCentroid($centroidAwal, $dataset);
-
+            ->centroidAwal($datasetNormal);
 
         /*
         |--------------------------------------------------------------------------
@@ -262,7 +253,6 @@ class KlasterisasiController extends Controller
             'dataset' => $dataset,
             'normalisasi' => $datasetNormal,
 
-            'centroid_awal' => $centroidAwal,
             'centroid_normal' => $centroidNormal,
 
             'hasil' => $hasil

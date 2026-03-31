@@ -59,7 +59,7 @@
                                     $r = $struktural['record'];
                                     $isActive = $struktural['is_active'];
 
-                                    $nama = $isActive ? $r->user->dataDiri->name ?? '-' : '-';
+                                    $nama = $isActive ? $r->user->nama_lengkap ?? '-' : '-';
                                     $tglMulai = $isActive ? $r->tanggal_mulai ?? '-' : '-';
 
                                     // kalau fallback, boleh ambil info lain dari $r

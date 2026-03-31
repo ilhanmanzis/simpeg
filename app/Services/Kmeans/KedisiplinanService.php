@@ -56,8 +56,7 @@ class KedisiplinanService
                 // =============================
                 // CENTROID
                 // =============================
-                $centroidAwal = $this->centroidService->centroidAwal($dataset);
-                $centroidNormal = $this->centroidService->normalisasiCentroid($centroidAwal, $dataset);
+                $centroidNormal = $this->centroidService->centroidAwal($datasetNormal);
 
                 // =============================
                 // PROSES K-MEANS

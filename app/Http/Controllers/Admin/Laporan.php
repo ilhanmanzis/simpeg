@@ -90,7 +90,7 @@ class Laporan extends Controller
             $dd   = $u->dataDiri;
             $npp  = $u->npp ?? '-';
             $status_keaktifan  = $u->status_keaktifan ?? '-';
-            $nama = $dd->name ?? '-';
+            $nama = $u->nama_lengkap ?? '-';
 
             // Ambil 1 record aktif & terbaru (sudah di-limit(1) saat eager load)
             $golAktif  = optional($u->golongan->first());
@@ -367,6 +367,6 @@ class Laporan extends Controller
         ])->setPaper('A4', 'portrait');
 
 
-        return $pdf->download("biodata-{$user->dataDiri->name}.pdf");
+        return $pdf->download("biodata-{$user->nama_lengkape}.pdf");
     }
 }

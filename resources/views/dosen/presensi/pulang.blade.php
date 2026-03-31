@@ -51,7 +51,7 @@
                             <div>Nama</div>
                             <div>:</div>
                             <div class="font-medium text-gray-800 dark:text-gray-100">
-                                {{ auth()->user()->dataDiri->name ?? '-' }}
+                                {{ auth()->user()->nama_lengkap ?? '-' }}
                             </div>
                         </div>
 

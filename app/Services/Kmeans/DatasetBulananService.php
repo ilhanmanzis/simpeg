@@ -39,7 +39,6 @@ class DatasetBulananService
 
         foreach ($groupUser as $idUser => $rows) {
 
-            $totalDurasi = 0;
             $totalPemenuhan = 0;
             $totalHari = 0;
             $totalHadir = 0;
@@ -108,7 +107,6 @@ class DatasetBulananService
                     // Akumulasi
                     // ============================
 
-                    $totalDurasi += $durasi;
                     $totalPemenuhan += $pemenuhan;
                 }
             }
@@ -125,7 +123,7 @@ class DatasetBulananService
 
             $dataset[] = [
                 'id_user' => $idUser,
-                'name' => $user->dataDiri->name ?? '-',
+                'name' => $user->nama_lengkap ?? '-',
                 'npp' => $user->npp ?? '-',
 
                 'x1' => round($x1, 2),

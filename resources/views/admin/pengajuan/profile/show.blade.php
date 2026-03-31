@@ -51,7 +51,7 @@
                                 class="flex justify-between  border-b border-gray-100 dark:border-gray-800 py-4 -mx-5 px-5">
 
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90  -mt-5 ">
-                                    Pengajuan Perubahan Profile Pribadi {{ $pengajuan->user->dataDiri->name }}</h2>
+                                    Pengajuan Perubahan Profile Pribadi {{ $pengajuan->user->nama_lengkap }}</h2>
 
 
                             </div>

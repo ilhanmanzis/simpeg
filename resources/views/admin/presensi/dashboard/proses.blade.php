@@ -111,7 +111,7 @@
                             <div>Nama</div>
                             <div>:</div>
                             <div class="font-medium text-gray-800 dark:text-gray-100">
-                                {{ $presensi->user->dataDiri->name ?? '-' }}
+                                {{ $presensi->user->nama_lengkap ?? '-' }}
                             </div>
                         </div>
                         <div class="grid grid-cols-[140px_10px_1fr]">

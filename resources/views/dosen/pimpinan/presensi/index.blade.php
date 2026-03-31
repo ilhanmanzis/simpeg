@@ -243,7 +243,7 @@
                                                     class="font-medium
                                                     @if ($item->jam_pulang) line-through text-error-500
                                                     @else text-gray-900 dark:text-white/90 @endif">
-                                                    {{ $item->user->dataDiri->name ?? '-' }}
+                                                    {{ $item->user->nama_lengkap ?? '-' }}
                                                 </span>
 
                                                 @if ($item->jam_pulang)

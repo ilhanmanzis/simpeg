@@ -208,7 +208,7 @@
         <table style="margin-bottom:8px">
             <tr class="name">
                 <td width="80">Nama</td>
-                <td>: {{ $user->dataDiri->name }}</td>
+                <td>: {{ $user->nama_lengkap }}</td>
             </tr>
             <tr class="name">
                 <td>NPP</td>

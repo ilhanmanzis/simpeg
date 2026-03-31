@@ -20,7 +20,7 @@
 
             <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
                 <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                    {{ $title }} {{ $user->dataDiri->name }}
+                    {{ $title }} {{ $user->nama_lengkap }}
                 </h3>
             </div>
             <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
@@ -258,7 +258,7 @@
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Lengkapi
                                         Golongan Terlebih Dahulu</h3>
                                     <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
-                                        {{ $user->dataDiri->name }} belum memiliki data golongan. Silakan isi golongan
+                                        {{ $user->nama_lengkap }} belum memiliki data golongan. Silakan isi golongan
                                         sebelum melakukan mutasi jabatan fungsional.
                                     </p>
                                     <div class="mt-4 flex items-center gap-2">

@@ -40,7 +40,7 @@
                     <div class="grid grid-cols-1 gap-1 sm:grid-cols-1">
                         @if ($dosen)
                             <h3 class="text-base font-medium text-gray-800 dark:text-white/90 mb-5">
-                                Dosen Saat Ini : {{ $dosen->user->dataDiri->name }}
+                                Dosen Saat Ini : {{ $dosen->user->nama_lengkap }}
                             </h3>
                         @endif
                         <div class="flex justify-between mb-2">
@@ -57,7 +57,7 @@
                                             <option value="{{ $user['id_user'] }}"
                                                 {{ old('user') == $user['id_user'] ? 'selected' : '' }}
                                                 class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
-                                                {{ $user->dataDiri->name }}
+                                                {{ $user->nama_lengkap }}
                                             </option>
                                         @endforeach
 

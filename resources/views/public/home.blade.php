@@ -62,7 +62,7 @@
 
             @php
                 // tampilkan maksimal 12 dahulu; sisanya bisa dibuka via "Lihat selengkapnya"
-                $list = isset($strukturals) ? $strukturals->take(12) : collect();
+                $list = isset($strukturals) ? $strukturals->take(30) : collect();
             @endphp
 
             @if ($list->isEmpty())
@@ -82,7 +82,7 @@
                             $dataDiri = $user->dataDiri ?? null;
 
                             // Nama pejabat
-                            $nama = $dataDiri->name ?? ($user->name ?? ($user->nama ?? '-'));
+                            $nama = $user->nama_lengkap ?? ($user->name ?? ($user->nama ?? '-'));
 
                             // Nama jabatan struktural (mis. "Rektor", "Kabag Akademik", dst.)
                             $namaJabatan = $jabatan->nama_jabatan ?? ($jabatan->nama_jabatan ?? 'Jabatan Struktural');
@@ -112,10 +112,14 @@
 
                             {{-- Info --}}
                             <div class="p-3 text-left">
+
+                                <h3 class="text-xs font-semibold text-gray-900 leading-snug">
+                                    <span>
+                                        {{ $nama }}
+                                    </span>
+                                </h3>
                                 <div class="flex items-start justify-between gap-2">
-                                    <h3 class="text-sm font-semibold text-gray-900 leading-snug">
-                                        <span class="hover:text-yellow-700">{{ $nama }}</span>
-                                    </h3>
+                                    <p class="mt-0.5 text-xs text-gray-600 leading-tight">{{ $namaJabatan }}</p>
                                     @if ($isActive)
                                         <span
                                             class="shrink-0 inline-flex items-center rounded-full bg-green-100 text-green-700 text-[10px] font-medium px-2 py-0.5">
@@ -123,7 +127,6 @@
                                         </span>
                                     @endif
                                 </div>
-                                <p class="mt-0.5 text-xs text-gray-600 leading-tight">{{ $namaJabatan }}</p>
                             </div>
                         </article>
                     @endforeach
@@ -444,7 +447,7 @@
                                 <div>
                                     <a href="{{ route('public.dosen.show', $item->user->npp) }}"
                                         class="text-2xl font-bold text-gray-800 hover:text-yellow-600">
-                                        {{ $item->user->dataDiri->name }}
+                                        {{ $item->user->nama_lengkap }}
                                     </a>
 
                                     <p class="mt-3 text-gray-600 text-lg">

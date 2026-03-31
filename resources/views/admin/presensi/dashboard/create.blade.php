@@ -107,7 +107,7 @@
                                         <option value="{{ $pegawai->id_user }}" data-role="{{ $pegawai->role }}"
                                             data-struktural="{{ $pegawai->role === 'dosen' && $pegawai->has_struktural_aktif ? '1' : '0' }}">
 
-                                            {{ $pegawai->npp }} - {{ $pegawai->dataDiri->name ?? '-' }}
+                                            {{ $pegawai->npp }} - {{ $pegawai->nama_lengkap ?? '-' }}
 
                                         </option>
                                     @endforeach

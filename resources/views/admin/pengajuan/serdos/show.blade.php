@@ -22,7 +22,7 @@
 
                 <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between">
                     <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                        Sertifikat Dosen {{ $pengajuan->user->dataDiri->name }}
+                        Sertifikat Dosen {{ $pengajuan->user->nama_lengkap }}
                     </h3>
                 </div>
                 <div

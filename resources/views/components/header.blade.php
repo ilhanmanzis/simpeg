@@ -31,8 +31,16 @@
                 </svg>
             </button>
             <!-- Hamburger Toggle BTN -->
-
-            <a href="/" class="lg:hidden flex justify-start items-center">
+            @php
+                // Arahkan dashboard sesuai role (opsional).
+                $dashboardUrl = match (auth()->user()->role ?? null) {
+                    'admin' => route('admin.dashboard'),
+                    'dosen' => route('dosen.dashboard'),
+                    'karyawan' => route('karyawan.dashboard'),
+                    default => route('dashboard'), // fallback
+                };
+            @endphp
+            <a href="{{ $dashboardUrl }}" class="lg:hidden flex justify-start items-center">
                 <img class="size-10" src="{{ asset('storage/logo/' . $setting->logo) }}" alt="Logo" />
                 <h2 class="text-md font-bold text-black dark:text-white ml-2">{{ $setting->name }}</h2>
             </a>
@@ -159,10 +167,7 @@
 
                         </ul>
 
-                        {{-- <a href="#"
-                            class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 font-medium text-gray-800 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                            View All Notification
-                        </a> --}}
+
                     </div>
                     <!-- Dropdown End -->
                 </div>
@@ -181,7 +186,8 @@
                         @endif
                     </span>
 
-                    <span class="text-theme-sm mr-1 block font-medium"> {{ auth()->user()->dataDiri->name ?? 'Admin' }}
+                    <span class="text-theme-sm mr-1 block font-medium">
+                        {{ auth()->user()->dataDiri->name ?? 'Admin' }}
                     </span>
 
                     <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400"

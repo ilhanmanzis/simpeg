@@ -172,7 +172,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $karyawan->dataDIri->name }}
+                                                                    {{ $karyawan->nama_lengkap }}
                                                                 </p>
                                                             </div>
                                                         </div>

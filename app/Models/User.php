@@ -232,4 +232,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(PengajuanSerdoss::class, 'id_user', 'id_user');
     }
+
+
+
+    public function getNamaLengkapAttribute()
+    {
+        $nama = $this->dataDiri->name ?? '';
+
+        $gelar = Pendidikans::getGelarByUser($this->id_user);
+
+        return $nama . ($gelar ? ', ' . $gelar : '');
+    }
 }

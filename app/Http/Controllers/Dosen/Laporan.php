@@ -92,7 +92,7 @@ class Laporan extends Controller
         $rows = $users->map(function ($u) use ($pegawai, $isSudah) {
             $dd   = $u->dataDiri;
             $npp  = $u->npp ?? '-';
-            $nama = $dd->name ?? '-';
+            $nama = $u->nama_lengkap ?? '-';
             $status_keaktifan  = $u->status_keaktifan ?? '-';
 
             // Ambil 1 record aktif & terbaru (sudah di-limit(1) saat eager load)

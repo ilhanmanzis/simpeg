@@ -64,7 +64,7 @@
                 <div class="px-5 py-4 sm:px-6 sm:py-5 flex justify-between items-start">
                     <div>
                         <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                            Mutasi Jabatan Fungsional {{ $user->dataDiri->name }}
+                            Mutasi Jabatan Fungsional {{ $user->nama_lengkap }}
                         </h3>
 
                     </div>
@@ -255,7 +255,7 @@
                                             Lengkapi Golongan Terlebih Dahulu
                                         </h3>
                                         <p class="mt-1 text-sm text-gray-600 dark:text-white/70">
-                                            {{ $user->dataDiri->name }} belum memiliki data golongan. Silakan isi
+                                            {{ $user->nama_lengkap }} belum memiliki data golongan. Silakan isi
                                             golongan
                                             sebelum melakukan mutasi jabatan fungsional.
                                         </p>

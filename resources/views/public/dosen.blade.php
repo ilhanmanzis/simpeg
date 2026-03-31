@@ -51,7 +51,7 @@
                                 </td>
                                 <td class="px-4 py-2 align-top">{{ $dosen->npp ?? '-' }}</td>
 
-                                <td class="px-4 py-2 align-top">{{ $dosen->dataDiri->name ?? '-' }}</td>
+                                <td class="px-4 py-2 align-top">{{ $dosen->nama_lengkap ?? '-' }}</td>
 
                                 <td class="px-4 py-2 align-top">
                                     @if ($dosen->status_keaktifan ?? false)

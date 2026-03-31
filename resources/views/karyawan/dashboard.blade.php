@@ -202,7 +202,7 @@
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Nama</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $karyawan->dataDiri->name }}</div>
+                                            <div class="flex-1">{{ $karyawan->nama_lengkap }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NPP</div>

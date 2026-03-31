@@ -155,7 +155,7 @@
                                     </td>
 
                                     <td class="px-2 py-3 font-mono dark:text-white/90">
-                                        {{ $item->user->dataDiri->name ?? '-' }}
+                                        {{ $item->user->nama_lengkap ?? '-' }}
                                     </td>
 
                                     <td class="px-2 py-3 font-mono dark:text-white/90">

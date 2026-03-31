@@ -247,7 +247,7 @@
     <table class="pair-table">
         <tr>
             <td class="pair-label">Nama</td>
-            <td class="pair-value">{{ $user->dataDiri->name ?? '-' }}</td>
+            <td class="pair-value">{{ $user->nama_lengkap ?? '-' }}</td>
             <td class="pair-label">NPP</td>
             <td class="pair-value">{{ $user->npp }}</td>
         </tr>

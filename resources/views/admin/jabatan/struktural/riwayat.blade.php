@@ -130,7 +130,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat->user->dataDiri->name }}
+                                                                    {{ $riwayat->user->nama_lengkap }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -182,11 +182,11 @@
                                                             <div class="flex -space-x-2">
                                                                 <button type="button"
                                                                     @click="confirmDelete(
-    '{{ route('admin.jabatan.struktural.mutasi.delete', ['id' => $riwayat['id_struktural_user']]) }}',
-    '{{ $riwayat->status }}',
-    '{{ $riwayat->user->dataDiri->name }}',
-    '{{ $struktural->nama_jabatan }}'
-  )"
+                                                                            '{{ route('admin.jabatan.struktural.mutasi.delete', ['id' => $riwayat['id_struktural_user']]) }}',
+                                                                            '{{ $riwayat->status }}',
+                                                                            '{{ $riwayat->user->nama_lengkap }}',
+                                                                            '{{ $struktural->nama_jabatan }}'
+                                                                        )"
                                                                     class="inline-flex items-center gap-2 rounded-lg bg-error-500 px-2 py-1.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-error-600">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                         fill="none" viewBox="0 0 24 24"

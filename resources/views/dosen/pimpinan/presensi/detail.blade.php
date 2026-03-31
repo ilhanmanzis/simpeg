@@ -37,7 +37,7 @@
                              <div>Nama</div>
                              <div>:</div>
                              <div class="font-mono">
-                                 {{ $presensi->user->dataDiri->name ?? '-' }}
+                                 {{ $presensi->user->nama_lengkap ?? '-' }}
                              </div>
                          </div>
 

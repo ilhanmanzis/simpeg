@@ -8,7 +8,7 @@
             {{-- Header --}}
             <div class="border-b border-gray-200 px-4 py-4 sm:px-6">
                 <h2 class="text-center text-lg sm:text-xl font-semibold text-gray-900" data-aos="fade-down">
-                    Data {{ $dosen->dataDiri->name ?? '-' }}
+                    Data {{ $dosen->nama_lengkap ?? '-' }}
                 </h2>
             </div>
 
@@ -20,7 +20,7 @@
                         class="aspect-[3/4] w-full rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center overflow-hidden">
                         @if (!empty($dosen->dataDiri->foto))
                             <img src="{{ route('public.foto', $dosen->dataDiri->dokumen->file_id) }}"
-                                alt="Foto {{ $dosen->dataDiri->name }}" class="h-full w-full object-cover">
+                                alt="Foto {{ $dosen->nama_lengkap }}" class="h-full w-full object-cover">
                         @else
                             <span class="text-gray-600 font-semibold">Foto Profil</span>
                         @endif
@@ -35,7 +35,7 @@
                                 <tr class="bg-gray-50/70 w-full">
                                     <th class="w-48 px-4 py-3 text-left font-semibold text-gray-700">Nama</th>
                                     <td class="px-4 py-3 font-semibold text-gray-900">
-                                        {{ $dosen->dataDiri->name ?? '-' }}</td>
+                                        {{ $dosen->nama_lengkap ?? '-' }}</td>
                                 </tr>
                                 <tr class="bg-gray-50/70">
                                     <th class=" px-4 py-3 text-left font-semibold text-gray-700">NPP</th>

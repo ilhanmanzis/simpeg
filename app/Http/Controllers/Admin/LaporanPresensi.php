@@ -267,7 +267,7 @@ class LaporanPresensi extends Controller
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download(
-            'rekap-presensi-' . $user->npp . '-' . $user->dataDiri->name . '-' . $periode->format('Y-m') . '.pdf'
+            'rekap-presensi-' . $user->npp . '-' . $user->nama_lengkap . '-' . $periode->format('Y-m') . '.pdf'
         );
     }
 
@@ -431,7 +431,7 @@ class LaporanPresensi extends Controller
             $rows[] = [
                 'no' => $index + 1,
                 'npp' => $user->npp,
-                'nama' => $user->dataDiri->name ?? '-',
+                'nama' => $user->nama_lengkap ?? '-',
 
                 'hadir' => $hadir,
                 'sakit' => $sakit,
@@ -647,7 +647,7 @@ class LaporanPresensi extends Controller
             $rows[] = [
                 'no' => $index + 1,
                 'npp' => $user->npp,
-                'nama' => $user->dataDiri->name ?? '-',
+                'nama' => $user->nama_lengkap ?? '-',
 
                 'hadir' => $hadir ?? 0,
                 'sakit' => $sakit ?? 0,

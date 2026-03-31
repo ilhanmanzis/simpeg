@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Pendidikans extends Model
 {
@@ -36,5 +37,65 @@ class Pendidikans extends Model
     public function pengajuanPerubahanPendidikan()
     {
         return $this->hasMany(PengajuanPerubahanPendidikans::class, 'id_pendidikan', 'id_pendidikan');
+    }
+
+
+    // gelar
+    protected static $urutanJenjang = [
+        'SD' => 1,
+        'MI' => 1,
+        'SMP' => 2,
+        'MTS' => 2,
+        'SMA' => 3,
+        'MA' => 3,
+        'SMK' => 3,
+        'D1' => 4,
+        'D2' => 5,
+        'D3' => 6,
+        'D4' => 7,
+        'S1' => 8,
+        'S2' => 9,
+        'S3' => 10,
+    ];
+
+
+
+
+    public static function getGelarByUser($id_user)
+    {
+        return Cache::remember("gelar_user_{$id_user}", now()->addDays(7), function () use ($id_user) {
+
+            $data = self::with('jenjang')
+                ->where('id_user', $id_user)
+                ->get();
+
+            // mapping urutan jenjang
+            $urutan = self::$urutanJenjang;
+
+            $sorted = $data->sortBy(function ($item) use ($urutan) {
+                return $urutan[$item->jenjang->nama_jenjang] ?? 999;
+            });
+
+            // ambil gelar & format
+            $gelars = $sorted->pluck('gelar')
+                ->filter()
+                ->map(function ($g) {
+                    return rtrim($g, '.') . '.'; // pastikan ada titik
+                });
+
+            return $gelars->implode(', ');
+        });
+    }
+
+
+    protected static function booted()
+    {
+        static::saved(function ($model) {
+            Cache::forget("gelar_user_{$model->id_user}");
+        });
+
+        static::deleted(function ($model) {
+            Cache::forget("gelar_user_{$model->id_user}");
+        });
     }
 }

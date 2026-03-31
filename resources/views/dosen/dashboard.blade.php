@@ -222,7 +222,7 @@
                                         <div class="flex">
                                             <div class="w-48 font-semibold">Nama</div>
                                             <div class="w-4">:</div>
-                                            <div class="flex-1">{{ $dosen->dataDiri->name }}</div>
+                                            <div class="flex-1">{{ $dosen->nama_lengkap }}</div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-48 font-semibold">NPP</div>

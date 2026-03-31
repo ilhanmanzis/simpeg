@@ -321,7 +321,7 @@
 
                                         <td class="px-3 py-2" x-text="index+1"></td>
                                         <td class="px-3 py-2" x-text="row.npp"></td>
-                                        <td class="px-3 py-2" x-text="row.name"></td>
+                                        <td class="px-3 py-2 text-left" x-text="row.name"></td>
                                         <td class="px-3 py-2" x-text="row.x1"></td>
                                         <td class="px-3 py-2" x-text="row.x2"></td>
 
@@ -369,7 +369,7 @@
 
                                         <td class="px-3 py-2" x-text="index+1"></td>
                                         <td class="px-3 py-2" x-text="row.npp"></td>
-                                        <td class="px-3 py-2" x-text="row.name"></td>
+                                        <td class="px-3 py-2 text-left" x-text="row.name"></td>
                                         <td class="px-3 py-2" x-text="row.x1_norm"></td>
                                         <td class="px-3 py-2" x-text="row.x2_norm"></td>
 
@@ -395,58 +395,20 @@
                     </h3>
 
 
-                    <!-- sebelum normalisasi -->
-                    <div class="mb-6">
-
-                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
-                            Sebelum Normalisasi
-                        </h4>
-
-                        <table class="text-sm w-full text-center text-gray-600 dark:text-gray-300">
-
-                            <thead class="bg-gray-100 dark:bg-gray-800">
-                                <tr>
-                                    <th class="px-3 py-2">Cluster</th>
-                                    <th class="px-3 py-2">X1</th>
-                                    <th class="px-3 py-2">X2</th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y dark:divide-gray-700 text-gray-600 dark:text-gray-300">
-
-                                <template x-for="c in centroidAwal || []">
-
-                                    <tr>
-
-                                        <td class="px-3 py-2 font-medium" x-text="c.cluster"></td>
-                                        <td class="px-3 py-2" x-text="c.x1"></td>
-                                        <td class="px-3 py-2" x-text="c.x2"></td>
-
-                                    </tr>
-
-                                </template>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
 
 
                     <!-- setelah normalisasi -->
                     <div>
 
-                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
-                            Setelah Normalisasi
-                        </h4>
+
 
                         <table class="text-sm w-full text-center text-gray-600 dark:text-gray-300">
 
                             <thead class="bg-gray-100 dark:bg-gray-800 ">
                                 <tr>
                                     <th class="px-3 py-2">Cluster</th>
-                                    <th class="px-3 py-2">X1'</th>
-                                    <th class="px-3 py-2">X2'</th>
+                                    <th class="px-3 py-2">X1</th>
+                                    <th class="px-3 py-2">X2</th>
                                 </tr>
                             </thead>
 
@@ -576,7 +538,7 @@
                                             <tr>
 
                                                 <td class="px-3 py-2" x-text="row.npp"></td>
-                                                <td class="px-3 py-2" x-text="row.name"></td>
+                                                <td class="px-3 py-2 text-left" x-text="row.name"></td>
 
                                                 <!-- D1 -->
                                                 <td class="px-3 py-2"
@@ -1080,7 +1042,6 @@
                     dataset: [],
                     datasetNormal: [],
 
-                    centroidAwal: [],
                     centroidNormal: [],
                     centroidSekarang: [],
 
@@ -1150,7 +1111,7 @@
                         this.dataset = data.dataset
                         this.datasetNormal = data.normalisasi
 
-                        this.centroidAwal = data.centroid_awal
+
                         this.centroidNormal = data.centroid_normal
 
                         this.centroidSekarang = data.iterasi.centroid_baru
@@ -1293,7 +1254,7 @@
                         this.dataset = data.dataset
                         this.datasetNormal = data.normalisasi
 
-                        this.centroidAwal = data.centroid_awal
+
                         this.centroidNormal = data.centroid_normal
 
                         /* =========================

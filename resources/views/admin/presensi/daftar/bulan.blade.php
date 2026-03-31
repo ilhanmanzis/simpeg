@@ -71,7 +71,7 @@
 
                             @foreach ($pegawais as $pegawai)
                                 <option value="{{ $pegawai->id_user }}">
-                                    {{ $pegawai->npp }} - {{ $pegawai->dataDiri->name ?? '-' }} </option>
+                                    {{ $pegawai->npp }} - {{ $pegawai->nama_lengkap ?? '-' }} </option>
                             @endforeach
                         </select>
 

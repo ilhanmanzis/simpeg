@@ -51,7 +51,7 @@
                                 </td>
                                 <td class="px-4 py-2 align-top">{{ $tendik->npp ?? '-' }}</td>
 
-                                <td class="px-4 py-2 align-top">{{ $tendik->dataDiri->name ?? '-' }}</td>
+                                <td class="px-4 py-2 align-top">{{ $tendik->nama_lengkap ?? '-' }}</td>
 
                                 <td class="px-4 py-2 align-top">
                                     @if ($tendik->status_keaktifan ?? false)

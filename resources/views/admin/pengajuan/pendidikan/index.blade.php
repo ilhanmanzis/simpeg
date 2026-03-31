@@ -161,7 +161,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $pengajuan->user->dataDiri->name }}
+                                                                    {{ $pengajuan->user->nama_lengkap }}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -363,7 +363,7 @@
                                                             <div class="flex -space-x-2">
                                                                 <p
                                                                     class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                                    {{ $riwayat->user->dataDiri->name }}
+                                                                    {{ $riwayat->user->nama_lengkap }}
                                                                 </p>
                                                             </div>
                                                         </div>
