@@ -561,7 +561,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-sm">
                                 @forelse ($daftarPresensiHariIni as $i => $item)
                                     <tr>
                                         <td class="pl-3 pr-1 py-3 dark:text-white/90">{{ $i + 1 }}</td>
