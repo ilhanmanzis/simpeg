@@ -69,18 +69,21 @@ class Pendidikans extends Model
                 ->where('id_user', $id_user)
                 ->get();
 
-            // mapping urutan jenjang
             $urutan = self::$urutanJenjang;
 
             $sorted = $data->sortBy(function ($item) use ($urutan) {
-                return $urutan[$item->jenjang->nama_jenjang] ?? 999;
+
+                $urutanJenjang = $urutan[$item->jenjang->nama_jenjang] ?? 999;
+                $tahun = $item->tahun_lulus ?? 0;
+
+                // gabungkan jadi 1 angka
+                return ($urutanJenjang * 10000) + $tahun;
             });
 
-            // ambil gelar & format
             $gelars = $sorted->pluck('gelar')
                 ->filter()
                 ->map(function ($g) {
-                    return rtrim($g, '.') . '.'; // pastikan ada titik
+                    return rtrim($g, '.') . '.';
                 });
 
             return $gelars->implode(', ');
