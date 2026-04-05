@@ -17,10 +17,6 @@ class Laporan extends Controller
      */
     public function index()
     {
-        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
-            return abort(403, 'Unauthorized');
-        }
-
         $data = [
             'page' => 'Laporan',
             'selected' => 'Laporan',
@@ -34,10 +30,6 @@ class Laporan extends Controller
      */
     public function create(Request $request)
     {
-        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
-            return abort(403, 'Unauthorized');
-        }
-
         $validated = $request->validate([
             'pegawai'        => 'required|in:all,dosen,karyawan',
             // required_if untuk dosen; nilai yang valid: all/ya/tidak

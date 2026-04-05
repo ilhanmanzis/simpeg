@@ -104,6 +104,7 @@ class StrukturalUser extends Controller
             'sk'              => 'required|file|mimes:pdf|max:2048',
         ]);
 
+        $today = Carbon::today();
         $user        = User::where('id_user', $request->user)->with('dataDiri')->first();
         $struktural  = JabatanStrukturals::findOrFail($id);
 
@@ -160,32 +161,15 @@ class StrukturalUser extends Controller
                 'pimpinan' => 'nonaktif'
             ]);
         }
-        if (in_array($struktural->id_struktural, [1, 2])) {
-            $user->dataDiri->update([
-                'pimpinan' => 'aktif'
-            ]);
-        } else {
-            $user->dataDiri->update([
-                'pimpinan' => 'nonaktif'
-            ]);
-        }
+        // Update status pimpinan berdasarkan data aktual yang aktif hari ini
+        $user->dataDiri->update([
+            'pimpinan' => $user->hasJabatanStrukturalAktif() ? 'aktif' : 'nonaktif'
+        ]);
 
         return redirect()->route('admin.jabatan.struktural')
             ->with('success', 'Jabatan struktural Dosen berhasil dimutasi');
     }
 
-    public function create()
-    { /* ... */
-    }
-    public function store(Request $request)
-    { /* ... */
-    }
-    public function edit(string $id)
-    { /* ... */
-    }
-    public function update(Request $request, string $id)
-    { /* ... */
-    }
 
     public function show(string $id)
     {
@@ -208,27 +192,34 @@ class StrukturalUser extends Controller
         return view('admin.jabatan.struktural.riwayat', $data);
     }
 
+
+
     public function destroy(string $id)
     {
-        $struktural = StrukturalUsers::where('id_struktural_user', $id)
-            ->with(['dokumen', 'struktural', 'user'])
-            ->first();
+        $struktural = StrukturalUsers::with(['dokumen', 'struktural', 'user.dataDiri'])
+            ->findOrFail($id);
 
-        $strukturalId = JabatanStrukturals::findOrFail($struktural->struktural->id_struktural);
+        $strukturalId = $struktural->struktural->id_struktural;
+        $user = $struktural->user;
 
-        // Hapus file di Google Drive (disk google)
-        if ($struktural->dokumen && $struktural->dokumen->path_file) {
+        // Hapus file Google Drive jika ada
+        if ($struktural->dokumen?->path_file) {
             try {
                 Storage::disk('google')->delete($struktural->dokumen->path_file);
             } catch (\Throwable $e) {
-                // sengaja di-skip sesuai pola kode sebelumnya
+                // optionally log error
             }
         }
 
-        $struktural->user->dataDiri->update([
-            'pimpinan' => 'nonaktif'
-        ]);
+        // Hapus data jabatan
         $struktural->delete();
+
+        // Update status pimpinan berdasarkan method model
+        if ($user->dataDiri) {
+            $user->dataDiri->update([
+                'pimpinan' => $user->hasJabatanStrukturalAktif() ? 'aktif' : 'nonaktif'
+            ]);
+        }
 
         return redirect()
             ->route('admin.jabatan.struktural.show', $strukturalId)

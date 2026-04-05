@@ -67,12 +67,45 @@
 
 
 
-                        <h3 class="font-semibold  text-gray-600 dark:text-gray-100">Rekomendasi</h3>
+                        <h3 class="font-semibold  text-gray-600 dark:text-gray-100">Notifikasi Terbaru</h3>
 
                     </div>
 
-                    <div class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                        <p>Tidak ada rekomendasi</p>
+                    <div class="px-2 text-sm text-gray-700 dark:text-gray-300">
+
+                        @forelse ($notifications as $notif)
+                            <ul class="custom-scrollbar flex h-auto flex-col overflow-y-auto">
+                                <li>
+                                    <form action="{{ route('notifications.read', $notif->id) }}" method="POST">
+                                        @csrf
+
+                                        <button type="submit"
+                                            class="flex w-full gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 text-left hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5">
+                                            {{-- ICON --}}
+                                            <x-notification-icon :jenis="$notif->data['params']['jenis'] ?? 'default'" />
+
+
+                                            {{-- TEXT --}}
+                                            <span class="block">
+                                                <span class="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
+                                                    <span class="font-semibold text-gray-800 dark:text-white">
+                                                        {{ $notif->data['title'] }}
+                                                    </span>
+                                                </span>
+
+                                                <span class="text-xs text-gray-800 dark:text-white">
+                                                    {{ $notif->created_at->diffForHumans() }}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        @empty
+                            <div class="flex justify-center">
+                                <p>Tidak ada notifikasi</p>
+                            </div>
+                        @endforelse
                     </div>
 
                 </div>
@@ -208,7 +241,8 @@
                                 <div class="w-full">
 
                                     <div class="w-full ">
-                                        <div class="my-5 w-64 aspect-[3/4] overflow-hidden flex justify-center mx-auto">
+                                        <div
+                                            class="my-5 w-64 aspect-[3/4] overflow-hidden flex justify-center mx-auto">
                                             @if ($dosen->dataDiri->foto)
                                                 <img src="{{ route('file.foto.drive', $dosen->dataDiri->foto) }}"
                                                     alt="" class="w-full h-full object-cover">

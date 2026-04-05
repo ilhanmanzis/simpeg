@@ -112,7 +112,7 @@
                         <div
                             class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
                             <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                                Notification
+                                Notifikasi
                             </h5>
 
                             <button @click="dropdownOpen = false" class="text-gray-500 dark:text-gray-400">

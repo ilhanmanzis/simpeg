@@ -3,10 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
@@ -96,7 +99,7 @@ class User extends Authenticatable
         return $this->unreadNotifications()->count();
     }
 
-    public function latestNotifications(int $limit = 5)
+    public function latestNotifications(int $limit = 2)
     {
         return $this->notifications()->latest()->limit($limit)->get();
     }
@@ -235,6 +238,7 @@ class User extends Authenticatable
 
 
 
+    //  get gelar user
     public function getNamaLengkapAttribute()
     {
         $nama = $this->dataDiri->name ?? '';
@@ -242,5 +246,19 @@ class User extends Authenticatable
         $gelar = Pendidikans::getGelarByUser($this->id_user);
 
         return $nama . ($gelar ? ', ' . $gelar : '');
+    }
+
+    // cek status jabatan struktural ketua atau wakil aktif hari ini 
+    public function hasJabatanStrukturalAktif(?Carbon $tanggal = null): bool
+    {
+        $tanggal = $tanggal ?? Carbon::today();
+
+        $cacheKey = "jabatan_struktural_aktif_{$this->id_user}_{$tanggal->toDateString()}";
+
+        return Cache::remember($cacheKey, now()->addHours(6), function () use ($tanggal) {
+            return $this->struktural()
+                ->aktifPadaTanggal($tanggal)
+                ->exists();
+        });
     }
 }

@@ -20,9 +20,7 @@ class LaporanPresensi extends Controller
      */
     public function index()
     {
-        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
-            return abort(403, 'Unauthorized');
-        }
+
         $data = [
             'page' => 'Laporan Presensi',
             'selected' => 'Laporan',
@@ -43,9 +41,7 @@ class LaporanPresensi extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
-            return abort(403, 'Unauthorized');
-        }
+
         $validated = $request->validate([
             'id_user' => 'required|exists:users,id_user',
             'periode' => 'required|date_format:Y-m',
@@ -280,9 +276,7 @@ class LaporanPresensi extends Controller
 
     public function cetakSemua(Request $request)
     {
-        if (Auth::user()->dataDiri->pimpinan !== 'aktif') {
-            return abort(403, 'Unauthorized');
-        }
+
         $request->validate([
             'periode' => 'required|date_format:Y-m',
             'type' => 'required|in:pdf,excel'

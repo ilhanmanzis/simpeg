@@ -56,107 +56,160 @@
 
             </div>
             <!-- Breadcrumb End -->
-
-            <!-- ================= Presensi ================= -->
-            <div class="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+                <!-- ================= Rekomendasi ================= -->
                 <div
-                    class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
+                    class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] flex flex-col h-full">
 
-                    <!-- ICON -->
-                    <div class="mb-2 text-gray-800 dark:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
+                    <div
+                        class="flex justify-center items-center mb-2 border-b border-gray-200 dark:border-gray-800 px-5 py-2">
+
+
+
+                        <h3 class="font-semibold  text-gray-600 dark:text-gray-100">Notifikasi Terbaru</h3>
+
                     </div>
 
-                    <!-- TITLE -->
-                    <p class="text-sm text-gray-800 dark:text-gray-300">
-                        Jam Kerja Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
-                    </p>
+                    <div class="px-2 text-sm text-gray-700 dark:text-gray-300">
 
-                    <!-- VALUE -->
-                    <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
-                        {{ $avgJamKerja }}
-                    </p>
+                        @forelse ($notifications as $notif)
+                            <ul class="custom-scrollbar flex h-auto flex-col overflow-y-auto">
+                                <li>
+                                    <form action="{{ route('notifications.read', $notif->id) }}" method="POST">
+                                        @csrf
+
+                                        <button type="submit"
+                                            class="flex w-full gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 text-left hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5">
+                                            {{-- ICON --}}
+                                            <x-notification-icon :jenis="$notif->data['params']['jenis'] ?? 'default'" />
+
+
+                                            {{-- TEXT --}}
+                                            <span class="block">
+                                                <span class="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
+                                                    <span class="font-semibold text-gray-800 dark:text-white">
+                                                        {{ $notif->data['title'] }}
+                                                    </span>
+                                                </span>
+
+                                                <span class="text-xs text-gray-800 dark:text-white">
+                                                    {{ $notif->created_at->diffForHumans() }}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        @empty
+                            <div class="flex justify-center">
+                                <p>Tidak ada notifikasi</p>
+                            </div>
+                        @endforelse
+                    </div>
 
                 </div>
-                <div
-                    class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
 
-                    <!-- ICON -->
-                    <div class="mb-2 text-blue-500 dark:text-blue-400">
+                <!-- ================= Presensi ================= -->
+                <div class="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div
+                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
-                        </svg>
+                        <!-- ICON -->
+                        <div class="mb-2 text-gray-800 dark:text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </div>
 
+                        <!-- TITLE -->
+                        <p class="text-sm text-gray-800 dark:text-gray-300">
+                            Jam Kerja Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
+                        </p>
 
-
-                    </div>
-
-                    <!-- TITLE -->
-                    <p class="text-sm text-gray-800 dark:text-gray-300">
-                        Jam Masuk Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
-                    </p>
-
-                    <!-- VALUE -->
-                    <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
-                        {{ $avgJamMasuk }}
-                    </p>
-
-                </div>
-                <div
-                    class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
-
-                    <!-- ICON -->
-                    <div class="mb-2 text-gray-800 dark:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                        </svg>
-
+                        <!-- VALUE -->
+                        <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
+                            {{ $avgJamKerja }}
+                        </p>
 
                     </div>
+                    <div
+                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
 
-                    <!-- TITLE -->
-                    <p class="text-sm text-gray-800 dark:text-gray-300">
-                        Tingkat Kedisiplinan <span class="font-semibold">({{ $bulan }})</span>
-                    </p>
+                        <!-- ICON -->
+                        <div class="mb-2 text-blue-500 dark:text-blue-400">
 
-                    <!-- VALUE -->
-                    <p class="mt-2 text-lg font-semibold {{ $warnaKedisiplinan }}">
-                        {{ $kedisiplinan }}
-                    </p>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                            </svg>
 
-                </div>
-                <div
-                    class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
 
-                    <!-- ICON -->
-                    <div class="mb-2 text-error-600 dark:text-error-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
-                        </svg>
+
+                        </div>
+
+                        <!-- TITLE -->
+                        <p class="text-sm text-gray-800 dark:text-gray-300">
+                            Jam Masuk Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
+                        </p>
+
+                        <!-- VALUE -->
+                        <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
+                            {{ $avgJamMasuk }}
+                        </p>
 
                     </div>
+                    <div
+                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
 
-                    <!-- TITLE -->
-                    <p class="text-sm text-gray-800 dark:text-gray-300">
-                        Jam Pulang Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
-                    </p>
+                        <!-- ICON -->
+                        <div class="mb-2 text-gray-800 dark:text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                            </svg>
 
-                    <!-- VALUE -->
-                    <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
-                        {{ $avgJamPulang }}
-                    </p>
 
+                        </div>
+
+                        <!-- TITLE -->
+                        <p class="text-sm text-gray-800 dark:text-gray-300">
+                            Tingkat Kedisiplinan <span class="font-semibold">({{ $bulan }})</span>
+                        </p>
+
+                        <!-- VALUE -->
+                        <p class="mt-2 text-lg font-semibold {{ $warnaKedisiplinan }}">
+                            {{ $kedisiplinan }}
+                        </p>
+
+                    </div>
+                    <div
+                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
+
+                        <!-- ICON -->
+                        <div class="mb-2 text-error-600 dark:text-error-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                            </svg>
+
+                        </div>
+
+                        <!-- TITLE -->
+                        <p class="text-sm text-gray-800 dark:text-gray-300">
+                            Jam Pulang Rata-Rata <span class="font-semibold">({{ $bulan }})</span>
+                        </p>
+
+                        <!-- VALUE -->
+                        <p class="mt-2 text-lg font-semibold text-gray-800 dark:text-white">
+                            {{ $avgJamPulang }}
+                        </p>
+
+                    </div>
                 </div>
             </div>
 
@@ -187,7 +240,8 @@
                                 <div class="w-full">
 
                                     <div class="w-full ">
-                                        <div class="my-5 w-64 aspect-[3/4] overflow-hidden flex justify-center mx-auto">
+                                        <div
+                                            class="my-5 w-64 aspect-[3/4] overflow-hidden flex justify-center mx-auto">
 
                                             @if ($karyawan->dataDiri->foto)
                                                 <img src="{{ route('file.foto.drive', $karyawan->dataDiri->foto) }}"

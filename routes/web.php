@@ -423,18 +423,6 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
     // profile pribadi
     Route::get('/profile', [ProfilePribadi::class, 'index'])->name('profilepribadi');
 
-    // laporan
-    Route::get('/laporan', [DosenLaporan::class, 'index'])->name('laporan');
-    Route::post('/laporan/create', [DosenLaporan::class, 'create'])->name('laporan.create');
-    Route::get('/laporan/presensi', [DosenLaporanPresensi::class, 'index'])->name('laporan.presensi');
-    Route::post('/laporan/presensi/store', [DosenLaporanPresensi::class, 'store'])->name('laporan.presensi.store');
-
-    Route::post(
-        '/laporan/presensi/semua',
-        [DosenLaporanPresensi::class, 'cetakSemua']
-    )
-        ->name('laporan.presensi.semua');
-
     // pengajuan perubahan profile pribadi
     Route::get('/perubahan-profile', [PengajuanProfilePribadi::class, 'index'])->name('pengajuan.profile');
     Route::get('/perubahan-profile/create', [PengajuanProfilePribadi::class, 'create'])->name('pengajuan.profile.create');
@@ -533,48 +521,68 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->as('dosen.')->group(
         [PresensiDosen::class, 'cetakPdf']
     )->name('presensi.cetakPdf');
 
-    // daftar presensi
-    Route::get('/presensi/daftar', [DosenDaftarPresensi::class, 'index'])->name('presensi.daftar');
-    Route::get('/presensi/daftar/bulan', [DosenDaftarPresensi::class, 'bulan'])->name('presensi.daftar.bulan');
-    Route::post('/presensi/daftar/bulan', [DosenDaftarPresensi::class, 'dataBulan'])->name('presensi.daftar.bulan.data');
-    Route::get('/presensi/daftar/bulan/{id}', [DosenDaftarPresensi::class, 'showBulan'])->name('presensi.daftar.bulan.data.show');
 
-    // klasterisasi
-    Route::get(
-        '/presensi/klasterisasi',
-        [DosenKlasterisasiController::class, 'index']
-    )->name('presensi.klasterisasi');
 
-    // ambil dataset (bulan)
-    Route::post(
-        '/presensi/klasterisasi/dataset-bulanan',
-        [DosenKlasterisasiController::class, 'datasetBulanan']
-    )->name('presensi.klasterisasi.dataset.bulan');
+    // pimpinan
+    Route::middleware(['jabatan.aktif'])->group(function () {
 
-    // ambil dataset (tahun)
-    Route::post(
-        '/presensi/klasterisasi/dataset-tahunan',
-        [DosenKlasterisasiController::class, 'datasetTahunan']
-    )->name('presensi.klasterisasi.dataset.tahun');
+        // laporan
+        Route::get('/laporan', [DosenLaporan::class, 'index'])->name('laporan');
+        Route::post('/laporan/create', [DosenLaporan::class, 'create'])->name('laporan.create');
+        Route::get('/laporan/presensi', [DosenLaporanPresensi::class, 'index'])->name('laporan.presensi');
+        Route::post('/laporan/presensi/store', [DosenLaporanPresensi::class, 'store'])->name('laporan.presensi.store');
 
-    // centroid
-    Route::post(
-        '/presensi/klasterisasi/centroid',
-        [DosenKlasterisasiController::class, 'centroid']
-    )->name('presensi.klasterisasi.centroid');
+        Route::post(
+            '/laporan/presensi/semua',
+            [DosenLaporanPresensi::class, 'cetakSemua']
+        )
+            ->name('laporan.presensi.semua');
 
-    // proses k-means bertahap
-    Route::post(
-        '/presensi/klasterisasi/proses',
-        [DosenKlasterisasiController::class, 'proses']
-    )->name('presensi.klasterisasi.proses');
+        // daftar presensi
+        Route::get('/presensi/daftar', [DosenDaftarPresensi::class, 'index'])->name('presensi.daftar');
+        Route::get('/presensi/daftar/bulan', [DosenDaftarPresensi::class, 'bulan'])->name('presensi.daftar.bulan');
+        Route::post('/presensi/daftar/bulan', [DosenDaftarPresensi::class, 'dataBulan'])->name('presensi.daftar.bulan.data');
+        Route::get('/presensi/daftar/bulan/{id}', [DosenDaftarPresensi::class, 'showBulan'])->name('presensi.daftar.bulan.data.show');
 
-    // proses k-means otomatis
-    Route::post(
-        '/presensi/klasterisasi/hasil',
-        [DosenKlasterisasiController::class, 'hasil']
-    )->name('presensi.klasterisasi.hasil');
+        // klasterisasi
+        Route::get(
+            '/presensi/klasterisasi',
+            [DosenKlasterisasiController::class, 'index']
+        )->name('presensi.klasterisasi');
+
+        // ambil dataset (bulan)
+        Route::post(
+            '/presensi/klasterisasi/dataset-bulanan',
+            [DosenKlasterisasiController::class, 'datasetBulanan']
+        )->name('presensi.klasterisasi.dataset.bulan');
+
+        // ambil dataset (tahun)
+        Route::post(
+            '/presensi/klasterisasi/dataset-tahunan',
+            [DosenKlasterisasiController::class, 'datasetTahunan']
+        )->name('presensi.klasterisasi.dataset.tahun');
+
+        // centroid
+        Route::post(
+            '/presensi/klasterisasi/centroid',
+            [DosenKlasterisasiController::class, 'centroid']
+        )->name('presensi.klasterisasi.centroid');
+
+        // proses k-means bertahap
+        Route::post(
+            '/presensi/klasterisasi/proses',
+            [DosenKlasterisasiController::class, 'proses']
+        )->name('presensi.klasterisasi.proses');
+
+        // proses k-means otomatis
+        Route::post(
+            '/presensi/klasterisasi/hasil',
+            [DosenKlasterisasiController::class, 'hasil']
+        )->name('presensi.klasterisasi.hasil');
+    });
 });
+
+
 
 
 // tendik

@@ -68,6 +68,6 @@ class GoogleOauthController extends Controller
             Cache::forever('gdrive:refresh_token', $payload['refresh_token']);
         }
 
-        return redirect('/')->with('success', 'Google Drive terhubung.');
+        return redirect()->route('admin.dashboard')->with('success', 'Google Drive terhubung.');
     }
 }
