@@ -197,6 +197,7 @@ class Home extends Controller
             ->values();
         // dd($penelitian, $pengabdian, $carouselItems);
 
+        // dd($carouselItems);
         $data = [
             'page' => 'Home',
             'title' => 'Selamat datang di Webiste Sistem Kepegawaian STMIK EL RAHMA Yogyakarta',

@@ -161,8 +161,27 @@
                         </p>
 
                     </div>
-                    <div
-                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
+                    <div x-data="{ showKeterangan: false }"
+                        class="relative rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+
+                        <!-- BUTTON ICON (pojok kanan atas) -->
+                        <button @click="showKeterangan = true"
+                            class="absolute top-3 right-3 p-1 rounded-full 
+                                text-gray-400 hover:text-green-600 
+                                hover:bg-green-100 dark:hover:bg-gray-700 
+                                transition">
+
+                            <!-- icon tanda tanya dalam lingkaran -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 18h.01M9.09 9a3 3 0 1 1 5.82 1c-.35 1.3-1.91 1.83-2.58 2.62-.33.38-.33.63-.33 1.38" />
+
+                                <circle cx="12" cy="12" r="9" />
+                            </svg>
+
+                        </button>
 
                         <!-- ICON -->
                         <div class="mb-2 text-gray-800 dark:text-gray-300">
@@ -171,8 +190,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                             </svg>
-
-
                         </div>
 
                         <!-- TITLE -->
@@ -180,11 +197,128 @@
                             Tingkat Kedisiplinan <span class="font-semibold">({{ $bulan }})</span>
                         </p>
 
-                        <!-- VALUE -->
                         <p class="mt-2 text-lg font-semibold {{ $warnaKedisiplinan }}">
                             {{ $kedisiplinan }}
                         </p>
+                        <div x-show="showKeterangan" x-transition @keydown.escape.window="showKeterangan=false"
+                            class="fixed inset-0 z-99999 flex items-center justify-center">
 
+                            <!-- overlay -->
+                            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showKeterangan=false">
+                            </div>
+
+                            <!-- modal -->
+                            <div
+                                class="relative w-full max-w-4xl mx-4
+                                bg-white dark:bg-gray-900
+                                border border-gray-200 dark:border-gray-700
+                                rounded-xl shadow-xl p-6">
+
+                                <!-- header -->
+                                <div class="flex items-center justify-between mb-4">
+
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                                        Informasi Klasterisasi
+                                    </h3>
+
+                                    <button @click="showKeterangan=false"
+                                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+
+                                        ✕
+
+                                    </button>
+
+                                </div>
+
+                                <!-- isi -->
+                                <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+
+                                    <!-- metode -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Metode Klasterisasi
+                                        </h4>
+
+                                        <p>
+                                            Sistem ini menggunakan metode <b>K-Means Clustering</b> untuk
+                                            mengelompokkan tingkat kedisiplinan pegawai berdasarkan data presensi.
+                                        </p>
+                                    </div>
+
+                                    <!-- jumlah cluster -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Jumlah Cluster
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+                                            <li>C1 : Kedisiplinan Tinggi</li>
+                                            <li>C2 : Kedisiplinan Sedang</li>
+                                            <li>C3 : Kedisiplinan Rendah</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- variabel -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Variabel Perhitungan
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+
+                                            <li>
+                                                <b>X1</b> = Rata-rata persentase pemenuhan jam kerja pegawai selama
+                                                periode presensi
+                                                berdasarkan data presensi dengan status hadir.
+                                            </li>
+
+                                            <li>
+                                                <b>X2</b> = Persentase kehadiran pegawai selama periode presensi.
+                                            </li>
+
+                                        </ul>
+                                    </div>
+
+                                    <!-- proses -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Proses Perhitungan
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+
+                                            <li>Data presensi dikumpulkan berdasarkan periode yang dipilih
+                                                ({{ $bulan }}).</li>
+
+                                            <li>Data dinormalisasi agar memiliki skala yang sama.</li>
+
+                                            <li>Centroid awal ditentukan sebagai titik awal cluster.</li>
+
+                                            <li>Jarak setiap data ke centroid dihitung menggunakan Euclidean Distance.
+                                            </li>
+
+                                            <li>Cluster diperbarui hingga centroid konvergen.</li>
+
+                                        </ul>
+                                    </div>
+
+                                </div>
+
+                                <!-- footer -->
+                                <div class="flex justify-end mt-6">
+
+                                    <button @click="showKeterangan=false"
+                                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg">
+
+                                        Tutup
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
                     <div
                         class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">

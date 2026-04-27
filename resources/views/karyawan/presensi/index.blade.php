@@ -387,8 +387,27 @@
                         </p>
 
                     </div>
-                    <div
-                        class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
+                    <div x-data="{ showKeterangan: false }"
+                        class="relative rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+
+                        <!-- BUTTON ICON (pojok kanan atas) -->
+                        <button @click="showKeterangan = true"
+                            class="absolute top-3 right-3 p-1 rounded-full 
+                                text-gray-400 hover:text-green-600 
+                                hover:bg-green-100 dark:hover:bg-gray-700 
+                                transition">
+
+                            <!-- icon tanda tanya dalam lingkaran -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 18h.01M9.09 9a3 3 0 1 1 5.82 1c-.35 1.3-1.91 1.83-2.58 2.62-.33.38-.33.63-.33 1.38" />
+
+                                <circle cx="12" cy="12" r="9" />
+                            </svg>
+
+                        </button>
 
                         <!-- ICON -->
                         <div class="mb-2 text-gray-800 dark:text-gray-300">
@@ -397,8 +416,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                             </svg>
-
-
                         </div>
 
                         <!-- TITLE -->
@@ -406,11 +423,128 @@
                             Tingkat Kedisiplinan <span class="font-semibold">({{ $bulan }})</span>
                         </p>
 
-                        <!-- VALUE -->
                         <p class="mt-2 text-lg font-semibold {{ $warnaKedisiplinan }}">
                             {{ $kedisiplinan }}
                         </p>
+                        <div x-show="showKeterangan" x-transition @keydown.escape.window="showKeterangan=false"
+                            class="fixed inset-0 z-99999 flex items-center justify-center">
 
+                            <!-- overlay -->
+                            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showKeterangan=false">
+                            </div>
+
+                            <!-- modal -->
+                            <div
+                                class="relative w-full max-w-4xl mx-4
+                                bg-white dark:bg-gray-900
+                                border border-gray-200 dark:border-gray-700
+                                rounded-xl shadow-xl p-6">
+
+                                <!-- header -->
+                                <div class="flex items-center justify-between mb-4">
+
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                                        Informasi Klasterisasi
+                                    </h3>
+
+                                    <button @click="showKeterangan=false"
+                                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+
+                                        ✕
+
+                                    </button>
+
+                                </div>
+
+                                <!-- isi -->
+                                <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+
+                                    <!-- metode -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Metode Klasterisasi
+                                        </h4>
+
+                                        <p>
+                                            Sistem ini menggunakan metode <b>K-Means Clustering</b> untuk
+                                            mengelompokkan tingkat kedisiplinan pegawai berdasarkan data presensi.
+                                        </p>
+                                    </div>
+
+                                    <!-- jumlah cluster -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Jumlah Cluster
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+                                            <li>C1 : Kedisiplinan Tinggi</li>
+                                            <li>C2 : Kedisiplinan Sedang</li>
+                                            <li>C3 : Kedisiplinan Rendah</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- variabel -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Variabel Perhitungan
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+
+                                            <li>
+                                                <b>X1</b> = Rata-rata persentase pemenuhan jam kerja pegawai selama
+                                                periode presensi
+                                                berdasarkan data presensi dengan status hadir.
+                                            </li>
+
+                                            <li>
+                                                <b>X2</b> = Persentase kehadiran pegawai selama periode presensi.
+                                            </li>
+
+                                        </ul>
+                                    </div>
+
+                                    <!-- proses -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            Proses Perhitungan
+                                        </h4>
+
+                                        <ul class="list-disc ml-5 space-y-1">
+
+                                            <li>Data presensi dikumpulkan berdasarkan periode yang dipilih
+                                                ({{ $bulan }}).</li>
+
+                                            <li>Data dinormalisasi agar memiliki skala yang sama.</li>
+
+                                            <li>Centroid awal ditentukan sebagai titik awal cluster.</li>
+
+                                            <li>Jarak setiap data ke centroid dihitung menggunakan Euclidean Distance.
+                                            </li>
+
+                                            <li>Cluster diperbarui hingga centroid konvergen.</li>
+
+                                        </ul>
+                                    </div>
+
+                                </div>
+
+                                <!-- footer -->
+                                <div class="flex justify-end mt-6">
+
+                                    <button @click="showKeterangan=false"
+                                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg">
+
+                                        Tutup
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
                     <div
                         class="rounded-xl border border-gray-200 bg-white py-4 px-6 shadow-sm  dark:border-gray-700 dark:bg-gray-800">
@@ -476,12 +610,48 @@
                             <tr>
                                 <td class="pr-2 align-middle">•</td>
                                 <td class="flex items-center gap-2">
-                                    <span class="inline-block h-2.5 w-2.5 rounded-full bg-success-500"></span>
+                                    <span class="inline-block h-3 w-3 rounded-full bg-success-500"></span>
                                     <span>jam kerja terpenuhi</span>
                                 </td>
                             </tr>
-
                             <tr>
+                                <td class="pr-2 align-middle">•</td>
+                                <td class="flex items-center gap-2">
+                                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path
+                                                d="m 8 0 c -1.894531 0 -3.582031 0.882812 -4.679688 2.257812 l -1.789062 -1.789062 l -1.0625 1.0625 l 14 14 l 1.0625 -1.0625 l -3.652344 -3.652344 c 0.449219 -0.546875 0.855469 -1.082031 1.167969 -1.570312 c 0.261719 -0.414063 0.46875 -0.808594 0.585937 -1.171875 l -0.019531 0.003906 c 0.25 -0.664063 0.382813 -1.367187 0.386719 -2.078125 c 0.003906 -3.3125 -2.6875 -6 -6 -6 z m 0 3.695312 c 1.273438 -0.003906 2.308594 1.03125 2.308594 2.304688 c 0 0.878906 -0.492188 1.640625 -1.214844 2.03125 l -3.125 -3.125 c 0.390625 -0.722656 1.152344 -1.210938 2.03125 -1.210938 z m -5.9375 1.429688 c -0.039062 0.289062 -0.0625 0.578125 -0.0625 0.875 c 0.003906 0.710938 0.136719 1.414062 0.386719 2.082031 l -0.015625 -0.007812 c 0.636718 1.988281 3.78125 5.082031 5.628906 6.925781 v 0.003906 v -0.003906 c 0.5625 -0.5625 1.25 -1.253906 1.945312 -1.992188 z m 0 0"
+                                                fill="#16A34A"></path>
+                                        </g>
+                                    </svg>
+                                    <span>Presensi masuk diluar radius</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pr-2 align-middle">•</td>
+                                <td class="flex items-center gap-2">
+                                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="size-4">
+
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path
+                                                d="m 8 0 c -1.894531 0 -3.582031 0.882812 -4.679688 2.257812 l -1.789062 -1.789062 l -1.0625 1.0625 l 14 14 l 1.0625 -1.0625 l -3.652344 -3.652344 c 0.449219 -0.546875 0.855469 -1.082031 1.167969 -1.570312 c 0.261719 -0.414063 0.46875 -0.808594 0.585937 -1.171875 l -0.019531 0.003906 c 0.25 -0.664063 0.382813 -1.367187 0.386719 -2.078125 c 0.003906 -3.3125 -2.6875 -6 -6 -6 z m 0 3.695312 c 1.273438 -0.003906 2.308594 1.03125 2.308594 2.304688 c 0 0.878906 -0.492188 1.640625 -1.214844 2.03125 l -3.125 -3.125 c 0.390625 -0.722656 1.152344 -1.210938 2.03125 -1.210938 z m -5.9375 1.429688 c -0.039062 0.289062 -0.0625 0.578125 -0.0625 0.875 c 0.003906 0.710938 0.136719 1.414062 0.386719 2.082031 l -0.015625 -0.007812 c 0.636718 1.988281 3.78125 5.082031 5.628906 6.925781 v 0.003906 v -0.003906 c 0.5625 -0.5625 1.25 -1.253906 1.945312 -1.992188 z m 0 0"
+                                                fill="#fb6514" />
+                                        </g>
+
+                                    </svg>
+                                    <span>Presensi pulang diluar radius</span>
+                                </td>
+                            </tr>
+
+                            {{-- <tr>
                                 <td class="pr-2 align-middle">•</td>
                                 <td class="flex items-center gap-2">
                                     <span class="inline-block h-2.5 w-2.5 rounded-full bg-warning-500"></span>
@@ -495,7 +665,7 @@
                                     <span class="inline-block h-2.5 w-2.5 rounded-full bg-error-500"></span>
                                     <span>peringatan jam (jam kerja &lt; 4 jam)</span>
                                 </td>
-                            </tr>
+                            </tr> --}}
                         </tbody>
                     </table>
 
@@ -579,16 +749,53 @@
                                                     {{ $item->user->nama_lengkap ?? '-' }}
                                                 </span>
 
-                                                @if ($item->jam_pulang)
-                                                    <span
-                                                        class="h-2.5 w-2.5 rounded-full
+                                                <div class="flex">
+                                                    @if ($item->jam_pulang)
+                                                        <span
+                                                            class="h-2.5 w-2.5 rounded-full
                                                             @if ($item->status_jam_kerja == 'hijau') bg-success-500
-                                                            @elseif ($item->status_jam_kerja == 'kuning') bg-warning-500
+                                                            {{-- @elseif ($item->status_jam_kerja == 'kuning') bg-warning-500
                                                             @elseif ($item->status_jam_kerja == 'merah') 
-                                                            bg-error-500
+                                                            bg-error-500 --}}
                                                             @else @endif">
-                                                    </span>
-                                                @endif
+                                                        </span>
+                                                    @endif
+                                                    @if ($item->jam_datang && $item->status_lokasi_datang == 'diluar_radius')
+                                                        <span class="ml-1">
+                                                            <svg viewBox="0 0 16 16"
+                                                                xmlns="http://www.w3.org/2000/svg" class="size-4">
+                                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                    stroke-linejoin="round">
+                                                                </g>
+                                                                <g id="SVGRepo_iconCarrier">
+                                                                    <path
+                                                                        d="m 8 0 c -1.894531 0 -3.582031 0.882812 -4.679688 2.257812 l -1.789062 -1.789062 l -1.0625 1.0625 l 14 14 l 1.0625 -1.0625 l -3.652344 -3.652344 c 0.449219 -0.546875 0.855469 -1.082031 1.167969 -1.570312 c 0.261719 -0.414063 0.46875 -0.808594 0.585937 -1.171875 l -0.019531 0.003906 c 0.25 -0.664063 0.382813 -1.367187 0.386719 -2.078125 c 0.003906 -3.3125 -2.6875 -6 -6 -6 z m 0 3.695312 c 1.273438 -0.003906 2.308594 1.03125 2.308594 2.304688 c 0 0.878906 -0.492188 1.640625 -1.214844 2.03125 l -3.125 -3.125 c 0.390625 -0.722656 1.152344 -1.210938 2.03125 -1.210938 z m -5.9375 1.429688 c -0.039062 0.289062 -0.0625 0.578125 -0.0625 0.875 c 0.003906 0.710938 0.136719 1.414062 0.386719 2.082031 l -0.015625 -0.007812 c 0.636718 1.988281 3.78125 5.082031 5.628906 6.925781 v 0.003906 v -0.003906 c 0.5625 -0.5625 1.25 -1.253906 1.945312 -1.992188 z m 0 0"
+                                                                        fill="#16A34A"></path>
+                                                                </g>
+                                                            </svg>
+                                                        </span>
+                                                    @endif
+                                                    @if ($item->jam_pulang && $item->status_lokasi_pulang == 'diluar_radius')
+                                                        <span class="ml-1">
+                                                            <svg viewBox="0 0 16 16"
+                                                                xmlns="http://www.w3.org/2000/svg" class="size-4">
+
+                                                                <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                    stroke-linejoin="round" />
+
+                                                                <g id="SVGRepo_iconCarrier">
+                                                                    <path
+                                                                        d="m 8 0 c -1.894531 0 -3.582031 0.882812 -4.679688 2.257812 l -1.789062 -1.789062 l -1.0625 1.0625 l 14 14 l 1.0625 -1.0625 l -3.652344 -3.652344 c 0.449219 -0.546875 0.855469 -1.082031 1.167969 -1.570312 c 0.261719 -0.414063 0.46875 -0.808594 0.585937 -1.171875 l -0.019531 0.003906 c 0.25 -0.664063 0.382813 -1.367187 0.386719 -2.078125 c 0.003906 -3.3125 -2.6875 -6 -6 -6 z m 0 3.695312 c 1.273438 -0.003906 2.308594 1.03125 2.308594 2.304688 c 0 0.878906 -0.492188 1.640625 -1.214844 2.03125 l -3.125 -3.125 c 0.390625 -0.722656 1.152344 -1.210938 2.03125 -1.210938 z m -5.9375 1.429688 c -0.039062 0.289062 -0.0625 0.578125 -0.0625 0.875 c 0.003906 0.710938 0.136719 1.414062 0.386719 2.082031 l -0.015625 -0.007812 c 0.636718 1.988281 3.78125 5.082031 5.628906 6.925781 v 0.003906 v -0.003906 c 0.5625 -0.5625 1.25 -1.253906 1.945312 -1.992188 z m 0 0"
+                                                                        fill="#fb6514" />
+                                                                </g>
+
+                                                            </svg>
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
 

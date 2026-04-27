@@ -440,8 +440,16 @@
                                     'opacity-50 scale-90'">
 
                                 <!-- FOTO -->
-                                <img src="{{ route('public.foto', $item->user->dataDiri->dokumen->file_id) }}"
-                                    class="w-44 h-44 object-cover rounded-xl shadow-lg">
+                                @if ($item->user->dataDiri->dokumen != null)
+                                    <img src="{{ route('public.foto', $item->user->dataDiri->dokumen->file_id) }}"
+                                        class="w-44 h-44 object-cover rounded-xl shadow-lg">
+                                @else
+                                    <div class="w-44 h-44 grid place-items-center bg-gray-500 text-xs">
+
+                                    </div>
+                                @endif
+
+
 
                                 <!-- TEKS -->
                                 <div>

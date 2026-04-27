@@ -184,8 +184,8 @@ class DaftarPresensi extends Controller
             ->exists();
 
         return view('admin.presensi.daftar.detail', [
-            'page'      => 'Presensi',
-            'selected'  => 'Presensi',
+            'page' => 'Daftar Presensi Pegawai',
+            'selected' => 'Daftar Presensi Pegawai',
             'title'     => 'Detail Presensi',
             'presensi'  => $presensi,
             'lokasiKampus' => $lokasiKampus,
