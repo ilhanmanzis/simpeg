@@ -212,7 +212,7 @@ class Presensi extends Controller
             ->where('id_presensi', $request->input('id_presensi'))
             ->firstOrFail();
 
-        if ($presensi->id_user !== $user->id_user) {
+        if ($presensi->id_user != $user->id_user) {
             return back()->with('error', 'Data presensi tidak sesuai.');
         }
 

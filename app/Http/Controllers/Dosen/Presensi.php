@@ -673,7 +673,7 @@ class Presensi extends Controller
                 }
 
                 // Jika bukan hadir
-                if ($p->status_kehadiran !== 'hadir') {
+                if ($p->status_kehadiran != 'hadir') {
                     $p->keterangan = ucfirst($p->status_kehadiran);
                 } else {
                     $p->keterangan = null;
@@ -725,7 +725,7 @@ class Presensi extends Controller
                 }
             } else {
                 $bytes = @file_get_contents($path);
-                if ($bytes !== false) {
+                if ($bytes != false) {
                     $mime = mime_content_type($path) ?: 'image/png';
                     $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($bytes);
                 }
@@ -774,7 +774,7 @@ class Presensi extends Controller
 
         foreach ($presensis as $p) {
 
-            if ($p->status_kehadiran !== 'hadir') {
+            if ($p->status_kehadiran != 'hadir') {
                 continue;
             }
 
