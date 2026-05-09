@@ -13,7 +13,7 @@ class PresensiSeeder extends Seeder
     {
 
         $start = Carbon::create(2020, 1, 1);
-        $end   = Carbon::create(2026, 4, 28);
+        $end   = Carbon::create(2026, 5, 31);
 
         $currentMonth = $start->copy()->startOfMonth();
 

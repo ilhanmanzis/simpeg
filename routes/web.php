@@ -69,6 +69,7 @@ use App\Http\Controllers\Karyawan\Sertifikat as KaryawanSertifikat;
 use App\Http\Controllers\ManajemenUser;
 use App\Http\Controllers\Public\Dosen;
 use App\Http\Controllers\Public\Home;
+use App\Http\Controllers\Public\Presensi as PublicPresensi;
 use App\Http\Controllers\Public\Tendik;
 use App\Http\Controllers\Register;
 use App\Http\Controllers\Setting;
@@ -81,6 +82,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // OAuth flow
     Route::get('/oauth/google/redirect', [GoogleOauthController::class, 'redirect'])->name('google.oauth.redirect');
     Route::get('/oauth/google/callback', [GoogleOauthController::class, 'callback'])->name('google.oauth.callback');
+
+    // public presensi
+    Route::get('/public/presensi', [PublicPresensi::class, 'index'])->name('public.presensi');
+    Route::post('/public/presensi/store', [PublicPresensi::class, 'store'])->name('public.presensi.store');
+    Route::post('/public/presensi/storepulang', [PublicPresensi::class, 'storePulang'])->name('public.presensi.storepulang');
 });
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(function () {
 

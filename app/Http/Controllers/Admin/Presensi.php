@@ -779,28 +779,28 @@ class Presensi extends Controller
             PresensiAktivitas::create([
                 'id_presensi' => $presensi->id_presensi,
 
-                'sks_siang' => $user->role == 'karyawan' ? $request->sks_siang : null,
-                'sks_malam' => $user->role == 'karyawan' ? $request->sks_malam : null,
-                'sks_praktikum_siang' => $user->role == 'karyawan' ? $request->sks_praktikum_siang : null,
-                'sks_praktikum_malam' => $user->role == 'karyawan' ? $request->sks_praktikum_malam : null,
+                'sks_siang' => $user->role == 'dosen' ? $request->sks_siang : null,
+                'sks_malam' => $user->role == 'dosen' ? $request->sks_malam : null,
+                'sks_praktikum_siang' => $user->role == 'dosen' ? $request->sks_praktikum_siang : null,
+                'sks_praktikum_malam' => $user->role == 'dosen' ? $request->sks_praktikum_malam : null,
 
-                'mata_kuliah' => $user->role == 'karyawan' ? $request->mata_kuliah : null,
+                'mata_kuliah' => $user->role == 'dosen' ? $request->mata_kuliah : null,
                 'kegiatan'    =>  $request->kegiatan,
 
-                'seminar_jumlah' => $user->role == 'karyawan' ? $request->seminar_jumlah : null,
-                'seminar_keterangan' => $user->role == 'karyawan' ? $request->seminar_keterangan : null,
+                'seminar_jumlah' => $user->role == 'dosen' ? $request->seminar_jumlah : null,
+                'seminar_keterangan' => $user->role == 'dosen' ? $request->seminar_keterangan : null,
 
-                'pembimbing_jumlah' => $user->role == 'karyawan' ? $request->pembimbing_jumlah : null,
-                'pembimbing_keterangan' => $user->role == 'karyawan' ? $request->pembimbing_keterangan : null,
+                'pembimbing_jumlah' => $user->role == 'dosen' ? $request->pembimbing_jumlah : null,
+                'pembimbing_keterangan' => $user->role == 'dosen' ? $request->pembimbing_keterangan : null,
 
-                'penguji_jumlah' => $user->role == 'karyawan' ? $request->penguji_jumlah : null,
-                'penguji_keterangan' => $user->role == 'karyawan' ? $request->penguji_keterangan : null,
+                'penguji_jumlah' => $user->role == 'dosen' ? $request->penguji_jumlah : null,
+                'penguji_keterangan' => $user->role == 'dosen' ? $request->penguji_keterangan : null,
 
-                'kkl_jumlah' => $user->role == 'karyawan' ? $request->kkl_jumlah : null,
-                'kkl_keterangan' => $user->role == 'karyawan' ? $request->kkl_keterangan : null,
+                'kkl_jumlah' => $user->role == 'dosen' ? $request->kkl_jumlah : null,
+                'kkl_keterangan' => $user->role == 'dosen' ? $request->kkl_keterangan : null,
 
-                'tugas_luar_jumlah' => $user->role == 'karyawan' ? $request->tugas_luar_jumlah : null,
-                'tugas_luar_keterangan' => $user->role == 'karyawan' ? $request->tugas_luar_keterangan : null,
+                'tugas_luar_jumlah' => $user->role == 'dosen' ? $request->tugas_luar_jumlah : null,
+                'tugas_luar_keterangan' => $user->role == 'dosen' ? $request->tugas_luar_keterangan : null,
             ]);
 
             // ==============================
